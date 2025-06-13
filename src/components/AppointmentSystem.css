@@ -1,0 +1,66 @@
+.appointment-system {
+    min-height: 100vh;
+    background: var(--bg-primary);
+    padding: var(--spacing-2);
+}
+
+.appointment-system-container {
+    display: flex;
+    gap: var(--spacing-3);
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.calendar-section {
+    flex: 0 0 420px;
+}
+
+.content-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-3);
+}
+
+/* Dashboard-style başlık */
+.appointment-system-header {
+    text-align: center;
+    margin-bottom: var(--spacing-4);
+    padding: var(--spacing-3);
+    background: var(--bg-card);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-soft);
+}
+
+.appointment-system-title {
+    font-size: 28px;
+    font-weight: var(--font-weight-bold);
+    color: var(--primary-color);
+    margin-bottom: var(--spacing-1);
+    letter-spacing: -0.5px;
+}
+
+.appointment-system-subtitle {
+    color: var(--text-secondary);
+    font-size: 16px;
+    font-weight: var(--font-weight-medium);
+    margin: 0;
+}
+
+@media (max-width: 1024px) {
+    .appointment-system-container {
+        flex-direction: column;
+    }
+
+    .calendar-section {
+        flex: none;
+    }
+
+    .appointment-system {
+        padding: var(--spacing-2);
+    }
+
+    .appointment-system-title {
+        font-size: 24px;
+    }
+} 

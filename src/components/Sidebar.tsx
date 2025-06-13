@@ -16,16 +16,28 @@ import '../styles/Sidebar.css';
 interface SidebarProps {
   collapsed: boolean;
   toggleSidebar: () => void;
+  currentView: 'dashboard' | 'appointments';
+  onViewChange: (view: 'dashboard' | 'appointments') => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ collapsed, toggleSidebar }) => {
+const Sidebar: React.FC<SidebarProps> = ({ collapsed, toggleSidebar, currentView, onViewChange }) => {
+  const handleDashboardClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    onViewChange('dashboard');
+  };
+
+  const handleAppointmentsClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    onViewChange('appointments');
+  };
+
   const menuItems = [
-    { icon: FaTachometerAlt({}), text: 'Panel', path: '#' },
-    { icon: FaCalendarAlt({}), text: 'Randevular', path: '#' },
-    { icon: FaPaw({}), text: 'Hastalar/Hayvanlar', path: '#' },
-    { icon: FaBoxes({}), text: 'Envanter/Stok', path: '#' },
-    { icon: FaChartBar({}), text: 'Raporlar', path: '#' },
-    { icon: FaCog({}), text: 'Ayarlar', path: '#' },
+    { icon: FaTachometerAlt({}), text: 'Panel', href: '#dashboard', onClick: handleDashboardClick, active: currentView === 'dashboard' },
+    { icon: FaCalendarAlt({}), text: 'Randevular', href: '#appointments', onClick: handleAppointmentsClick, active: currentView === 'appointments' },
+    { icon: FaPaw({}), text: 'Hastalar/Hayvanlar', href: '#patients' },
+    { icon: FaBoxes({}), text: 'Envanter/Stok', href: '#inventory' },
+    { icon: FaChartBar({}), text: 'Raporlar', href: '#reports' },
+    { icon: FaCog({}), text: 'Ayarlar', href: '#settings' },
   ];
 
   return (
@@ -40,7 +52,13 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, toggleSidebar }) => {
       
       <div className="menu-container">
         {menuItems.map((item, index) => (
-          <a key={index} href={item.path} className="menu-item">
+          <a 
+            key={index} 
+            href={item.href} 
+            className={`menu-item ${item.active ? 'active' : ''}`}
+            onClick={item.onClick}
+            title={collapsed ? item.text : ''}
+          >
             <span className="icon">{item.icon}</span>
             {!collapsed && <span className="text">{item.text}</span>}
           </a>
@@ -57,10 +75,14 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, toggleSidebar }) => {
             </div>
           )}
         </div>
-        <button className="logout">
+        <a 
+          href="#logout" 
+          className="logout"
+          title={collapsed ? 'Çıkış' : ''}
+        >
           <span className="icon">{FaSignOutAlt({})}</span>
           {!collapsed && <span className="text">Çıkış</span>}
-        </button>
+        </a>
       </div>
     </div>
   );

@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import Sidebar from './Sidebar';
 import Dashboard from './Dashboard';
+import AppointmentSystem from './AppointmentSystem';
 import '../styles/Layout.css';
 
 const Layout: React.FC = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
   const [sidebarHovered, setSidebarHovered] = useState(false);
+  const [currentView, setCurrentView] = useState<'dashboard' | 'appointments'>('dashboard');
 
   const toggleSidebar = () => {
     setSidebarCollapsed(!sidebarCollapsed);
@@ -29,10 +31,15 @@ const Layout: React.FC = () => {
         onMouseEnter={handleSidebarMouseEnter}
         onMouseLeave={handleSidebarMouseLeave}
       >
-        <Sidebar collapsed={!isSidebarOpen} toggleSidebar={toggleSidebar} />
+        <Sidebar 
+          collapsed={!isSidebarOpen} 
+          toggleSidebar={toggleSidebar}
+          currentView={currentView}
+          onViewChange={setCurrentView}
+        />
       </div>
       <main className="main-content">
-        <Dashboard />
+        {currentView === 'dashboard' ? <Dashboard /> : <AppointmentSystem />}
       </main>
     </div>
   );

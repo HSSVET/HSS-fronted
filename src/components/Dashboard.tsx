@@ -1,6 +1,5 @@
 import React from 'react';
 import { 
-  FaCalendarAlt, 
   FaPaw, 
   FaFlask, 
   FaExclamationTriangle, 
