@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
-import './Calendar.css';
-import { Appointment } from '../../types/appointments';
+import '../../styles/components/Calendar.css';
+import { Appointment } from '../../types';
 
 interface CalendarProps {
     selectedDate: Date;

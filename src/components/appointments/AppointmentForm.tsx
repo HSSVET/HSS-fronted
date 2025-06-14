@@ -1,7 +1,7 @@
 import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import { Clock } from 'lucide-react';
-import './AppointmentForm.css';
-import { Appointment } from '../../types/appointments';
+import '../../styles/components/AppointmentForm.css';
+import { Appointment } from '../../types';
 
 interface FormData {
     time: string;

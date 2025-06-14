@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import Calendar from './appointments/Calendar';
-import AppointmentList from './appointments/AppointmentList';
-import AppointmentForm from './appointments/AppointmentForm';
-import { Appointment } from '../types/appointments';
-import './AppointmentSystem.css';
+import Calendar from './Calendar';
+import AppointmentList from './AppointmentList';
+import AppointmentForm from './AppointmentForm';
+import { Appointment } from '../../types';
+import '../../styles/components/AppointmentSystem.css';
 
 function AppointmentSystem(): React.ReactElement {
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());

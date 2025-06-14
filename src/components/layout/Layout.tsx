@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import Sidebar from './Sidebar';
-import Dashboard from './Dashboard';
-import AppointmentSystem from './AppointmentSystem';
-import '../styles/Layout.css';
+import Dashboard from '../dashboard/Dashboard';
+import AppointmentSystem from '../appointments/AppointmentSystem';
+import AnimalSystem from '../animals/AnimalSystem';
+import '../../styles/components/Layout.css';
 
 const Layout: React.FC = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
   const [sidebarHovered, setSidebarHovered] = useState(false);
-  const [currentView, setCurrentView] = useState<'dashboard' | 'appointments'>('dashboard');
+  const [currentView, setCurrentView] = useState<'dashboard' | 'appointments' | 'animals'>('dashboard');
 
   const toggleSidebar = () => {
     setSidebarCollapsed(!sidebarCollapsed);
@@ -39,7 +40,9 @@ const Layout: React.FC = () => {
         />
       </div>
       <main className="main-content">
-        {currentView === 'dashboard' ? <Dashboard /> : <AppointmentSystem />}
+        {currentView === 'dashboard' && <Dashboard />}
+        {currentView === 'appointments' && <AppointmentSystem />}
+        {currentView === 'animals' && <AnimalSystem />}
       </main>
     </div>
   );

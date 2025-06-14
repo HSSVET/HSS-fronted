@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Edit, Trash2, Plus, AlertTriangle } from 'lucide-react';
-import './AppointmentList.css';
-import { Appointment } from '../../types/appointments';
+import '../../styles/components/AppointmentList.css';
+import { Appointment } from '../../types';
 
 interface AppointmentListProps {
     appointments: Appointment[];

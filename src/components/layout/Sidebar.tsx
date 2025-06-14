@@ -11,13 +11,13 @@ import {
   FaChevronLeft,
   FaChevronRight
 } from 'react-icons/fa';
-import '../styles/Sidebar.css';
+import '../../styles/components/Sidebar.css';
 
 interface SidebarProps {
   collapsed: boolean;
   toggleSidebar: () => void;
-  currentView: 'dashboard' | 'appointments';
-  onViewChange: (view: 'dashboard' | 'appointments') => void;
+  currentView: 'dashboard' | 'appointments' | 'animals';
+  onViewChange: (view: 'dashboard' | 'appointments' | 'animals') => void;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ collapsed, toggleSidebar, currentView, onViewChange }) => {
@@ -31,10 +31,15 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, toggleSidebar, currentView
     onViewChange('appointments');
   };
 
+  const handleAnimalsClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    onViewChange('animals');
+  };
+
   const menuItems = [
     { icon: FaTachometerAlt({}), text: 'Panel', href: '#dashboard', onClick: handleDashboardClick, active: currentView === 'dashboard' },
     { icon: FaCalendarAlt({}), text: 'Randevular', href: '#appointments', onClick: handleAppointmentsClick, active: currentView === 'appointments' },
-    { icon: FaPaw({}), text: 'Hastalar/Hayvanlar', href: '#patients' },
+    { icon: FaPaw({}), text: 'Hastalar/Hayvanlar', href: '#animals', onClick: handleAnimalsClick, active: currentView === 'animals' },
     { icon: FaBoxes({}), text: 'Envanter/Stok', href: '#inventory' },
     { icon: FaChartBar({}), text: 'Raporlar', href: '#reports' },
     { icon: FaCog({}), text: 'Ayarlar', href: '#settings' },

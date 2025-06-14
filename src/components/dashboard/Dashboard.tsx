@@ -7,8 +7,8 @@ import {
   FaPlus,
   FaHospital
 } from 'react-icons/fa';
-import '../styles/Dashboard.css';
-import CalendarWidget from './Calendar';
+import '../../styles/components/Dashboard.css';
+import CalendarWidget from '../ui/CalendarWidget';
 
 const Dashboard: React.FC = () => {
   return (
