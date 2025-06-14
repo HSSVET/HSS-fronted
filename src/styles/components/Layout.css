@@ -99,8 +99,12 @@ body {
   margin-left: 60px; /* Daha ince sidebar */
   transition: margin-left var(--transition-speed) var(--transition-function);
   min-height: 100vh;
+  max-height: 100vh;
+  overflow-y: auto;
   background-color: var(--background-color);
   padding: var(--spacing-3);
+  display: flex;
+  flex-direction: column;
 }
 
 .layout:not(.sidebar-collapsed) .main-content {

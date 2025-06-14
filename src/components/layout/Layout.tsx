@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import Sidebar from './Sidebar';
-import Dashboard from '../dashboard/Dashboard';
-import AppointmentSystem from '../appointments/AppointmentSystem';
-import AnimalSystem from '../animals/AnimalSystem';
 import '../../styles/components/Layout.css';
 
-const Layout: React.FC = () => {
+interface LayoutProps {
+  children: React.ReactNode;
+}
+
+const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
   const [sidebarHovered, setSidebarHovered] = useState(false);
-  const [currentView, setCurrentView] = useState<'dashboard' | 'appointments' | 'animals'>('dashboard');
 
   const toggleSidebar = () => {
     setSidebarCollapsed(!sidebarCollapsed);
@@ -32,17 +32,10 @@ const Layout: React.FC = () => {
         onMouseEnter={handleSidebarMouseEnter}
         onMouseLeave={handleSidebarMouseLeave}
       >
-        <Sidebar 
-          collapsed={!isSidebarOpen} 
-          toggleSidebar={toggleSidebar}
-          currentView={currentView}
-          onViewChange={setCurrentView}
-        />
+        <Sidebar collapsed={!isSidebarOpen} toggleSidebar={toggleSidebar} />
       </div>
       <main className="main-content">
-        {currentView === 'dashboard' && <Dashboard />}
-        {currentView === 'appointments' && <AppointmentSystem />}
-        {currentView === 'animals' && <AnimalSystem />}
+        {children}
       </main>
     </div>
   );

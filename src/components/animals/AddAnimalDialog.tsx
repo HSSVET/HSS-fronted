@@ -13,6 +13,7 @@ import {
   Box,
   SelectChangeEvent,
 } from '@mui/material';
+import '../../styles/components/AddAnimalDialog.css';
 
 interface AddAnimalDialogProps {
   open: boolean;
@@ -68,10 +69,16 @@ const AddAnimalDialog: React.FC<AddAnimalDialogProps> = ({ open, onClose, onAdd 
   };
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+    <Dialog 
+      open={open} 
+      onClose={onClose} 
+      maxWidth="sm" 
+      fullWidth
+      className="add-animal-dialog"
+    >
       <DialogTitle>Yeni Hayvan Ekle</DialogTitle>
       <DialogContent>
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 2 }}>
+        <div className="dialog-form-container">
           <TextField
             label="Hayvan Adı"
             value={formData.name}
@@ -138,14 +145,13 @@ const AddAnimalDialog: React.FC<AddAnimalDialogProps> = ({ open, onClose, onAdd 
             required
             InputLabelProps={{ shrink: true }}
           />
-        </Box>
+        </div>
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>İptal</Button>
         <Button 
           onClick={handleSubmit}
           variant="contained"
-          color="secondary"
           disabled={!formData.name || !formData.species || !formData.breed || !formData.health || !formData.lastCheckup || !formData.owner || !formData.nextVaccine}
         >
           Ekle

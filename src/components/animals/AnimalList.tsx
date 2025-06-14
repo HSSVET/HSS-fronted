@@ -7,8 +7,6 @@ import {
   Typography,
   Chip,
   IconButton,
-  useTheme,
-  alpha,
   Button,
   Popover,
   Stack,
@@ -23,6 +21,7 @@ import {
   Description as DescriptionIcon
 } from '@mui/icons-material';
 import { Animal } from '../../types';
+import '../../styles/components/AnimalList.css';
 
 interface AnimalListProps {
   onAddAnimal?: (animal: Animal) => void;
@@ -44,8 +43,7 @@ const initialAnimals: Animal[] = [
 ];
 
 const AnimalList: React.FC<AnimalListProps> = ({ onAddAnimal }) => {
-  const theme = useTheme();
-  const [animals, setAnimals] = useState<Animal[]>(initialAnimals);
+  const [animals] = useState<Animal[]>(initialAnimals);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortAnchorEl, setSortAnchorEl] = useState<null | HTMLElement>(null);
   const [sortBy, setSortBy] = useState<string>('name');
@@ -143,163 +141,117 @@ const AnimalList: React.FC<AnimalListProps> = ({ onAddAnimal }) => {
   const uniqueBreeds = Array.from(new Set(animals.map(a => a.breed)));
   const uniqueHealth = Array.from(new Set(animals.map(a => a.health)));
 
+  const getHealthChipClass = (health: string) => {
+    switch (health) {
+      case 'İyi':
+        return 'health-chip good';
+      case 'Tedavi Altında':
+        return 'health-chip treatment';
+      case 'Kontrol Gerekli':
+        return 'health-chip monitor';
+      default:
+        return 'health-chip';
+    }
+  };
+
   return (
-    <Box sx={{ width: '100%', maxWidth: '100vw', margin: '0 auto', p: 0, background: 'transparent', display: 'flex', minHeight: '80vh' }}>
-      {/* Sol Filtre Paneli */}
-      <Box sx={{ 
-        width: 300, 
-        minWidth: 240, 
-        maxWidth: 340, 
-        minHeight: '90vh',
-        position: 'sticky', 
-        top: 0, 
-        background: '#e9dbc7',
-        borderRight: `1px solid ${alpha(theme.palette.primary.main, 0.08)}`, 
-        p: 3, 
-        display: 'flex', 
-        flexDirection: 'column', 
-        gap: 2,
-        boxShadow: '2px 0 8px rgba(0,0,0,0.05)'
-      }}>
-        <Typography variant="h5" sx={{
-          mb: 2,
-          display: 'flex',
-          alignItems: 'center',
-          gap: 1,
-          color: theme.palette.primary.main,
-          fontWeight: 800,
-          fontSize: 28
-        }}>
-          Filtreler
-        </Typography>
+    <div className="animal-list-container">
+      {/* Filter Panel */}
+      <div className="filter-panel">
+        <h2>Filtreler</h2>
+        
         <TextField
           placeholder="Hayvan adı, sahibi..."
           variant="outlined"
           value={searchTerm}
           onChange={handleSearchChange}
           size="small"
-          sx={{
-            mb: 2,
-            background: '#fff',
-            borderRadius: 2,
-            '& .MuiOutlinedInput-root': {
-              '& fieldset': {
-                borderColor: alpha(theme.palette.primary.main, 0.1),
-              },
-              '&:hover fieldset': {
-                borderColor: alpha(theme.palette.primary.main, 0.3),
-              },
-            },
-          }}
+          className="filter-search"
           InputProps={{
-            startAdornment: <SearchIcon sx={{ color: '#bfa77a', mr: 1 }} />
+            startAdornment: <SearchIcon sx={{ color: 'var(--primary-color)', mr: 1 }} />
           }}
         />
-        <Typography sx={{ fontWeight: 700, mt: 2, mb: 1 }}>Hayvan Türü</Typography>
-        <Box sx={{ background: '#d6c6aa', p: 1.5, borderRadius: 2, mb: 2, width: '100%' }}>
-          {uniqueSpecies.map(species => (
-            <Box key={species} sx={{ display: 'flex', alignItems: 'center' }}>
-              <Checkbox
-                checked={filters.species.includes(species)}
-                onChange={() => handleCheckboxChange('species', species)}
-                sx={{ color: '#bfa77a' }}
-              />
-              <Typography>{species}</Typography>
-            </Box>
-          ))}
-        </Box>
-        <Typography sx={{ fontWeight: 700, mt: 2, mb: 1 }}>Irk</Typography>
-        <Box
-          sx={{
-            background: '#d6c6aa',
-            p: 1.5,
-            borderRadius: 2,
-            mb: 2,
-            width: '100%',
-            minHeight: 96,
-            maxHeight: 180,
-            overflowY: 'auto',
-            pr: 1,
-            '&::-webkit-scrollbar': {
-              width: 8,
-              background: '#e9dbc7',
-              borderRadius: 8,
-            },
-            '&::-webkit-scrollbar-thumb': {
-              background: '#a88c5f',
-              borderRadius: 8,
-              minHeight: 24,
-            },
-            '&::-webkit-scrollbar-thumb:hover': {
-              background: '#8d7346',
-            },
-            scrollbarColor: '#a88c5f #e9dbc7',
-            scrollbarWidth: 'thin',
-          }}
-        >
-          {uniqueBreeds.map(breed => (
-            <Box key={breed} sx={{ display: 'flex', alignItems: 'center' }}>
-              <Checkbox
-                checked={filters.breed.includes(breed)}
-                onChange={() => handleCheckboxChange('breed', breed)}
-                sx={{ color: '#bfa77a' }}
-              />
-              <Typography>{breed}</Typography>
-            </Box>
-          ))}
-        </Box>
-        <Typography sx={{ fontWeight: 700, mt: 2, mb: 1 }}>Sağlık Durumu</Typography>
-        <Box sx={{ background: '#d6c6aa', p: 1.5, borderRadius: 2, mb: 2, width: '100%' }}>
-          {uniqueHealth.map(health => (
-            <Box key={health} sx={{ display: 'flex', alignItems: 'center' }}>
-              <Checkbox
-                checked={filters.health.includes(health)}
-                onChange={() => handleCheckboxChange('health', health)}
-                sx={{ color: '#bfa77a' }}
-              />
-              <Typography>{health}</Typography>
-            </Box>
-          ))}
-        </Box>
-        <Typography sx={{ fontWeight: 700, mt: 2, mb: 1 }}>Son Kontrol Tarihi</Typography>
-        <Box sx={{ background: '#d6c6aa', p: 1, borderRadius: 2, mb: 2, width: '100%', display: 'flex', flexDirection: 'column', gap: 2 }}>
-          <TextField
-            label="Başlangıç Tarihi"
-            type="date"
-            value={filters.startDate}
-            onChange={(e) => handleFilterChange('startDate', e.target.value)}
-            InputLabelProps={{ shrink: true }}
-            fullWidth
-            sx={{ background: '#fff', borderRadius: 2 }}
-          />
-          <TextField
-            label="Bitiş Tarihi"
-            type="date"
-            value={filters.endDate}
-            onChange={(e) => handleFilterChange('endDate', e.target.value)}
-            InputLabelProps={{ shrink: true }}
-            fullWidth
-            sx={{ background: '#fff', borderRadius: 2 }}
-          />
-        </Box>
-      </Box>
+
+        <div className="filter-section">
+          <h3>Hayvan Türü</h3>
+          <div className="filter-options">
+            {uniqueSpecies.map(species => (
+              <div key={species} className="filter-checkbox-item">
+                <Checkbox
+                  checked={filters.species.includes(species)}
+                  onChange={() => handleCheckboxChange('species', species)}
+                  sx={{ color: 'var(--primary-color)' }}
+                />
+                <Typography>{species}</Typography>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="filter-section">
+          <h3>Irk</h3>
+          <div className="filter-options scrollable">
+            {uniqueBreeds.map(breed => (
+              <div key={breed} className="filter-checkbox-item">
+                <Checkbox
+                  checked={filters.breed.includes(breed)}
+                  onChange={() => handleCheckboxChange('breed', breed)}
+                  sx={{ color: 'var(--primary-color)' }}
+                />
+                <Typography>{breed}</Typography>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="filter-section">
+          <h3>Sağlık Durumu</h3>
+          <div className="filter-options">
+            {uniqueHealth.map(health => (
+              <div key={health} className="filter-checkbox-item">
+                <Checkbox
+                  checked={filters.health.includes(health)}
+                  onChange={() => handleCheckboxChange('health', health)}
+                  sx={{ color: 'var(--primary-color)' }}
+                />
+                <Typography>{health}</Typography>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="filter-section">
+          <h3>Son Kontrol Tarihi</h3>
+          <div className="date-filter-inputs">
+            <TextField
+              label="Başlangıç Tarihi"
+              type="date"
+              value={filters.startDate}
+              onChange={(e) => handleFilterChange('startDate', e.target.value)}
+              InputLabelProps={{ shrink: true }}
+              fullWidth
+            />
+            <TextField
+              label="Bitiş Tarihi"
+              type="date"
+              value={filters.endDate}
+              onChange={(e) => handleFilterChange('endDate', e.target.value)}
+              InputLabelProps={{ shrink: true }}
+              fullWidth
+            />
+          </div>
+        </div>
+      </div>
       
-      {/* Sağ Liste ve Arama Paneli */}
-      <Box sx={{ flex: 1, p: 3 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-          <Typography variant="h5" sx={{ fontWeight: 800, color: theme.palette.primary.main }}>Hayvan Listesi</Typography>
+      {/* Main Content */}
+      <div className="animal-list-main">
+        <div className="animal-list-header">
+          <h2 className="animal-list-title">Hayvan Listesi</h2>
           <Button
             variant="outlined"
             onClick={handleSortClick}
             startIcon={<SortIcon />}
-            sx={{
-              borderColor: '#bfa77a',
-              color: '#bfa77a',
-              '&:hover': {
-                borderColor: '#a88c5f',
-                backgroundColor: 'rgba(191, 167, 122, 0.04)'
-              }
-            }}
+            className="sort-button"
           >
             Sırala
           </Button>
@@ -316,126 +268,114 @@ const AnimalList: React.FC<AnimalListProps> = ({ onAddAnimal }) => {
               horizontal: 'right',
             }}
           >
-            <Box sx={{ p: 2, minWidth: 200 }}>
-              <Typography sx={{ fontWeight: 700, mb: 1 }}>Sıralama Seçenekleri</Typography>
-              <Stack spacing={1}>
+            <div className="sort-popover">
+              <h3>Sıralama Seçenekleri</h3>
+              <div className="sort-options">
                 <Button
                   onClick={() => handleSortChange({ target: { value: 'name' } } as SelectChangeEvent)}
-                  sx={{ justifyContent: 'flex-start', color: sortBy === 'name' ? '#bfa77a' : 'inherit' }}
+                  className={`sort-option ${sortBy === 'name' ? 'active' : ''}`}
                 >
                   İsim (A-Z)
                 </Button>
                 <Button
                   onClick={() => handleSortChange({ target: { value: 'name-desc' } } as SelectChangeEvent)}
-                  sx={{ justifyContent: 'flex-start', color: sortBy === 'name-desc' ? '#bfa77a' : 'inherit' }}
+                  className={`sort-option ${sortBy === 'name-desc' ? 'active' : ''}`}
                 >
                   İsim (Z-A)
                 </Button>
                 <Divider />
                 <Button
                   onClick={() => handleSortChange({ target: { value: 'nextVaccine' } } as SelectChangeEvent)}
-                  sx={{ justifyContent: 'flex-start', color: sortBy === 'nextVaccine' ? '#bfa77a' : 'inherit' }}
+                  className={`sort-option ${sortBy === 'nextVaccine' ? 'active' : ''}`}
                 >
                   Sonraki Aşı (Yakın-Uzak)
                 </Button>
                 <Button
                   onClick={() => handleSortChange({ target: { value: 'nextVaccine-desc' } } as SelectChangeEvent)}
-                  sx={{ justifyContent: 'flex-start', color: sortBy === 'nextVaccine-desc' ? '#bfa77a' : 'inherit' }}
+                  className={`sort-option ${sortBy === 'nextVaccine-desc' ? 'active' : ''}`}
                 >
                   Sonraki Aşı (Uzak-Yakın)
                 </Button>
                 <Divider />
                 <Button
                   onClick={() => handleSortChange({ target: { value: 'health' } } as SelectChangeEvent)}
-                  sx={{ justifyContent: 'flex-start', color: sortBy === 'health' ? '#bfa77a' : 'inherit' }}
+                  className={`sort-option ${sortBy === 'health' ? 'active' : ''}`}
                 >
                   Sağlık Durumu (A-Z)
                 </Button>
                 <Button
                   onClick={() => handleSortChange({ target: { value: 'health-desc' } } as SelectChangeEvent)}
-                  sx={{ justifyContent: 'flex-start', color: sortBy === 'health-desc' ? '#bfa77a' : 'inherit' }}
+                  className={`sort-option ${sortBy === 'health-desc' ? 'active' : ''}`}
                 >
                   Sağlık Durumu (Z-A)
                 </Button>
                 <Divider />
                 <Button
                   onClick={() => handleSortChange({ target: { value: 'lastCheckup' } } as SelectChangeEvent)}
-                  sx={{ justifyContent: 'flex-start', color: sortBy === 'lastCheckup' ? '#bfa77a' : 'inherit' }}
+                  className={`sort-option ${sortBy === 'lastCheckup' ? 'active' : ''}`}
                 >
                   Son Kontrol (Yeni-Eski)
                 </Button>
                 <Button
                   onClick={() => handleSortChange({ target: { value: 'lastCheckup-desc' } } as SelectChangeEvent)}
-                  sx={{ justifyContent: 'flex-start', color: sortBy === 'lastCheckup-desc' ? '#bfa77a' : 'inherit' }}
+                  className={`sort-option ${sortBy === 'lastCheckup-desc' ? 'active' : ''}`}
                 >
                   Son Kontrol (Eski-Yeni)
                 </Button>
-              </Stack>
-            </Box>
+              </div>
+            </div>
           </Popover>
-        </Box>
+        </div>
         
-        <Paper sx={{ width: '100%', overflow: 'auto', borderRadius: 3, boxShadow: '0 2px 12px rgba(0,0,0,0.04)', p: 0 }}>
-          <Box sx={{ display: 'flex', fontWeight: 700, bgcolor: '#f6f4f1', borderBottom: '2px solid #e9dbc7', py: 1.5, px: 2 }}>
-            <Box sx={{ flex: 0.5 }}>ID</Box>
-            <Box sx={{ flex: 1.5 }}>Hayvan Adı</Box>
-            <Box sx={{ flex: 1.5 }}>Tür/Irk</Box>
-            <Box sx={{ flex: 1.5 }}>Sahibi</Box>
-            <Box sx={{ flex: 1 }}>Sağlık Durumu</Box>
-            <Box sx={{ flex: 1 }}>Son Kontrol</Box>
-            <Box sx={{ flex: 1 }}>Sonraki Aşı</Box>
-            <Box sx={{ flex: 1 }}>İşlemler</Box>
-          </Box>
+        <Paper className="animal-table">
+          <div className="animal-table-header">
+            <div className="animal-table-cell id">ID</div>
+            <div className="animal-table-cell name">Hayvan Adı</div>
+            <div className="animal-table-cell species">Tür/Irk</div>
+            <div className="animal-table-cell owner">Sahibi</div>
+            <div className="animal-table-cell health">Sağlık Durumu</div>
+            <div className="animal-table-cell date">Son Kontrol</div>
+            <div className="animal-table-cell date">Sonraki Aşı</div>
+            <div className="animal-table-cell actions">İşlemler</div>
+          </div>
           {filteredAndSortedAnimals.map((animal) => (
-            <Box key={animal.id} sx={{ display: 'flex', alignItems: 'center', borderBottom: '1px solid #f0e6d2', py: 1.5, px: 2, '&:hover': { bgcolor: '#f9f6f1' } }}>
-              <Box sx={{ flex: 0.5, color: '#bfa77a', fontWeight: 700 }}>#{animal.id}</Box>
-              <Box sx={{ flex: 1.5, fontWeight: 700 }}>{animal.name}</Box>
-              <Box sx={{ flex: 1.5 }}>
-                <Typography variant="body2" sx={{ fontWeight: 500 }}>{animal.species}</Typography>
-                <Typography variant="caption" color="text.secondary">{animal.breed}</Typography>
-              </Box>
-              <Box sx={{ flex: 1.5 }}>{animal.owner}</Box>
-              <Box sx={{ flex: 1 }}>
-                <Chip
-                  label={animal.health}
-                  size="small"
-                  sx={{
-                    bgcolor:
-                      animal.health === 'İyi' ? '#e0f7e9' :
-                      animal.health === 'Tedavi Altında' ? '#ffeaea' :
-                      animal.health === 'Kontrol Gerekli' ? '#fff7e0' :
-                      '#e0e0e0',
-                    color:
-                      animal.health === 'İyi' ? '#388e3c' :
-                      animal.health === 'Tedavi Altında' ? '#d32f2f' :
-                      animal.health === 'Kontrol Gerekli' ? '#fbc02d' :
-                      '#757575',
-                    fontWeight: 700
-                  }}
-                />
-              </Box>
-              <Box sx={{ flex: 1 }}>{animal.lastCheckup}</Box>
-              <Box sx={{ flex: 1 }}>
-                <Chip
-                  label={animal.nextVaccine}
-                  size="small"
-                  sx={{
-                    bgcolor: '#e3f2fd',
-                    color: '#1976d2',
-                    fontWeight: 700
-                  }}
-                />
-              </Box>
-              <Box sx={{ flex: 1, display: 'flex', gap: 1 }}>
-                <IconButton size="small"><EventIcon sx={{ color: '#bfa77a' }} /></IconButton>
-                <IconButton size="small"><EditIcon sx={{ color: '#bfa77a' }} /></IconButton>
-                <IconButton size="small"><DescriptionIcon sx={{ color: '#bfa77a' }} /></IconButton>
-              </Box>
-            </Box>
+            <div key={animal.id} className="animal-table-row">
+              <div className="animal-table-cell id">#{animal.id}</div>
+              <div className="animal-table-cell name">{animal.name}</div>
+              <div className="animal-table-cell species">
+                <div className="species-info">
+                  <div className="species-name">{animal.species}</div>
+                  <div className="breed-name">{animal.breed}</div>
+                </div>
+              </div>
+              <div className="animal-table-cell owner">{animal.owner}</div>
+              <div className="animal-table-cell health">
+                <span className={getHealthChipClass(animal.health)}>
+                  {animal.health}
+                </span>
+              </div>
+              <div className="animal-table-cell date">{animal.lastCheckup}</div>
+              <div className="animal-table-cell date">
+                <span className="vaccine-chip">
+                  {animal.nextVaccine}
+                </span>
+              </div>
+              <div className="animal-table-cell actions">
+                <IconButton size="small" className="action-icon-button">
+                  <EventIcon />
+                </IconButton>
+                <IconButton size="small" className="action-icon-button">
+                  <EditIcon />
+                </IconButton>
+                <IconButton size="small" className="action-icon-button">
+                  <DescriptionIcon />
+                </IconButton>
+              </div>
+            </div>
           ))}
         </Paper>
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 };
 

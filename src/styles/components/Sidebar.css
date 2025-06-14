@@ -1,325 +1,400 @@
-/* Sidebar Styles - Material Design Inspired */
+/* Sidebar Styles - Material Design */
 .sidebar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 100vh;
-  width: 240px; /* Daha ince sidebar */
-  background: linear-gradient(180deg, var(--primary-color) 0%, var(--primary-dark) 100%);
-  color: var(--text-on-primary);
-  transition: width var(--transition-speed) var(--transition-function);
   display: flex;
   flex-direction: column;
-  box-shadow: var(--elevation-4);
-  z-index: 1000;
+  background-color: var(--primary-color);
+  color: var(--text-on-primary);
+  height: 100vh;
+  width: 100%;
+  transition: all var(--transition-speed) var(--transition-function);
   overflow: hidden;
 }
 
 .sidebar.collapsed {
-  width: 60px; /* Daha ince sidebar */
+  width: 100%;
+}
+
+.sidebar-hover-area {
+  width: auto;
+  height: 100%;
 }
 
 .logo-container {
-  padding: var(--spacing-3);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  min-height: 64px; /* Material Design header height */
-}
-
-.sidebar.collapsed .logo-container {
-  justify-content: center;
   padding: var(--spacing-2);
+  height: 60px; /* Daha ince header */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* Beyaz çizgi */
 }
 
 .logo-container h2 {
-  font-size: 1.5rem;
-  font-weight: var(--font-weight-bold);
   margin: 0;
-  transition: opacity var(--transition-speed) var(--transition-function);
-}
-
-.sidebar.collapsed .logo-container h2 {
-  opacity: 1;
-  font-size: 1.2rem;
+  font-size: 18px; /* Daha küçük yazı */
+  color: var(--text-on-primary);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: 0.15px;
 }
 
 .toggle-button {
-  background: rgba(255, 255, 255, 0.1);
+  background: none;
   border: none;
-  color: var(--text-on-primary);
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
+  color: rgba(255, 255, 255, 0.7);
   cursor: pointer;
+  font-size: 20px; /* Daha küçük ikon */
+  padding: var(--spacing-1);
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all var(--transition-speed) var(--transition-function);
-}
-
-.sidebar.collapsed .toggle-button {
-  display: none;
+  border-radius: 50%;
+  width: 36px; /* Daha küçük buton */
+  height: 36px; /* Daha küçük buton */
+  transition: background-color var(--transition-speed) var(--transition-function);
 }
 
 .toggle-button:hover {
-  background: rgba(255, 255, 255, 0.2);
-  transform: scale(1.1);
+  background-color: rgba(255, 255, 255, 0.1); /* Beyaz hover efekti */
+  color: var(--text-on-primary);
+}
+
+/* Sidebar CSS Icons */
+.sidebar .icon {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  position: relative;
+  margin-right: var(--spacing-3);
+}
+
+.sidebar.collapsed .icon {
+  margin-right: 0;
+}
+
+.icon-dashboard::before {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border: 2px solid currentColor;
+  border-radius: 2px;
+}
+
+.icon-dashboard::after {
+  content: '';
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  width: 8px;
+  height: 8px;
+  background-color: currentColor;
+}
+
+.icon-calendar::before {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 14px;
+  height: 14px;
+  border: 2px solid currentColor;
+  border-radius: 2px;
+}
+
+.icon-calendar::after {
+  content: '';
+  position: absolute;
+  top: 8px;
+  left: 6px;
+  width: 8px;
+  height: 2px;
+  background-color: currentColor;
+}
+
+.icon-paw::before {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 8px;
+  width: 4px;
+  height: 6px;
+  background-color: currentColor;
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+}
+
+.icon-paw::after {
+  content: '';
+  position: absolute;
+  bottom: 2px;
+  left: 6px;
+  width: 8px;
+  height: 6px;
+  background-color: currentColor;
+  border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;
+}
+
+.icon-box::before {
+  content: '';
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 12px;
+  height: 12px;
+  border: 2px solid currentColor;
+  border-radius: 1px;
+}
+
+.icon-chart::before {
+  content: '';
+  position: absolute;
+  bottom: 2px;
+  left: 2px;
+  width: 4px;
+  height: 8px;
+  background-color: currentColor;
+}
+
+.icon-chart::after {
+  content: '';
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  width: 4px;
+  height: 12px;
+  background-color: currentColor;
+}
+
+.icon-settings::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 12px;
+  height: 12px;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.icon-settings::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 4px;
+  height: 4px;
+  background-color: currentColor;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.icon-chevron-right {
+  border-left: 6px solid currentColor;
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
+  width: 0;
+  height: 0;
+  background: transparent;
+  margin-right: 0;
+}
+
+.icon-chevron-left {
+  border-right: 6px solid currentColor;
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
+  width: 0;
+  height: 0;
+  background: transparent;
+  margin-right: 0;
+}
+
+.icon-user::before {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 6px;
+  width: 8px;
+  height: 8px;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+}
+
+.icon-user::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 3px;
+  width: 14px;
+  height: 8px;
+  border: 2px solid currentColor;
+  border-radius: 8px 8px 0 0;
+  border-bottom: none;
+}
+
+.icon-logout::before {
+  content: '';
+  position: absolute;
+  top: 6px;
+  left: 2px;
+  width: 12px;
+  height: 8px;
+  border: 2px solid currentColor;
+  border-right: none;
+}
+
+.icon-logout::after {
+  content: '';
+  position: absolute;
+  top: 8px;
+  right: 2px;
+  border-left: 6px solid currentColor;
+  border-top: 2px solid transparent;
+  border-bottom: 2px solid transparent;
+  width: 0;
+  height: 0;
 }
 
 .menu-container {
   flex: 1;
-  padding: var(--spacing-2) 0;
-}
-
-.sidebar.collapsed .menu-container {
   padding: var(--spacing-1) 0;
-  margin-top: var(--spacing-4);
+  overflow-y: auto;
 }
 
 .menu-item {
   display: flex;
   align-items: center;
-  padding: var(--spacing-2) var(--spacing-3);
-  color: var(--text-on-primary);
+  padding: 0 var(--spacing-2);
+  height: 44px; /* Daha ince menü öğesi */
+  color: rgba(255, 255, 255, 0.8);
   text-decoration: none;
-  cursor: pointer;
-  border: none;
-  background: none;
-  width: 100%;
-  height: 48px;
-  text-align: left;
-  font-size: 0.95rem;
-  font-weight: var(--font-weight-medium);
-  transition: all var(--transition-speed) var(--transition-function);
+  transition: background-color var(--transition-speed) var(--transition-function);
+  white-space: nowrap;
   position: relative;
-  overflow: hidden;
-  margin-bottom: 2px;
-  border-radius: var(--border-radius-sm);
-  box-sizing: border-box;
-}
-
-.sidebar.collapsed .menu-item {
-  padding: var(--spacing-2);
-  justify-content: center;
-  margin-bottom: 4px;
-  height: 48px;
-}
-
-.menu-item::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 4px;
-  height: 100%;
-  background: var(--secondary-color);
-  transform: scaleY(0);
-  transition: transform var(--transition-speed) var(--transition-function);
-}
-
-.sidebar.collapsed .menu-item::before {
-  width: 100%;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-  margin: 2px;
-  width: calc(100% - 4px);
-  left: 2px;
-}
-
-.menu-item:hover::before,
-.menu-item.active::before {
-  transform: scaleY(1);
 }
 
 .menu-item:hover {
-  background: rgba(255, 255, 255, 0.1);
-  transform: translateX(2px);
-}
-
-.sidebar.collapsed .menu-item:hover {
-  background: rgba(255, 255, 255, 0.15);
-  padding: var(--spacing-2);
-  transform: none;
+  background-color: rgba(255, 255, 255, 0.1); /* Beyaz hover efekti */
+  color: var(--text-on-primary);
 }
 
 .menu-item.active {
-  background: rgba(255, 255, 255, 0.15);
-  font-weight: var(--font-weight-bold);
-}
-
-.sidebar.collapsed .menu-item.active {
-  background: transparent;
+  background-color: rgba(255, 255, 255, 0.15); /* Daha belirgin aktif renk */
+  color: var(--text-on-primary);
 }
 
 .menu-item .icon {
-  margin-right: var(--spacing-2);
-  font-size: 1.2rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  opacity: 0.9;
-  transition: all var(--transition-speed) var(--transition-function);
+  color: rgba(255, 255, 255, 0.7);
 }
 
-.sidebar.collapsed .menu-item .icon {
-  margin-right: 0;
-  font-size: 1.25rem;
-  width: 24px;
-  height: 24px;
-  opacity: 1;
-}
-
+.menu-item.active .icon,
 .menu-item:hover .icon {
-  opacity: 1;
-  transform: scale(1.05);
-}
-
-.sidebar.collapsed .menu-item:hover .icon {
-  transform: scale(1.1);
+  color: var(--text-on-primary);
 }
 
 .menu-item .text {
+  white-space: nowrap;
+  opacity: 1;
   transition: opacity var(--transition-speed) var(--transition-function);
+  font-weight: var(--font-weight-medium);
+  font-size: 14px;
+  letter-spacing: 0.1px;
 }
 
 .sidebar.collapsed .menu-item .text {
   opacity: 0;
-  pointer-events: none;
-  display: none;
 }
 
 .user-container {
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
   padding: var(--spacing-2);
-}
-
-.sidebar.collapsed .user-container {
-  padding: var(--spacing-1);
+  border-top: 1px solid rgba(255, 255, 255, 0.1); /* Beyaz çizgi */
+  margin-top: auto;
 }
 
 .user-profile {
   display: flex;
   align-items: center;
-  padding: var(--spacing-2);
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: var(--border-radius-sm);
-  margin-bottom: var(--spacing-1);
-  height: 48px;
-  box-sizing: border-box;
-}
-
-.sidebar.collapsed .user-profile {
-  justify-content: center;
-  padding: var(--spacing-1);
-  margin-bottom: var(--spacing-1);
-  height: 48px;
+  margin-bottom: var(--spacing-2);
 }
 
 .user-profile .icon {
+  font-size: 18px; /* Daha küçük ikon */
   margin-right: var(--spacing-2);
-  font-size: 1.2rem;
-  width: 24px;
-  height: 24px;
+  background-color: rgba(255, 255, 255, 0.15); /* Beyaz arka plan */
+  width: 36px; /* Daha küçük avatar */
+  height: 36px; /* Daha küçük avatar */
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all var(--transition-speed) var(--transition-function);
+  color: var(--text-on-primary); /* Beyaz ikon rengi */
 }
 
 .sidebar.collapsed .user-profile .icon {
   margin-right: 0;
-  font-size: 1.25rem;
-  width: 24px;
-  height: 24px;
 }
 
 .user-info {
+  display: flex;
+  flex-direction: column;
+  opacity: 1;
   transition: opacity var(--transition-speed) var(--transition-function);
 }
 
 .sidebar.collapsed .user-info {
   opacity: 0;
-  pointer-events: none;
-  display: none;
 }
 
 .user-name {
-  display: block;
-  font-size: 0.9rem;
   font-weight: var(--font-weight-medium);
-  line-height: 1.2;
+  font-size: 14px;
+  letter-spacing: 0.1px;
+  color: var(--text-on-primary);
 }
 
 .user-role {
-  display: block;
-  font-size: 0.75rem;
-  opacity: 0.8;
-  line-height: 1.2;
+  font-size: 12px;
+  letter-spacing: 0.4px;
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .logout {
   display: flex;
   align-items: center;
-  padding: var(--spacing-2);
-  color: var(--text-on-primary);
+  color: rgba(255, 255, 255, 0.8);
   text-decoration: none;
-  cursor: pointer;
-  border: none;
+  padding: var(--spacing-1) 0;
+  transition: color var(--transition-speed) var(--transition-function);
   background: none;
+  border: none;
+  cursor: pointer;
   width: 100%;
-  height: 44px;
   text-align: left;
-  font-size: 0.9rem;
-  border-radius: var(--border-radius-sm);
-  transition: all var(--transition-speed) var(--transition-function);
-  box-sizing: border-box;
-}
-
-.sidebar.collapsed .logout {
-  justify-content: center;
-  padding: var(--spacing-1);
-  height: 44px;
+  font-size: 14px;
+  letter-spacing: 0.1px;
+  font-weight: var(--font-weight-medium);
 }
 
 .logout:hover {
-  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-on-primary);
 }
 
 .logout .icon {
+  font-size: 18px; /* Daha küçük ikon */
   margin-right: var(--spacing-2);
-  font-size: 1rem;
-  width: 20px;
-  height: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all var(--transition-speed) var(--transition-function);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.logout:hover .icon {
+  color: var(--text-on-primary);
 }
 
 .sidebar.collapsed .logout .icon {
   margin-right: 0;
-  font-size: 1.1rem;
-  width: 20px;
-  height: 20px;
-}
-
-.logout:hover .icon {
-  opacity: 1;
-  transform: scale(1.05);
-}
-
-.logout .text {
-  transition: opacity var(--transition-speed) var(--transition-function);
 }
 
 .sidebar.collapsed .logout .text {
   opacity: 0;
-  pointer-events: none;
-  display: none;
 }
 
 /* Tooltip for collapsed sidebar */

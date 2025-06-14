@@ -1,12 +1,4 @@
 import React from 'react';
-import { 
-  FaPaw, 
-  FaFlask, 
-  FaExclamationTriangle, 
-  FaBell,
-  FaPlus,
-  FaHospital
-} from 'react-icons/fa';
 import '../../styles/components/Dashboard.css';
 import CalendarWidget from '../ui/CalendarWidget';
 
@@ -17,10 +9,12 @@ const Dashboard: React.FC = () => {
         <h1>Veteriner Paneli</h1>
         <div className="quick-actions">
           <button className="action-button">
-            {FaPlus({})} Yeni Randevu
+            <span className="icon icon-plus"></span>
+            Yeni Randevu
           </button>
           <button className="action-button">
-            {FaPlus({})} Yeni Hasta Kaydı
+            <span className="icon icon-plus"></span>
+            Yeni Hasta Kaydı
           </button>
         </div>
       </div>
@@ -43,7 +37,7 @@ const Dashboard: React.FC = () => {
       <div className="widgets-container three-column">
         <div className="widget hospitalized-patients-widget">
           <div className="widget-header">
-            <h2>{FaHospital({})} Klinikte Yatan Hastalar</h2>
+            <h2><span className="icon icon-hospital"></span> Klinikte Yatan Hastalar</h2>
           </div>
           <div className="widget-content">
             <table className="hospitalized-patients-table">
@@ -87,7 +81,7 @@ const Dashboard: React.FC = () => {
 
         <div className="widget recent-activity-widget">
           <div className="widget-header">
-            <h2>{FaPaw({})} Son Hasta Aktiviteleri</h2>
+            <h2><span className="icon icon-paw"></span> Son Hasta Aktiviteleri</h2>
           </div>
           <div className="widget-content">
             <ul className="activity-list">
@@ -129,7 +123,7 @@ const Dashboard: React.FC = () => {
 
         <div className="widget low-stock-widget">
           <div className="widget-header">
-            <h2>{FaExclamationTriangle({})} Düşük Stok Uyarıları</h2>
+            <h2><span className="icon icon-warning"></span> Düşük Stok Uyarıları</h2>
           </div>
           <div className="widget-content">
             <table className="stock-table">
@@ -168,7 +162,7 @@ const Dashboard: React.FC = () => {
 
         <div className="widget lab-results-widget">
           <div className="widget-header">
-            <h2>{FaFlask({})} Bekleyen Laboratuvar Sonuçları</h2>
+            <h2><span className="icon icon-lab"></span> Bekleyen Laboratuvar Sonuçları</h2>
           </div>
           <div className="widget-content">
             <ul className="lab-list">
@@ -199,7 +193,7 @@ const Dashboard: React.FC = () => {
 
         <div className="widget notifications-widget">
           <div className="widget-header">
-            <h2>{FaBell({})} Sistem Bildirimleri</h2>
+            <h2><span className="icon icon-bell"></span> Sistem Bildirimleri</h2>
           </div>
           <div className="widget-content">
             <ul className="notification-list">

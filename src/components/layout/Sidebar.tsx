@@ -1,48 +1,22 @@
 import React from 'react';
-import { 
-  FaTachometerAlt, 
-  FaCalendarAlt, 
-  FaPaw, 
-  FaBoxes, 
-  FaChartBar, 
-  FaCog, 
-  FaUser,
-  FaSignOutAlt,
-  FaChevronLeft,
-  FaChevronRight
-} from 'react-icons/fa';
+import { Link, useLocation } from 'react-router-dom';
 import '../../styles/components/Sidebar.css';
 
 interface SidebarProps {
   collapsed: boolean;
   toggleSidebar: () => void;
-  currentView: 'dashboard' | 'appointments' | 'animals';
-  onViewChange: (view: 'dashboard' | 'appointments' | 'animals') => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ collapsed, toggleSidebar, currentView, onViewChange }) => {
-  const handleDashboardClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    onViewChange('dashboard');
-  };
-
-  const handleAppointmentsClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    onViewChange('appointments');
-  };
-
-  const handleAnimalsClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    onViewChange('animals');
-  };
-
+const Sidebar: React.FC<SidebarProps> = ({ collapsed, toggleSidebar }) => {
+  const location = useLocation();
+  
   const menuItems = [
-    { icon: FaTachometerAlt({}), text: 'Panel', href: '#dashboard', onClick: handleDashboardClick, active: currentView === 'dashboard' },
-    { icon: FaCalendarAlt({}), text: 'Randevular', href: '#appointments', onClick: handleAppointmentsClick, active: currentView === 'appointments' },
-    { icon: FaPaw({}), text: 'Hastalar/Hayvanlar', href: '#animals', onClick: handleAnimalsClick, active: currentView === 'animals' },
-    { icon: FaBoxes({}), text: 'Envanter/Stok', href: '#inventory' },
-    { icon: FaChartBar({}), text: 'Raporlar', href: '#reports' },
-    { icon: FaCog({}), text: 'Ayarlar', href: '#settings' },
+    { icon: 'icon-dashboard', text: 'Panel', path: '/dashboard' },
+    { icon: 'icon-calendar', text: 'Randevular', path: '/appointments' },
+    { icon: 'icon-paw', text: 'Hastalar/Hayvanlar', path: '/animals' },
+    { icon: 'icon-box', text: 'Envanter/Stok', path: '/inventory' },
+    { icon: 'icon-chart', text: 'Raporlar', path: '/reports' },
+    { icon: 'icon-settings', text: 'Ayarlar', path: '/settings' },
   ];
 
   return (
@@ -51,28 +25,26 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, toggleSidebar, currentView
         {!collapsed && <h2>VetKlinik</h2>}
         {collapsed && <h2>VK</h2>}
         <button className="toggle-button" onClick={toggleSidebar}>
-          {collapsed ? FaChevronRight({}) : FaChevronLeft({})}
+          <span className={`icon ${collapsed ? 'icon-chevron-right' : 'icon-chevron-left'}`}></span>
         </button>
       </div>
       
       <div className="menu-container">
         {menuItems.map((item, index) => (
-          <a 
+          <Link 
             key={index} 
-            href={item.href} 
-            className={`menu-item ${item.active ? 'active' : ''}`}
-            onClick={item.onClick}
-            title={collapsed ? item.text : ''}
+            to={item.path} 
+            className={`menu-item ${location.pathname === item.path ? 'active' : ''}`}
           >
-            <span className="icon">{item.icon}</span>
+            <span className={`icon ${item.icon}`}></span>
             {!collapsed && <span className="text">{item.text}</span>}
-          </a>
+          </Link>
         ))}
       </div>
       
       <div className="user-container">
         <div className="user-profile">
-          <span className="icon">{FaUser({})}</span>
+          <span className="icon icon-user"></span>
           {!collapsed && (
             <div className="user-info">
               <span className="user-name">Dr. Yılmaz</span>
@@ -80,14 +52,10 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, toggleSidebar, currentView
             </div>
           )}
         </div>
-        <a 
-          href="#logout" 
-          className="logout"
-          title={collapsed ? 'Çıkış' : ''}
-        >
-          <span className="icon">{FaSignOutAlt({})}</span>
+        <button className="logout">
+          <span className="icon icon-logout"></span>
           {!collapsed && <span className="text">Çıkış</span>}
-        </a>
+        </button>
       </div>
     </div>
   );

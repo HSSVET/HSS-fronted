@@ -2,12 +2,11 @@ import React, { useState } from 'react';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import '../../styles/components/Calendar.css';
-import { ChevronDown } from 'lucide-react';
 
 type ValuePiece = Date | null;
 type Value = ValuePiece | [ValuePiece, ValuePiece];
 
-interface CalendarAppointment {
+interface Appointment {
   id: number;
   time: string;
   patientName: string;
@@ -18,11 +17,11 @@ interface CalendarAppointment {
 interface DayAppointments {
   date: Date;
   count: number;
-  appointments: CalendarAppointment[];
+  appointments: Appointment[];
 }
 
 const CalendarWidget: React.FC = () => {
-  const today = new Date();
+    const today = new Date();
   const [value, onChange] = useState<Value>(today);
   const [selectedDay, setSelectedDay] = useState<Date | null>(today); // Initialize with today
   const [showAppointmentForm, setShowAppointmentForm] = useState<boolean>(false);
@@ -200,7 +199,7 @@ const CalendarWidget: React.FC = () => {
   };
 
   // Kompakt randevu listesi
-  const renderCompactAppointmentList = (appointments: CalendarAppointment[]) => {
+  const renderCompactAppointmentList = (appointments: Appointment[]) => {
     return (
       <div className="compact-appointments">
         {appointments.map(appointment => (
