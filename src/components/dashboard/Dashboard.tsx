@@ -1,8 +1,30 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import '../../styles/components/Dashboard.css';
 import CalendarWidget from '../ui/CalendarWidget';
 
 const Dashboard: React.FC = () => {
+  const navigate = useNavigate();
+
+  // Mock data mapping animal names to IDs for navigation
+  const animalIdMap: { [key: string]: number } = {
+    'Max': 4,
+    'Bıdık': 1, // Using Pamuk's ID as fallback
+    'Karabaş': 2,
+    'Pamuk': 1,
+    'Minnoş': 1, // Using Pamuk's ID as fallback
+    'Luna': 1, // Using Pamuk's ID as fallback
+    'Rocky': 2, // Using Karabaş's ID as fallback
+    'Çomar': 2, // Using Karabaş's ID as fallback
+  };
+
+  const handleAnimalClick = (animalName: string) => {
+    // Extract just the animal name (before parentheses if they exist)
+    const cleanName = animalName.split(' (')[0];
+    const animalId = animalIdMap[cleanName] || 1; // Default to ID 1 if not found
+    navigate(`/animals/${animalId}`);
+  };
+
   return (
     <div className="dashboard">
       <div className="dashboard-header">
@@ -50,27 +72,62 @@ const Dashboard: React.FC = () => {
               </thead>
               <tbody>
                 <tr>
-                  <td>Max (Köpek)</td>
+                  <td>
+                    <span 
+                      className="clickable-animal-name" 
+                      onClick={() => handleAnimalClick('Max (Köpek)')}
+                    >
+                      Max (Köpek)
+                    </span>
+                  </td>
                   <td>12.06.2023</td>
                   <td><span className="status-stable">Stabil</span></td>
                 </tr>
                 <tr>
-                  <td>Bıdık (Kedi)</td>
+                  <td>
+                    <span 
+                      className="clickable-animal-name" 
+                      onClick={() => handleAnimalClick('Bıdık (Kedi)')}
+                    >
+                      Bıdık (Kedi)
+                    </span>
+                  </td>
                   <td>13.06.2023</td>
                   <td><span className="status-improving">İyileşiyor</span></td>
                 </tr>
                 <tr>
-                  <td>Karabaş (Köpek)</td>
+                  <td>
+                    <span 
+                      className="clickable-animal-name" 
+                      onClick={() => handleAnimalClick('Karabaş (Köpek)')}
+                    >
+                      Karabaş (Köpek)
+                    </span>
+                  </td>
                   <td>11.06.2023</td>
                   <td><span className="status-critical">Kritik</span></td>
                 </tr>
                 <tr>
-                  <td>Pamuk (Tavşan)</td>
+                  <td>
+                    <span 
+                      className="clickable-animal-name" 
+                      onClick={() => handleAnimalClick('Pamuk (Tavşan)')}
+                    >
+                      Pamuk (Tavşan)
+                    </span>
+                  </td>
                   <td>14.06.2023</td>
                   <td><span className="status-observation">Gözlem</span></td>
                 </tr>
                 <tr>
-                  <td>Minnoş (Kedi)</td>
+                  <td>
+                    <span 
+                      className="clickable-animal-name" 
+                      onClick={() => handleAnimalClick('Minnoş (Kedi)')}
+                    >
+                      Minnoş (Kedi)
+                    </span>
+                  </td>
                   <td>10.06.2023</td>
                   <td><span className="status-recovering">Nekahet</span></td>
                 </tr>
@@ -88,28 +145,48 @@ const Dashboard: React.FC = () => {
               <li>
                 <div className="activity-info">
                   <span className="activity-time">11:32</span>
-                  <span className="activity-name">Luna (Kedi)</span>
+                  <span 
+                    className="activity-name clickable-animal-name" 
+                    onClick={() => handleAnimalClick('Luna (Kedi)')}
+                  >
+                    Luna (Kedi)
+                  </span>
                 </div>
                 <div className="activity-status">Kan tahlili tamamlandı</div>
               </li>
               <li>
                 <div className="activity-info">
                   <span className="activity-time">10:45</span>
-                  <span className="activity-name">Rocky (Köpek)</span>
+                  <span 
+                    className="activity-name clickable-animal-name" 
+                    onClick={() => handleAnimalClick('Rocky (Köpek)')}
+                  >
+                    Rocky (Köpek)
+                  </span>
                 </div>
                 <div className="activity-status">Röntgen çekildi</div>
               </li>
               <li>
                 <div className="activity-info">
                   <span className="activity-time">09:15</span>
-                  <span className="activity-name">Minnoş (Kedi)</span>
+                  <span 
+                    className="activity-name clickable-animal-name" 
+                    onClick={() => handleAnimalClick('Minnoş (Kedi)')}
+                  >
+                    Minnoş (Kedi)
+                  </span>
                 </div>
                 <div className="activity-status">Aşı yapıldı</div>
               </li>
               <li>
                 <div className="activity-info">
                   <span className="activity-time">Dün</span>
-                  <span className="activity-name">Çomar (Köpek)</span>
+                  <span 
+                    className="activity-name clickable-animal-name" 
+                    onClick={() => handleAnimalClick('Çomar (Köpek)')}
+                  >
+                    Çomar (Köpek)
+                  </span>
                 </div>
                 <div className="activity-status">Ameliyat sonrası - stabil</div>
               </li>

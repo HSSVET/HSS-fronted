@@ -372,6 +372,26 @@
   color: #00796b;
 }
 
+/* Clickable Animal Names */
+.clickable-animal-name {
+  color: var(--primary-color);
+  cursor: pointer;
+  font-weight: var(--font-weight-medium);
+  transition: color var(--transition-speed) var(--transition-function);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+}
+
+.clickable-animal-name:hover {
+  color: var(--primary-dark);
+  border-bottom-color: var(--primary-color);
+  text-decoration: none;
+}
+
+.clickable-animal-name:active {
+  color: var(--primary-dark);
+}
+
 /* Recent Activity Widget */
 .activity-list {
   list-style: none;

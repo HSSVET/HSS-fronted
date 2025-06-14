@@ -160,7 +160,9 @@
 }
 
 .animal-table-row:hover {
-  background-color: rgba(146, 167, 140, 0.02);
+  background-color: rgba(146, 167, 140, 0.04);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(146, 167, 140, 0.1);
 }
 
 .animal-table-cell {

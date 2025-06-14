@@ -1,0 +1,89 @@
+/* Animal Detail Page Styles */
+.animal-detail-page {
+  min-height: 100vh;
+  background-color: var(--background-color);
+}
+
+.animal-detail-page .MuiContainer-root {
+  padding-top: var(--spacing-2);
+  padding-bottom: var(--spacing-2);
+}
+
+.animal-detail-page .MuiPaper-root {
+  box-shadow: var(--elevation-2);
+  border-radius: var(--border-radius-lg);
+}
+
+.animal-detail-page .MuiGrid-container {
+  margin-top: 0;
+}
+
+.animal-detail-page .MuiGrid-item {
+  padding-top: var(--spacing-2);
+}
+
+/* Profile Header Overrides */
+.animal-detail-page .MuiAvatar-root {
+  border: 3px solid var(--primary-light);
+}
+
+.animal-detail-page .MuiTypography-h4 {
+  font-size: 2rem;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: -0.5px;
+}
+
+/* Sidebar Menu Overrides */
+.animal-detail-page .MuiList-root {
+  padding: 0;
+}
+
+.animal-detail-page .MuiListItemButton-root {
+  transition: all var(--transition-speed) var(--transition-function);
+  margin-bottom: var(--spacing-1);
+}
+
+.animal-detail-page .MuiListItemButton-root:hover {
+  transform: translateX(2px);
+}
+
+.animal-detail-page .MuiListItemText-primary {
+  font-size: 14px;
+  font-weight: var(--font-weight-medium);
+}
+
+/* Alert Overrides */
+.animal-detail-page .MuiAlert-root {
+  border-radius: var(--border-radius-sm);
+  box-shadow: var(--elevation-1);
+  border: none;
+}
+
+.animal-detail-page .MuiAlert-message {
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.animal-detail-page .MuiAlert-icon {
+  font-size: 20px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .animal-detail-page .MuiContainer-root {
+    padding-left: var(--spacing-1);
+    padding-right: var(--spacing-1);
+  }
+  
+  .animal-detail-page .MuiTypography-h4 {
+    font-size: 1.5rem;
+  }
+  
+  .animal-detail-page .MuiGrid-container {
+    margin: 0;
+  }
+  
+  .animal-detail-page .MuiGrid-item {
+    padding: var(--spacing-1);
+  }
+} 

@@ -1,15 +1,13 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
   Paper, 
   TextField, 
-  Box,
   SelectChangeEvent,
   Typography,
-  Chip,
   IconButton,
   Button,
   Popover,
-  Stack,
   Divider,
   Checkbox
 } from '@mui/material';
@@ -43,6 +41,7 @@ const initialAnimals: Animal[] = [
 ];
 
 const AnimalList: React.FC<AnimalListProps> = ({ onAddAnimal }) => {
+  const navigate = useNavigate();
   const [animals] = useState<Animal[]>(initialAnimals);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortAnchorEl, setSortAnchorEl] = useState<null | HTMLElement>(null);
@@ -152,6 +151,10 @@ const AnimalList: React.FC<AnimalListProps> = ({ onAddAnimal }) => {
       default:
         return 'health-chip';
     }
+  };
+
+  const handleAnimalClick = (animalId: number) => {
+    navigate(`/animals/${animalId}`);
   };
 
   return (
@@ -339,7 +342,7 @@ const AnimalList: React.FC<AnimalListProps> = ({ onAddAnimal }) => {
             <div className="animal-table-cell actions">İşlemler</div>
           </div>
           {filteredAndSortedAnimals.map((animal) => (
-            <div key={animal.id} className="animal-table-row">
+            <div key={animal.id} className="animal-table-row" onClick={() => handleAnimalClick(animal.id)} style={{ cursor: 'pointer' }}>
               <div className="animal-table-cell id">#{animal.id}</div>
               <div className="animal-table-cell name">{animal.name}</div>
               <div className="animal-table-cell species">
@@ -360,14 +363,14 @@ const AnimalList: React.FC<AnimalListProps> = ({ onAddAnimal }) => {
                   {animal.nextVaccine}
                 </span>
               </div>
-              <div className="animal-table-cell actions">
+              <div className="animal-table-cell actions" onClick={(e) => e.stopPropagation()}>
                 <IconButton size="small" className="action-icon-button">
                   <EventIcon />
                 </IconButton>
                 <IconButton size="small" className="action-icon-button">
                   <EditIcon />
                 </IconButton>
-                <IconButton size="small" className="action-icon-button">
+                <IconButton size="small" className="action-icon-button" onClick={() => handleAnimalClick(animal.id)}>
                   <DescriptionIcon />
                 </IconButton>
               </div>
