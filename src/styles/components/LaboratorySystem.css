@@ -1,0 +1,196 @@
+/* Laboratory System Styles */
+.laboratory-system {
+  padding: 20px;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+
+.laboratory-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.laboratory-header h1 {
+  color: #2c3e50;
+  font-size: 28px;
+  font-weight: 600;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.laboratory-header h1::before {
+  content: "🧪";
+  font-size: 32px;
+}
+
+.quick-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.action-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: #3498db;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.action-button:hover {
+  background: #2980b9;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+}
+
+.action-button.primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.action-button.primary:hover {
+  background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+}
+
+.action-button .icon {
+  font-size: 16px;
+}
+
+/* Stats Container */
+.lab-stats {
+  margin-bottom: 30px;
+}
+
+.lab-stats .stat-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.lab-stats .stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #667eea, #764ba2);
+}
+
+.stat-trend {
+  font-size: 12px;
+  font-weight: 500;
+  margin-top: 5px;
+}
+
+.stat-trend.positive {
+  color: #27ae60;
+}
+
+.stat-trend.negative {
+  color: #e74c3c;
+}
+
+.stat-trend.neutral {
+  color: #f39c12;
+}
+
+/* Widgets Container */
+.widgets-container.three-column {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 20px;
+}
+
+/* Widget Base Styles */
+.widget {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  border: 1px solid #e9ecef;
+}
+
+.widget:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.widget-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 20px 15px;
+  border-bottom: 1px solid #f1f3f4;
+}
+
+.widget-header h2 {
+  color: #2c3e50;
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.widget-header .icon {
+  color: #667eea;
+  font-size: 18px;
+}
+
+.view-all-btn {
+  background: transparent;
+  border: 1px solid #667eea;
+  color: #667eea;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.view-all-btn:hover {
+  background: #667eea;
+  color: white;
+}
+
+.widget-content {
+  padding: 20px;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .widgets-container.three-column {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .laboratory-header {
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+  }
+  
+  .quick-actions {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .widgets-container.three-column {
+    grid-template-columns: 1fr;
+  }
+} 

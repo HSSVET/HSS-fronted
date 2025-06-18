@@ -240,24 +240,27 @@ const Dashboard: React.FC = () => {
         <div className="widget lab-results-widget">
           <div className="widget-header">
             <h2><span className="icon icon-lab"></span> Bekleyen Laboratuvar Sonuçları</h2>
+            <button className="view-all-btn" onClick={() => navigate('/laboratory')}>
+              Laboratuvara Git
+            </button>
           </div>
           <div className="widget-content">
             <ul className="lab-list">
-              <li>
+              <li onClick={() => navigate('/laboratory/test/T005')}>
                 <div className="lab-info">
                   <span className="lab-patient">Bella (Köpek)</span>
                   <span className="lab-test">Tam Kan Sayımı</span>
                 </div>
                 <div className="lab-date">Bugün</div>
               </li>
-              <li>
+              <li onClick={() => navigate('/laboratory/test/T006')}>
                 <div className="lab-info">
                   <span className="lab-patient">Tekir (Kedi)</span>
                   <span className="lab-test">İdrar Tahlili</span>
                 </div>
                 <div className="lab-date">Yarın</div>
               </li>
-              <li>
+              <li onClick={() => navigate('/laboratory/test/T007')}>
                 <div className="lab-info">
                   <span className="lab-patient">Papatya (Tavşan)</span>
                   <span className="lab-test">Dışkı Analizi</span>

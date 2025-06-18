@@ -1,0 +1,115 @@
+/* Pending Tests Widget Styles */
+.pending-tests-widget .widget-content {
+  padding: 15px;
+}
+
+.pending-tests-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pending-test-item {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 10px;
+  padding: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.pending-test-item:hover {
+  background: #f1f3f4;
+  border-color: #667eea;
+  transform: translateX(5px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+}
+
+.test-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.test-id {
+  font-weight: 600;
+  color: #495057;
+  font-size: 12px;
+}
+
+.priority-badge {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.priority-urgent {
+  background: #fee;
+  color: #dc3545;
+  border: 1px solid #ffc9c9;
+}
+
+.priority-high {
+  background: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffeaa7;
+}
+
+.priority-normal {
+  background: #d1ecf1;
+  color: #0c5460;
+  border: 1px solid #bee5eb;
+}
+
+.priority-low {
+  background: #e2e3e5;
+  color: #383d41;
+  border: 1px solid #d6d8db;
+}
+
+.test-patient {
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 4px;
+  font-size: 14px;
+}
+
+.test-type {
+  color: #6c757d;
+  font-size: 13px;
+  margin-bottom: 10px;
+}
+
+.test-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  color: #868e96;
+}
+
+.test-date {
+  font-weight: 500;
+}
+
+.estimated-time {
+  background: #e9ecef;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+/* Empty state */
+.pending-tests-list:empty::after {
+  content: "Bekleyen test bulunmuyor";
+  display: block;
+  text-align: center;
+  color: #6c757d;
+  padding: 40px 20px;
+  font-style: italic;
+} 

@@ -496,17 +496,22 @@
 }
 
 .lab-list li {
-  padding: 4px 6px;
+  padding: 12px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.04);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  transition: background-color var(--transition-speed) var(--transition-function);
+  transition: all 0.3s ease;
   font-size: 12px;
+  cursor: pointer;
+  border-radius: 6px;
+  margin-bottom: 5px;
 }
 
 .lab-list li:hover {
-  background-color: rgba(0, 0, 0, 0.02);
+  background: #f8f9fa;
+  transform: translateX(5px);
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
 }
 
 .lab-list li:last-child {
