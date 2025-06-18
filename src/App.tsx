@@ -5,7 +5,8 @@ import Dashboard from './components/dashboard/Dashboard';
 import AnimalPage from './components/animals/AnimalPage';
 import AnimalDetailPage from './components/animals/AnimalDetailPage';
 import AppointmentPage from './components/appointments/AppointmentPage';
-import LaboratorySystem from './components/laboratory/LaboratorySystem';
+import LabDashboard from './components/laboratory/LabDashboard';
+import LabTestTypes from './components/laboratory/LabTestTypes';
 import './styles/globals/App.css';
 
 function App() {
@@ -19,8 +20,8 @@ function App() {
             <Route path="/animals" element={<AnimalPage />} />
             <Route path="/animals/:id" element={<AnimalDetailPage />} />
             <Route path="/appointments" element={<AppointmentPage />} />
-            <Route path="/laboratory" element={<LaboratorySystem />} />
-            <Route path="/laboratory/*" element={<LaboratorySystem />} />
+            <Route path="/laboratory" element={<LabDashboard />} />
+            <Route path="/laboratory/test-types" element={<LabTestTypes />} />
             <Route path="/inventory" element={<div>Envanter/Stok Sayfası (Yakında)</div>} />
             <Route path="/reports" element={<div>Raporlar Sayfası (Yakında)</div>} />
             <Route path="/settings" element={<div>Ayarlar Sayfası (Yakında)</div>} />

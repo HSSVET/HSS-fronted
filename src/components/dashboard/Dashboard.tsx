@@ -237,30 +237,27 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
 
-        <div className="widget lab-results-widget">
+        <div className="widget lab-results-widget clickable-widget" onClick={() => navigate('/laboratory')}>
           <div className="widget-header">
             <h2><span className="icon icon-lab"></span> Bekleyen Laboratuvar Sonuçları</h2>
-            <button className="view-all-btn" onClick={() => navigate('/laboratory')}>
-              Laboratuvara Git
-            </button>
           </div>
           <div className="widget-content">
             <ul className="lab-list">
-              <li onClick={() => navigate('/laboratory/test/T005')}>
+              <li>
                 <div className="lab-info">
                   <span className="lab-patient">Bella (Köpek)</span>
                   <span className="lab-test">Tam Kan Sayımı</span>
                 </div>
                 <div className="lab-date">Bugün</div>
               </li>
-              <li onClick={() => navigate('/laboratory/test/T006')}>
+              <li>
                 <div className="lab-info">
                   <span className="lab-patient">Tekir (Kedi)</span>
                   <span className="lab-test">İdrar Tahlili</span>
                 </div>
                 <div className="lab-date">Yarın</div>
               </li>
-              <li onClick={() => navigate('/laboratory/test/T007')}>
+              <li>
                 <div className="lab-info">
                   <span className="lab-patient">Papatya (Tavşan)</span>
                   <span className="lab-test">Dışkı Analizi</span>
@@ -268,6 +265,9 @@ const Dashboard: React.FC = () => {
                 <div className="lab-date">15.06</div>
               </li>
             </ul>
+            <div className="widget-action">
+              <span className="action-text">Laboratuvar Paneline Git →</span>
+            </div>
           </div>
         </div>
 
