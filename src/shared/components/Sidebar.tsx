@@ -27,6 +27,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, toggleSidebar }) => {
     { icon: 'icon-calendar', text: 'Randevular', path: '/appointments' },
     { icon: 'icon-paw', text: 'Hastalar/Hayvanlar', path: '/animals' },
     { icon: 'icon-lab', text: 'Laboratuvar', path: '/laboratory' },
+    { icon: 'icon-billing', text: 'Ödeme & Fatura', path: '/billing' },
     { icon: 'icon-box', text: 'Envanter/Stok', path: '/inventory' },
     { icon: 'icon-chart', text: 'Raporlar', path: '/reports' },
     { icon: 'icon-settings', text: 'Ayarlar', path: '/settings' },

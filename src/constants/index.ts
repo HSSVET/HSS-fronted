@@ -13,6 +13,7 @@ export const ROUTES = {
   ANIMALS: '/animals',
   APPOINTMENTS: '/appointments',
   LABORATORY: '/laboratory',
+  BILLING: '/billing',
 } as const;
 
 // Status types
