@@ -9,6 +9,8 @@ import ImportantAlerts from './detail/ImportantAlerts';
 import DiseaseHistory from './detail/DiseaseHistory';
 import ClinicalExamination from './detail/ClinicalExamination';
 import AppointmentTracking from './detail/AppointmentTracking';
+import RadiologyImaging from './detail/RadiologyImaging';
+import LaboratoryTests from './detail/LaboratoryTests';
 import '../../styles/components/AnimalDetail.css';
 
 const theme = createTheme({
@@ -69,6 +71,10 @@ const AnimalDetailPage: React.FC = () => {
         return <ClinicalExamination onAddClick={handleAddClinicalExamination} />;
       case 2: // Randevu Takip Sistemi
         return <AppointmentTracking onAddClick={handleAddAppointment} />;
+      case 3: // Radyolojik Görüntüleme
+        return <RadiologyImaging />;
+      case 4: // Lab Testleri/Sonuçları
+        return <LaboratoryTests />;
       default:
         return <ImportantAlerts />;
     }
