@@ -17,6 +17,7 @@ export const Billing: React.FC = () => {
   const { 
     invoices, 
     payments, 
+    services,
     loading, 
     error, 
     fetchInvoices, 
@@ -44,102 +45,95 @@ export const Billing: React.FC = () => {
     setShowCreatePayment(true);
   };
 
-  const renderActionButtons = () => {
-    switch (activeTab) {
-      case 'invoices':
-        return (
-          <div className="action-buttons">
-            <button className="action-button primary" onClick={handleCreateInvoice}>
-              + Fatura Oluştur
-            </button>
-            <button className="action-button secondary" onClick={handleCreateInvoice}>
-              + Yeni Fatura
-            </button>
-          </div>
-        );
-      case 'payments':
-        return (
-          <button className="action-button primary" onClick={handleCreatePayment}>
-            + Ödeme Kaydet
-          </button>
-        );
-      case 'reports':
-        return (
-          <button className="action-button secondary">
-            📊 Rapor İndir
-          </button>
-        );
-      default:
-        return null;
-    }
-  };
-
   const renderTabContent = () => {
     if (loading) {
       return (
         <div className="loading-spinner">
-          <div className="spinner"></div>
+          <div className="spinner" />
         </div>
       );
     }
 
     if (error) {
       return (
-        <div className="empty-state">
-          <div className="empty-state-icon">⚠️</div>
-          <div className="empty-state-text">Hata: {error}</div>
+        <div className="error-message">
+          <span>❌ {error}</span>
         </div>
       );
     }
 
     switch (activeTab) {
       case 'invoices':
-        return <InvoiceList invoices={invoices} onRefresh={fetchInvoices} />;
+        return <InvoiceList />;
       case 'payments':
-        return <PaymentList payments={payments} onRefresh={fetchPayments} />;
+        return <PaymentList />;
       case 'reports':
         return <BillingReports />;
       case 'services':
-        return <div>Hizmet yönetimi yakında eklenecek...</div>;
+        return (
+          <div className="services-content">
+            <h3>Hizmetler</h3>
+            <p>Hizmet yönetimi geliştiriliyor...</p>
+          </div>
+        );
       default:
         return null;
     }
   };
 
   return (
-    <div className="billing-container">
+    <div className="billing">
       <div className="billing-header">
-        <h1 className="billing-title">Ödeme ve Faturalandırma</h1>
-        <div className="billing-actions">
-          {renderActionButtons()}
+        <h1>Ödeme ve Faturalandırma</h1>
+        <div className="quick-actions">
+          <button className="action-button" onClick={handleCreateInvoice}>
+            <span className="icon icon-plus"></span>
+            Fatura Oluştur
+          </button>
+          {activeTab === 'invoices' && (
+            <button className="action-button" onClick={handleCreateInvoice}>
+              <span className="icon icon-hospital"></span>
+              Yeni Fatura
+            </button>
+          )}
+          {activeTab === 'payments' && (
+            <button className="action-button" onClick={handleCreatePayment}>
+              <span className="icon icon-plus"></span>
+              Ödeme Kaydet
+            </button>
+          )}
         </div>
       </div>
 
       <div className="billing-tabs">
-        <div className="tab-navigation">
+        <div className="tab-buttons">
           <button
             className={`tab-button ${activeTab === 'invoices' ? 'active' : ''}`}
             onClick={() => setActiveTab('invoices')}
           >
-            📄 Faturalar
+            <span className="icon icon-hospital"></span>
+            Faturalar
           </button>
           <button
             className={`tab-button ${activeTab === 'payments' ? 'active' : ''}`}
             onClick={() => setActiveTab('payments')}
           >
-            💳 Ödemeler
+            <span className="icon icon-card"></span>
+            Ödemeler
           </button>
           <button
             className={`tab-button ${activeTab === 'reports' ? 'active' : ''}`}
             onClick={() => setActiveTab('reports')}
           >
-            📊 Raporlar
+            <span className="icon icon-chart"></span>
+            Raporlar
           </button>
           <button
             className={`tab-button ${activeTab === 'services' ? 'active' : ''}`}
             onClick={() => setActiveTab('services')}
           >
-            🛠️ Hizmetler
+            <span className="icon icon-lab"></span>
+            Hizmetler
           </button>
         </div>
 

@@ -69,81 +69,211 @@ export const BillingReports: React.FC = () => {
     link.click();
   };
 
+  const getPaymentMethodIcon = (method: string) => {
+    const iconMap = {
+      cash: '💵',
+      credit_card: '💳',
+      bank_transfer: '🏦',
+      check: '📝'
+    };
+    return iconMap[method as keyof typeof iconMap] || '💰';
+  };
+
+  const getPaymentMethodName = (method: string) => {
+    const nameMap = {
+      cash: 'Nakit',
+      credit_card: 'Kredi Kartı',
+      bank_transfer: 'Havale',
+      check: 'Çek'
+    };
+    return nameMap[method as keyof typeof nameMap] || method;
+  };
+
   return (
     <div>
-      <div className="filters-container">
-        <div className="filters-grid">
-          <div className="filter-group">
-            <label className="filter-label">Dönem</label>
-            <select
-              className="filter-select"
-              value={reportPeriod}
-              onChange={(e) => setReportPeriod(e.target.value)}
-            >
-              <option value="this_week">Bu Hafta</option>
-              <option value="this_month">Bu Ay</option>
-              <option value="last_month">Geçen Ay</option>
-              <option value="this_quarter">Bu Çeyrek</option>
-              <option value="this_year">Bu Yıl</option>
-            </select>
-          </div>
+      {/* Filters Widget */}
+      <div className="billing-widget">
+        <div className="widget-header">
+          <h2>
+            <span className="icon icon-chart"></span>
+            Rapor Ayarları
+          </h2>
+        </div>
+        <div className="widget-content">
+          <div className="billing-form" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 'var(--spacing-2)' }}>
+            <div className="form-group">
+              <label className="form-label">Dönem</label>
+              <select
+                className="form-select"
+                value={reportPeriod}
+                onChange={(e) => setReportPeriod(e.target.value)}
+              >
+                <option value="this_week">Bu Hafta</option>
+                <option value="this_month">Bu Ay</option>
+                <option value="last_month">Geçen Ay</option>
+                <option value="this_quarter">Bu Çeyrek</option>
+                <option value="this_year">Bu Yıl</option>
+              </select>
+            </div>
 
-          <div className="filter-group">
-            <button className="action-button primary" onClick={exportReport}>
-              📊 CSV İndir
-            </button>
+            <div className="form-group">
+              <button className="action-button" onClick={exportReport}>
+                <span className="icon icon-plus"></span>
+                CSV İndir
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem' }}>
-        {/* Özet Bilgiler */}
-        <div className="report-card">
-          <h3>Genel Özet</h3>
-          <div className="report-stats">
-            <div className="stat-item">
-              <span className="stat-label">Toplam Gelir</span>
-              <span className="stat-value currency">{formatCurrency(totalRevenue)}</span>
-            </div>
-            <div className="stat-item">
-              <span className="stat-label">Ödenen Faturalar</span>
-              <span className="stat-value">{paidInvoices}</span>
-            </div>
-            <div className="stat-item">
-              <span className="stat-label">Bekleyen Faturalar</span>
-              <span className="stat-value">{pendingInvoices}</span>
-            </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 'var(--spacing-2)' }}>
+        {/* Özet Bilgiler Widget */}
+        <div className="billing-widget">
+          <div className="widget-header">
+            <h2>
+              <span className="icon icon-chart"></span>
+              Genel Özet
+            </h2>
           </div>
-        </div>
-
-        {/* Ödeme Yöntemleri */}
-        <div className="report-card">
-          <h3>Ödeme Yöntemleri</h3>
-          <div className="payment-methods">
-            {Object.entries(revenueByMethod).map(([method, amount]) => (
-              <div key={method} className="payment-method-item">
-                <span className="method-name">
-                  {method === 'cash' ? '💵 Nakit' : 
-                   method === 'credit_card' ? '💳 Kredi Kartı' :
-                   method === 'bank_transfer' ? '🏦 Havale' : '📝 Çek'}
+          <div className="widget-content">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-2)' }}>
+              <div style={{ 
+                display: 'flex', 
+                justifyContent: 'space-between', 
+                alignItems: 'center',
+                padding: 'var(--spacing-1)',
+                background: 'var(--surface-variant)',
+                borderRadius: 'var(--border-radius-sm)'
+              }}>
+                <span style={{ color: 'var(--text-secondary)', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  Toplam Gelir
                 </span>
-                <span className="method-amount">{formatCurrency(amount)}</span>
+                <span style={{ fontWeight: 'var(--font-weight-medium)', color: 'var(--primary-color)' }}>
+                  {formatCurrency(totalRevenue)}
+                </span>
               </div>
-            ))}
+              <div style={{ 
+                display: 'flex', 
+                justifyContent: 'space-between', 
+                alignItems: 'center',
+                padding: 'var(--spacing-1)',
+                background: 'var(--surface-variant)',
+                borderRadius: 'var(--border-radius-sm)'
+              }}>
+                <span style={{ color: 'var(--text-secondary)', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  Ödenen Faturalar
+                </span>
+                <span style={{ fontWeight: 'var(--font-weight-medium)', color: 'var(--text-primary)' }}>
+                  {paidInvoices}
+                </span>
+              </div>
+              <div style={{ 
+                display: 'flex', 
+                justifyContent: 'space-between', 
+                alignItems: 'center',
+                padding: 'var(--spacing-1)',
+                background: 'var(--surface-variant)',
+                borderRadius: 'var(--border-radius-sm)'
+              }}>
+                <span style={{ color: 'var(--text-secondary)', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  Bekleyen Faturalar
+                </span>
+                <span style={{ fontWeight: 'var(--font-weight-medium)', color: 'var(--text-primary)' }}>
+                  {pendingInvoices}
+                </span>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* En Çok Kullanılan Hizmetler */}
-        <div className="report-card">
-          <h3>Popüler Hizmetler</h3>
-          <div className="service-list">
-            {topServices.map(([service, revenue], index) => (
-              <div key={service} className="service-item">
-                <span className="service-rank">{index + 1}</span>
-                <span className="service-name">{service}</span>
-                <span className="service-revenue">{formatCurrency(revenue)}</span>
-              </div>
-            ))}
+        {/* Ödeme Yöntemleri Widget */}
+        <div className="billing-widget">
+          <div className="widget-header">
+            <h2>
+              <span className="icon icon-card"></span>
+              Ödeme Yöntemleri
+            </h2>
+          </div>
+          <div className="widget-content">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-1)' }}>
+              {Object.entries(revenueByMethod).map(([method, amount]) => (
+                <div key={method} style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  padding: 'var(--spacing-1)',
+                  background: 'var(--surface-variant)',
+                  borderRadius: 'var(--border-radius-sm)'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-half)' }}>
+                    <span>{getPaymentMethodIcon(method)}</span>
+                    <span style={{ color: 'var(--text-secondary)', fontSize: '12px' }}>
+                      {getPaymentMethodName(method)}
+                    </span>
+                  </div>
+                  <span style={{ fontWeight: 'var(--font-weight-medium)', color: 'var(--primary-color)' }}>
+                    {formatCurrency(amount)}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* En Çok Kullanılan Hizmetler Widget */}
+        <div className="billing-widget">
+          <div className="widget-header">
+            <h2>
+              <span className="icon icon-lab"></span>
+              Popüler Hizmetler
+            </h2>
+          </div>
+          <div className="widget-content">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-1)' }}>
+              {topServices.map(([service, revenue], index) => (
+                <div key={service} style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 'var(--spacing-1)',
+                  padding: 'var(--spacing-1)',
+                  background: 'var(--surface-variant)',
+                  borderRadius: 'var(--border-radius-sm)'
+                }}>
+                  <div style={{
+                    background: 'var(--primary-color)',
+                    color: 'var(--text-on-primary)',
+                    width: '20px',
+                    height: '20px',
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '10px',
+                    fontWeight: 'var(--font-weight-medium)',
+                    flexShrink: 0
+                  }}>
+                    {index + 1}
+                  </div>
+                  <span style={{ 
+                    flex: 1, 
+                    color: 'var(--text-secondary)', 
+                    fontSize: '12px',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap'
+                  }}>
+                    {service}
+                  </span>
+                  <span style={{ 
+                    fontWeight: 'var(--font-weight-medium)', 
+                    color: 'var(--primary-color)',
+                    fontSize: '12px'
+                  }}>
+                    {formatCurrency(revenue)}
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
