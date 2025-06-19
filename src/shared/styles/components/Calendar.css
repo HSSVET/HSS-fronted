@@ -1,0 +1,118 @@
+/* Calendar Widget Styles */
+.calendar-widget {
+  background: white;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e0e0e0;
+}
+
+.calendar-widget-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.calendar-widget-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.calendar-widget-nav {
+  display: flex;
+  gap: 8px;
+}
+
+.calendar-nav-btn {
+  background: none;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.calendar-nav-btn:hover {
+  background: #f5f5f5;
+  border-color: #ccc;
+}
+
+.calendar-widget-month {
+  font-size: 14px;
+  font-weight: 500;
+  color: #555;
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.calendar-widget-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.calendar-widget-day {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.calendar-widget-day:hover {
+  background: #f0f0f0;
+}
+
+.calendar-widget-day.today {
+  background: var(--primary-color, #92A78C);
+  color: white;
+  font-weight: 600;
+}
+
+.calendar-widget-day.selected {
+  background: var(--secondary-color, #F7CD82);
+  color: #333;
+  font-weight: 600;
+}
+
+.calendar-widget-day.has-events::after {
+  content: '';
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  width: 4px;
+  height: 4px;
+  background: #e74c3c;
+  border-radius: 50%;
+}
+
+.calendar-widget-day.other-month {
+  color: #ccc;
+  pointer-events: none;
+}
+
+.calendar-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  margin-bottom: 4px;
+}
+
+.calendar-weekday {
+  text-align: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: #666;
+  padding: 4px 0;
+} 

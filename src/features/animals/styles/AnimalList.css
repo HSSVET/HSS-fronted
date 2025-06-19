@@ -1,0 +1,334 @@
+/* Animal List Styles - Dashboard Design Consistency */
+.animal-list-container {
+  width: 100%;
+  display: flex;
+  min-height: 80vh;
+}
+
+/* Filter Panel */
+.filter-panel {
+  width: 300px;
+  min-width: 240px;
+  max-width: 340px;
+  min-height: 90vh;
+  position: sticky;
+  top: 0;
+  background: var(--surface-color);
+  border-right: 1px solid rgba(0, 0, 0, 0.08);
+  padding: var(--spacing-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+  box-shadow: 2px 0 8px rgba(0,0,0,0.05);
+}
+
+.filter-panel h2 {
+  margin-bottom: var(--spacing-2);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-1);
+  color: var(--primary-color);
+  font-weight: var(--font-weight-bold);
+  font-size: 18px;
+}
+
+.filter-search {
+  margin-bottom: var(--spacing-2);
+  background: var(--surface-color);
+  border-radius: var(--border-radius-sm);
+}
+
+.filter-section {
+  margin-bottom: var(--spacing-2);
+}
+
+.filter-section h3 {
+  font-weight: var(--font-weight-medium);
+  margin-top: var(--spacing-2);
+  margin-bottom: var(--spacing-1);
+  color: var(--text-primary);
+  font-size: 14px;
+}
+
+.filter-options {
+  background: rgba(146, 167, 140, 0.05);
+  padding: var(--spacing-2);
+  border-radius: var(--border-radius-sm);
+  margin-bottom: var(--spacing-2);
+  width: 100%;
+}
+
+.filter-options.scrollable {
+  min-height: 96px;
+  max-height: 180px;
+  overflow-y: auto;
+  padding-right: var(--spacing-1);
+}
+
+.filter-options.scrollable::-webkit-scrollbar {
+  width: 8px;
+  background: rgba(146, 167, 140, 0.1);
+  border-radius: 8px;
+}
+
+.filter-options.scrollable::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
+  border-radius: 8px;
+  min-height: 24px;
+}
+
+.filter-options.scrollable::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-dark);
+}
+
+.filter-checkbox-item {
+  display: flex;
+  align-items: center;
+}
+
+.date-filter-inputs {
+  background: rgba(146, 167, 140, 0.05);
+  padding: var(--spacing-1);
+  border-radius: var(--border-radius-sm);
+  margin-bottom: var(--spacing-2);
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+.date-filter-inputs .MuiTextField-root {
+  background: var(--surface-color);
+  border-radius: var(--border-radius-sm);
+}
+
+/* Main Content */
+.animal-list-main {
+  flex: 1;
+  padding: var(--spacing-3);
+}
+
+.animal-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-2);
+}
+
+.animal-list-title {
+  font-weight: var(--font-weight-bold);
+  color: var(--primary-color);
+  font-size: 18px;
+  margin: 0;
+}
+
+.sort-button {
+  border-color: var(--primary-color) !important;
+  color: var(--primary-color) !important;
+}
+
+.sort-button:hover {
+  border-color: var(--primary-dark) !important;
+  background-color: rgba(146, 167, 140, 0.04) !important;
+}
+
+/* Animal Table */
+.animal-table {
+  width: 100%;
+  overflow: auto;
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--elevation-1);
+  padding: 0;
+}
+
+.animal-table-header {
+  display: flex;
+  font-weight: var(--font-weight-medium);
+  background-color: rgba(146, 167, 140, 0.05);
+  border-bottom: 2px solid rgba(146, 167, 140, 0.1);
+  padding: var(--spacing-2);
+  font-size: 14px;
+  color: var(--text-primary);
+}
+
+.animal-table-row {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid rgba(146, 167, 140, 0.08);
+  padding: var(--spacing-2);
+  transition: background-color var(--transition-speed) var(--transition-function);
+}
+
+.animal-table-row:hover {
+  background-color: rgba(146, 167, 140, 0.04);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(146, 167, 140, 0.1);
+}
+
+.animal-table-cell {
+  display: flex;
+  flex-direction: column;
+}
+
+.animal-table-cell.id {
+  flex: 0.5;
+  color: var(--primary-color);
+  font-weight: var(--font-weight-medium);
+}
+
+.animal-table-cell.name {
+  flex: 1.5;
+  font-weight: var(--font-weight-medium);
+}
+
+.animal-table-cell.species {
+  flex: 1.5;
+}
+
+.animal-table-cell.owner {
+  flex: 1.5;
+}
+
+.animal-table-cell.health {
+  flex: 1;
+}
+
+.animal-table-cell.date {
+  flex: 1;
+}
+
+.animal-table-cell.actions {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  gap: var(--spacing-1);
+}
+
+.species-info .species-name {
+  font-weight: var(--font-weight-medium);
+  font-size: 14px;
+}
+
+.species-info .breed-name {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+/* Health Status Chips */
+.health-chip {
+  font-size: 12px;
+  font-weight: var(--font-weight-medium);
+  padding: 4px 8px;
+  border-radius: var(--border-radius-sm);
+}
+
+.health-chip.good {
+  background-color: #e0f7e9;
+  color: #388e3c;
+}
+
+.health-chip.treatment {
+  background-color: #ffeaea;
+  color: #d32f2f;
+}
+
+.health-chip.monitor {
+  background-color: #fff7e0;
+  color: #fbc02d;
+}
+
+/* Vaccine Date Chips */
+.vaccine-chip {
+  font-size: 12px;
+  font-weight: var(--font-weight-medium);
+  padding: 4px 8px;
+  border-radius: var(--border-radius-sm);
+  background-color: #e3f2fd;
+  color: #1976d2;
+}
+
+/* Action Buttons */
+.action-icon-button {
+  color: var(--primary-color) !important;
+  padding: 4px !important;
+}
+
+.action-icon-button:hover {
+  background-color: rgba(146, 167, 140, 0.04) !important;
+}
+
+/* Sort Popover */
+.sort-popover {
+  padding: var(--spacing-2);
+  min-width: 200px;
+}
+
+.sort-popover h3 {
+  font-weight: var(--font-weight-medium);
+  margin-bottom: var(--spacing-1);
+  font-size: 14px;
+}
+
+.sort-options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+}
+
+.sort-option {
+  justify-content: flex-start !important;
+  text-transform: none !important;
+  font-size: 14px !important;
+  padding: var(--spacing-1) !important;
+}
+
+.sort-option.active {
+  color: var(--primary-color) !important;
+  background-color: rgba(146, 167, 140, 0.04) !important;
+}
+
+/* Animal Table - specific styling for the new table layout */
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .animal-list-container {
+    flex-direction: column;
+  }
+  
+  .filter-panel {
+    width: 100%;
+    min-height: auto;
+    position: static;
+    border-right: none;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  }
+  
+
+}
+
+@media (max-width: 768px) {
+  .animal-list-main {
+    padding: var(--spacing-1);
+  }
+  
+  .animal-table-header,
+  .animal-table-row {
+    padding: var(--spacing-1);
+    font-size: 12px;
+  }
+  
+  .animal-list-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-1);
+  }
+  
+  /* Hide some columns on mobile */
+  .animal-table-cell.actions {
+    display: none;
+  }
+  
+  .animal-table-cell.date:last-of-type {
+    display: none;
+  }
+} 
