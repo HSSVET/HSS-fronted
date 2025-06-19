@@ -25,6 +25,8 @@ import VaccinesIcon from '@mui/icons-material/Vaccines';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import ScienceIcon from '@mui/icons-material/Science';
 import Allergies from './detail/Allergies';
+import Notes from './detail/Notes';
+import NoteIcon from '@mui/icons-material/Note';
 import '../../styles/components/AnimalDetail.css';
 
 const theme = createTheme({
@@ -117,6 +119,11 @@ const AnimalDetailPage: React.FC = () => {
       label: 'Patoloji Bulguları',
       icon: <ScienceIcon />,
     },
+    {
+      id: 'notes',
+      label: 'Notlar',
+      icon: <NoteIcon />,
+    },
   ];
 
   const renderContent = () => {
@@ -152,6 +159,8 @@ const AnimalDetailPage: React.FC = () => {
             location: 'DERİ - SOL ÖN BACAK'
           }}
         />;
+      case 10: // Notlar
+        return <Notes onAddClick={() => console.log('Add new note')} />;
       default:
         return <ImportantAlerts />;
     }
