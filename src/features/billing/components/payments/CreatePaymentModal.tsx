@@ -1,284 +1,456 @@
 import React, { useState, useEffect } from 'react';
 import { useBilling } from '../../hooks/useBilling';
-import { Payment, Invoice } from '../../types';
+import { POSTerminal, CardInfo } from '../../types';
+import { billingService } from '../../services/billingService';
 
 interface CreatePaymentModalProps {
   onClose: () => void;
   onSuccess: () => void;
-  preselectedInvoiceId?: number;
+  invoiceId?: number;
 }
 
 export const CreatePaymentModal: React.FC<CreatePaymentModalProps> = ({ 
   onClose, 
   onSuccess, 
-  preselectedInvoiceId 
+  invoiceId 
 }) => {
-  const { invoices, createPayment, loading, fetchInvoices } = useBilling();
+  const { invoices, createPayment } = useBilling();
+  const [loading, setLoading] = useState(false);
+  const [posTerminals, setPosTerminals] = useState<POSTerminal[]>([]);
+  const [processingCard, setProcessingCard] = useState(false);
   
-  const [formData, setFormData] = useState({
-    invoiceId: preselectedInvoiceId?.toString() || '',
-    amount: '',
-    paymentMethod: 'cash' as Payment['paymentMethod'],
-    transactionId: '',
-    notes: ''
-  });
-
-  const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
+  // Form state
+  const [selectedInvoiceId, setSelectedInvoiceId] = useState<number>(invoiceId || 0);
+  const [amount, setAmount] = useState<number>(0);
+  const [paymentMethod, setPaymentMethod] = useState<'cash' | 'credit_card' | 'debit_card' | 'bank_transfer' | 'check'>('cash');
+  const [description, setDescription] = useState('');
+  
+  // Nakit ödeme için
+  const [cashReceived, setCashReceived] = useState<number>(0);
+  const [changeGiven, setChangeGiven] = useState<number>(0);
+  
+  // Kart ödeme için
+  const [selectedPosTerminal, setSelectedPosTerminal] = useState<string>('');
+  const [cardType, setCardType] = useState<'visa' | 'mastercard' | 'amex' | 'troy'>('visa');
+  const [lastFourDigits, setLastFourDigits] = useState('');
+  const [cardHolderName, setCardHolderName] = useState('');
+  
+  // Havale için
+  const [bankAccount, setBankAccount] = useState('');
+  const [referenceNumber, setReferenceNumber] = useState('');
+  
+  // Çek için
+  const [checkNumber, setCheckNumber] = useState('');
+  const [checkBank, setCheckBank] = useState('');
+  const [checkDate, setCheckDate] = useState('');
 
   useEffect(() => {
-    fetchInvoices({ status: 'sent' }); // Sadece gönderilmiş faturaları getir
+    const loadPosTerminals = async () => {
+      try {
+        const terminals = await billingService.getPOSTerminals();
+        setPosTerminals(terminals);
+        if (terminals.length > 0) {
+          setSelectedPosTerminal(terminals[0].id);
+        }
+      } catch (error) {
+        console.error('POS terminalleri yüklenemedi:', error);
+      }
+    };
+    
+    loadPosTerminals();
   }, []);
 
   useEffect(() => {
-    if (formData.invoiceId) {
-      const invoice = invoices.find(inv => inv.id === parseInt(formData.invoiceId));
-      setSelectedInvoice(invoice || null);
-      if (invoice && !formData.amount) {
-        setFormData(prev => ({ ...prev, amount: invoice.total.toString() }));
+    if (selectedInvoiceId) {
+      const invoice = invoices.find(inv => inv.id === selectedInvoiceId);
+      if (invoice) {
+        setAmount(invoice.total);
       }
-    } else {
-      setSelectedInvoice(null);
     }
-  }, [formData.invoiceId, invoices]);
+  }, [selectedInvoiceId, invoices]);
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('tr-TR', {
-      style: 'currency',
-      currency: 'TRY'
-    }).format(amount);
-  };
+  useEffect(() => {
+    // Nakit ödeme için para üstü hesaplama
+    if (paymentMethod === 'cash' && cashReceived > 0 && amount > 0) {
+      const change = cashReceived - amount;
+      setChangeGiven(change > 0 ? change : 0);
+    }
+  }, [cashReceived, amount, paymentMethod]);
 
-  const formatDate = (date: Date) => {
-    return new Intl.DateTimeFormat('tr-TR').format(new Date(date));
+  const handleCardPayment = async () => {
+    if (!selectedPosTerminal || amount <= 0) return null;
+    
+    setProcessingCard(true);
+    try {
+      const result = await billingService.processCardPayment(
+        amount, 
+        selectedPosTerminal, 
+        cardType
+      );
+      
+      if (result.success) {
+        return {
+          authorizationCode: result.authorizationCode,
+          batchNumber: result.batchNumber
+        };
+      } else {
+        alert(`POS İşlem Hatası: ${result.errorMessage}`);
+        return null;
+      }
+    } catch (error) {
+      alert('POS bağlantı hatası');
+      return null;
+    } finally {
+      setProcessingCard(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.invoiceId || !formData.amount) {
-      alert('Lütfen fatura ve ödeme tutarını seçin');
+    if (!selectedInvoiceId || amount <= 0) {
+      alert('Lütfen fatura ve tutar seçin');
       return;
     }
 
-    const amount = parseFloat(formData.amount);
-    if (amount <= 0) {
-      alert('Ödeme tutarı sıfırdan büyük olmalıdır');
+    if (paymentMethod === 'cash' && cashReceived < amount) {
+      alert('Alınan nakit tutar, ödeme tutarından az olamaz');
       return;
     }
 
-    if (selectedInvoice && amount > selectedInvoice.total) {
-      alert('Ödeme tutarı fatura tutarından büyük olamaz');
-      return;
-    }
-
-    const paymentData: Omit<Payment, 'id' | 'createdAt'> = {
-      invoiceId: parseInt(formData.invoiceId),
-      amount,
-      paymentDate: new Date(),
-      paymentMethod: formData.paymentMethod,
-      transactionId: formData.transactionId || undefined,
-      notes: formData.notes || undefined,
-      createdBy: 'Dr. Veteriner'
-    };
-
+    setLoading(true);
+    
     try {
+      let paymentData: any = {
+        invoiceId: selectedInvoiceId,
+        amount,
+        paymentDate: new Date(),
+        paymentMethod,
+        description,
+        status: 'completed',
+        createdBy: 'Kullanıcı' // Gerçek uygulamada session'dan gelecek
+      };
+
+      // Ödeme yöntemine göre özel alanlar
+      switch (paymentMethod) {
+        case 'cash':
+          paymentData.cashReceived = cashReceived;
+          paymentData.changeGiven = changeGiven;
+          break;
+          
+        case 'credit_card':
+        case 'debit_card':
+          // POS işlemi simülasyonu
+          const cardResult = await handleCardPayment();
+          if (!cardResult) {
+            setLoading(false);
+            return;
+          }
+          
+          const terminal = posTerminals.find(t => t.id === selectedPosTerminal);
+          paymentData.posTerminal = terminal;
+          paymentData.cardInfo = {
+            cardType,
+            lastFourDigits,
+            bankName: terminal?.bank || '',
+            cardHolderName
+          };
+          paymentData.authorizationCode = cardResult.authorizationCode;
+          paymentData.batchNumber = cardResult.batchNumber;
+          break;
+          
+        case 'bank_transfer':
+          paymentData.bankAccount = bankAccount;
+          paymentData.referenceNumber = referenceNumber;
+          break;
+          
+        case 'check':
+          paymentData.checkNumber = checkNumber;
+          paymentData.checkBank = checkBank;
+          paymentData.checkDate = checkDate ? new Date(checkDate) : new Date();
+          break;
+      }
+
       await createPayment(paymentData);
       onSuccess();
     } catch (error) {
-      console.error('Ödeme kaydetme hatası:', error);
+      alert('Ödeme kaydedilemedi: ' + (error as Error).message);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const getPaymentMethodRequirements = () => {
-    switch (formData.paymentMethod) {
-      case 'credit_card':
-        return 'Kredi kartı ödemeleri için işlem numarası zorunludur';
-      case 'bank_transfer':
-        return 'Havale ödemeleri için dekont numarası eklenmelidir';
-      case 'check':
-        return 'Çek ödemeleri için çek numarası girilmelidir';
-      default:
-        return 'Nakit ödemeler için işlem numarası isteğe bağlıdır';
-    }
-  };
-
-  const unpaidInvoices = invoices.filter(inv => inv.status === 'sent');
+  const selectedInvoice = invoices.find(inv => inv.id === selectedInvoiceId);
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal" onClick={(e) => e.stopPropagation()}>
+    <div className="modal-overlay">
+      <div className="modal" style={{ maxWidth: '600px' }}>
         <div className="modal-header">
           <h2 className="modal-title">Ödeme Kaydet</h2>
           <button className="close-button" onClick={onClose}>×</button>
         </div>
 
-        <form onSubmit={handleSubmit}>
-          <div className="form-grid">
-            <div className="form-group" style={{ gridColumn: '1 / -1' }}>
-              <label className="form-label">Fatura Seçin</label>
-              <select
-                className="form-select"
-                value={formData.invoiceId}
-                onChange={(e) => setFormData({ ...formData, invoiceId: e.target.value })}
-                required
-              >
-                <option value="">Fatura seçin...</option>
-                {unpaidInvoices.map(invoice => (
-                  <option key={invoice.id} value={invoice.id}>
-                    {invoice.invoiceNumber} - {invoice.patient.name} ({invoice.patient.ownerName}) - {formatCurrency(invoice.total)}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {selectedInvoice && (
-              <div style={{ 
-                gridColumn: '1 / -1',
-                background: '#f8f9fa', 
-                border: '1px solid #dee2e6',
-                borderRadius: '6px', 
-                padding: '1rem',
-                marginBottom: '1rem'
-              }}>
-                <h4>Seçilen Fatura Detayları</h4>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
-                  <div>
-                    <strong>Fatura No:</strong> {selectedInvoice.invoiceNumber}
-                  </div>
-                  <div>
-                    <strong>Hasta:</strong> {selectedInvoice.patient.name}
-                  </div>
-                  <div>
-                    <strong>Sahip:</strong> {selectedInvoice.patient.ownerName}
-                  </div>
-                  <div>
-                    <strong>Vade Tarihi:</strong> {formatDate(selectedInvoice.dueDate)}
-                  </div>
-                  <div>
-                    <strong>Toplam Tutar:</strong> {formatCurrency(selectedInvoice.total)}
-                  </div>
-                  <div>
-                    <strong>Durum:</strong> 
-                    <span style={{ 
-                      color: new Date(selectedInvoice.dueDate) < new Date() ? '#e74c3c' : '#f39c12',
-                      fontWeight: 'bold'
-                    }}>
-                      {new Date(selectedInvoice.dueDate) < new Date() ? ' Gecikmiş' : ' Bekliyor'}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            <div className="form-group">
-              <label className="form-label">Ödeme Tutarı (₺)</label>
-              <input
-                type="number"
-                className="form-input"
-                value={formData.amount}
-                onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
-                step="0.01"
-                min="0.01"
-                max={selectedInvoice?.total}
-                required
-              />
-              {selectedInvoice && (
-                <small style={{ color: '#6c757d' }}>
-                  Maksimum: {formatCurrency(selectedInvoice.total)}
-                </small>
-              )}
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">Ödeme Yöntemi</label>
-              <select
-                className="form-select"
-                value={formData.paymentMethod}
-                onChange={(e) => setFormData({ ...formData, paymentMethod: e.target.value as Payment['paymentMethod'] })}
-                required
-              >
-                <option value="cash">💵 Nakit</option>
-                <option value="credit_card">💳 Kredi Kartı</option>
-                <option value="bank_transfer">🏦 Havale/EFT</option>
-                <option value="check">📝 Çek</option>
-              </select>
-              <small style={{ color: '#6c757d', fontSize: '0.8rem' }}>
-                {getPaymentMethodRequirements()}
-              </small>
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">
-                İşlem/Referans Numarası
-                {(formData.paymentMethod === 'credit_card' || formData.paymentMethod === 'bank_transfer') && (
-                  <span style={{ color: '#e74c3c' }}> *</span>
-                )}
-              </label>
-              <input
-                type="text"
-                className="form-input"
-                value={formData.transactionId}
-                onChange={(e) => setFormData({ ...formData, transactionId: e.target.value })}
-                placeholder={
-                  formData.paymentMethod === 'credit_card' ? 'Kredi kartı işlem no...' :
-                  formData.paymentMethod === 'bank_transfer' ? 'Dekont numarası...' :
-                  formData.paymentMethod === 'check' ? 'Çek numarası...' :
-                  'İsteğe bağlı...'
-                }
-                required={formData.paymentMethod === 'credit_card' || formData.paymentMethod === 'bank_transfer'}
-              />
-            </div>
-
-            <div className="form-group" style={{ gridColumn: '1 / -1' }}>
-              <label className="form-label">Notlar (İsteğe bağlı)</label>
-              <textarea
-                className="form-textarea"
-                value={formData.notes}
-                onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                placeholder="Ödeme ile ilgili notlar..."
-                rows={3}
-              />
-            </div>
+        <form onSubmit={handleSubmit} className="billing-form">
+          {/* Fatura Seçimi */}
+          <div className="form-group">
+            <label className="form-label">Fatura</label>
+            <select
+              className="form-select"
+              value={selectedInvoiceId}
+              onChange={(e) => setSelectedInvoiceId(Number(e.target.value))}
+              required
+            >
+              <option value="">Fatura Seçin</option>
+              {invoices.filter(inv => inv.status !== 'paid').map(invoice => (
+                <option key={invoice.id} value={invoice.id}>
+                  {invoice.invoiceNumber} - {invoice.patient.name} - {invoice.total.toFixed(2)} TL
+                </option>
+              ))}
+            </select>
           </div>
 
-          {formData.amount && selectedInvoice && (
+          {selectedInvoice && (
             <div style={{ 
-              border: '2px solid #27ae60', 
-              borderRadius: '8px', 
-              padding: '1rem', 
-              backgroundColor: '#f8fff8',
-              marginBottom: '1.5rem'
+              padding: 'var(--spacing-1)', 
+              background: 'var(--surface-variant)', 
+              borderRadius: 'var(--border-radius-sm)',
+              marginBottom: 'var(--spacing-2)'
             }}>
-              <h4 style={{ color: '#27ae60', marginBottom: '0.5rem' }}>Ödeme Özeti</h4>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
-                <div>Ödeme Tutarı:</div>
-                <div><strong>{formatCurrency(parseFloat(formData.amount) || 0)}</strong></div>
-                
-                <div>Kalan Tutar:</div>
-                <div>
-                  <strong>
-                    {formatCurrency(selectedInvoice.total - (parseFloat(formData.amount) || 0))}
-                  </strong>
-                </div>
-                
-                <div style={{ borderTop: '1px solid #27ae60', paddingTop: '0.5rem', color: '#27ae60' }}>
-                  Fatura Durumu:
-                </div>
-                <div style={{ borderTop: '1px solid #27ae60', paddingTop: '0.5rem', color: '#27ae60' }}>
-                  <strong>
-                    {(parseFloat(formData.amount) || 0) >= selectedInvoice.total ? 'Tamamen Ödenecek' : 'Kısmi Ödeme'}
-                  </strong>
-                </div>
-              </div>
+              <strong>Seçilen Fatura:</strong> {selectedInvoice.invoiceNumber}<br/>
+              <strong>Hasta:</strong> {selectedInvoice.patient.name} ({selectedInvoice.patient.ownerName})<br/>
+              <strong>Toplam Tutar:</strong> {selectedInvoice.total.toFixed(2)} TL
             </div>
           )}
 
-          <div className="form-actions">
-            <button type="button" className="action-button secondary" onClick={onClose}>
+          {/* Ödeme Tutarı */}
+          <div className="form-group">
+            <label className="form-label">Ödeme Tutarı (TL)</label>
+            <input
+              type="number"
+              className="form-input"
+              value={amount}
+              onChange={(e) => setAmount(Number(e.target.value))}
+              step="0.01"
+              min="0"
+              required
+            />
+          </div>
+
+          {/* Ödeme Yöntemi */}
+          <div className="form-group">
+            <label className="form-label">Ödeme Yöntemi</label>
+            <select
+              className="form-select"
+              value={paymentMethod}
+              onChange={(e) => setPaymentMethod(e.target.value as any)}
+              required
+            >
+              <option value="cash">💵 Nakit</option>
+              <option value="credit_card">💳 Kredi Kartı</option>
+              <option value="debit_card">💳 Banka Kartı</option>
+              <option value="bank_transfer">🏦 Havale/EFT</option>
+              <option value="check">📝 Çek</option>
+            </select>
+          </div>
+
+          {/* Nakit Ödeme Alanları */}
+          {paymentMethod === 'cash' && (
+            <>
+              <div className="form-group">
+                <label className="form-label">Alınan Nakit (TL)</label>
+                <input
+                  type="number"
+                  className="form-input"
+                  value={cashReceived}
+                  onChange={(e) => setCashReceived(Number(e.target.value))}
+                  step="0.01"
+                  min="0"
+                  placeholder="Müşteriden alınan nakit miktarı"
+                />
+              </div>
+              {changeGiven > 0 && (
+                <div style={{ 
+                  padding: 'var(--spacing-1)', 
+                  background: '#f0fff4', 
+                  color: '#2f855a',
+                  borderRadius: 'var(--border-radius-sm)',
+                  fontWeight: 'var(--font-weight-medium)'
+                }}>
+                  Para Üstü: {changeGiven.toFixed(2)} TL
+                </div>
+              )}
+            </>
+          )}
+
+          {/* Kart Ödeme Alanları */}
+          {(paymentMethod === 'credit_card' || paymentMethod === 'debit_card') && (
+            <>
+              <div className="form-group">
+                <label className="form-label">POS Terminal</label>
+                <select
+                  className="form-select"
+                  value={selectedPosTerminal}
+                  onChange={(e) => setSelectedPosTerminal(e.target.value)}
+                  required
+                >
+                  {posTerminals.map(terminal => (
+                    <option key={terminal.id} value={terminal.id}>
+                      {terminal.name} ({terminal.bank})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--spacing-2)' }}>
+                <div className="form-group">
+                  <label className="form-label">Kart Türü</label>
+                  <select
+                    className="form-select"
+                    value={cardType}
+                    onChange={(e) => setCardType(e.target.value as any)}
+                  >
+                    <option value="visa">Visa</option>
+                    <option value="mastercard">Mastercard</option>
+                    <option value="amex">American Express</option>
+                    <option value="troy">Troy</option>
+                  </select>
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">Son 4 Hanesi</label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    value={lastFourDigits}
+                    onChange={(e) => setLastFourDigits(e.target.value)}
+                    placeholder="1234"
+                    maxLength={4}
+                  />
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Kart Sahibi Adı</label>
+                <input
+                  type="text"
+                  className="form-input"
+                  value={cardHolderName}
+                  onChange={(e) => setCardHolderName(e.target.value.toUpperCase())}
+                  placeholder="KART SAHİBİNİN ADI"
+                />
+              </div>
+
+              {processingCard && (
+                <div style={{ 
+                  padding: 'var(--spacing-2)', 
+                  background: '#fff3cd', 
+                  color: '#856404',
+                  borderRadius: 'var(--border-radius-sm)',
+                  textAlign: 'center'
+                }}>
+                  🔄 POS işlemi gerçekleştiriliyor... Lütfen bekleyin.
+                </div>
+              )}
+            </>
+          )}
+
+          {/* Havale Alanları */}
+          {paymentMethod === 'bank_transfer' && (
+            <>
+              <div className="form-group">
+                <label className="form-label">Banka Hesap No</label>
+                <input
+                  type="text"
+                  className="form-input"
+                  value={bankAccount}
+                  onChange={(e) => setBankAccount(e.target.value)}
+                  placeholder="TR33 0006 1005 1978 6457 8413 26"
+                />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Referans Numarası</label>
+                <input
+                  type="text"
+                  className="form-input"
+                  value={referenceNumber}
+                  onChange={(e) => setReferenceNumber(e.target.value)}
+                  placeholder="Havale referans numarası"
+                />
+              </div>
+            </>
+          )}
+
+          {/* Çek Alanları */}
+          {paymentMethod === 'check' && (
+            <>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--spacing-2)' }}>
+                <div className="form-group">
+                  <label className="form-label">Çek Numarası</label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    value={checkNumber}
+                    onChange={(e) => setCheckNumber(e.target.value)}
+                    placeholder="123456"
+                  />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Çek Tarihi</label>
+                  <input
+                    type="date"
+                    className="form-input"
+                    value={checkDate}
+                    onChange={(e) => setCheckDate(e.target.value)}
+                  />
+                </div>
+              </div>
+              <div className="form-group">
+                <label className="form-label">Banka</label>
+                <input
+                  type="text"
+                  className="form-input"
+                  value={checkBank}
+                  onChange={(e) => setCheckBank(e.target.value)}
+                  placeholder="Ziraat Bankası"
+                />
+              </div>
+            </>
+          )}
+
+          {/* Açıklama */}
+          <div className="form-group">
+            <label className="form-label">Açıklama</label>
+            <textarea
+              className="form-input"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Ödeme ile ilgili notlar..."
+              rows={3}
+            />
+          </div>
+
+          {/* Butonlar */}
+          <div style={{ 
+            display: 'flex', 
+            justifyContent: 'flex-end', 
+            gap: 'var(--spacing-1)',
+            paddingTop: 'var(--spacing-2)',
+            borderTop: '1px solid rgba(0,0,0,0.04)'
+          }}>
+            <button
+              type="button"
+              className="action-button"
+              onClick={onClose}
+              style={{ background: 'var(--surface-variant)', color: 'var(--text-primary)' }}
+            >
               İptal
             </button>
-            <button type="submit" className="action-button success" disabled={loading}>
-              {loading ? 'Kaydediliyor...' : 'Ödeme Kaydet'}
+            <button
+              type="submit"
+              className="action-button"
+              disabled={loading || processingCard}
+            >
+              {loading ? '⏳ Kaydediliyor...' : processingCard ? '💳 POS İşlemi...' : '💰 Ödeme Kaydet'}
             </button>
           </div>
         </form>

@@ -1,4 +1,12 @@
-import { Invoice, Payment, PaymentPlan, Service, BillingStatsData, InvoiceFilters, PaymentFilters } from '../types';
+import { Invoice, Payment, PaymentPlan, Service, BillingStatsData, InvoiceFilters, PaymentFilters, POSTerminal, CardInfo } from '../types';
+
+// Mock POS Terminals - Gerçek klinik ortamında kullanılabilecek
+const mockPOSTerminals: POSTerminal[] = [
+  { id: 'POS001', name: 'Garanti BBVA POS', serialNumber: 'GB2024001', bank: 'Garanti BBVA', isActive: true },
+  { id: 'POS002', name: 'İş Bankası POS', serialNumber: 'IB2024002', bank: 'Türkiye İş Bankası', isActive: true },
+  { id: 'POS003', name: 'Akbank POS', serialNumber: 'AK2024003', bank: 'Akbank', isActive: false },
+  { id: 'POS004', name: 'Yapı Kredi POS', serialNumber: 'YK2024004', bank: 'Yapı Kredi', isActive: true }
+];
 
 // Mock data - gerçek uygulamada API'den gelecek
 const mockServices: Service[] = [
@@ -52,9 +60,29 @@ const mockInvoices: Invoice[] = [
     createdBy: 'Dr. Zeynep Kaya',
     createdAt: new Date('2024-01-18'),
     updatedAt: new Date('2024-01-20')
+  },
+  {
+    id: 3,
+    invoiceNumber: 'INV-2024-003',
+    patientId: 3,
+    patient: { id: 3, name: 'Boncuk', ownerName: 'Mehmet Kaya', ownerPhone: '+90 555 456 7890', ownerEmail: 'mehmet@email.com' },
+    issueDate: new Date('2024-01-22'),
+    dueDate: new Date('2024-02-22'),
+    items: [
+      { id: 4, serviceId: 6, service: mockServices[5], quantity: 1, unitPrice: 1500, discount: 100, total: 1400 }
+    ],
+    subtotal: 1400,
+    tax: 252,
+    discount: 100,
+    total: 1552,
+    status: 'paid',
+    createdBy: 'Dr. Ahmet Şen',
+    createdAt: new Date('2024-01-22'),
+    updatedAt: new Date('2024-01-22')
   }
 ];
 
+// Gerçek hayat senaryolarına uygun ödeme mock data'sı
 const mockPayments: Payment[] = [
   {
     id: 1,
@@ -62,14 +90,91 @@ const mockPayments: Payment[] = [
     amount: 177,
     paymentDate: new Date('2024-01-20'),
     paymentMethod: 'credit_card',
-    transactionId: 'TXN-001-2024',
-    notes: 'Kredi kartı ile ödeme',
+    transactionNumber: 'TXN-20240120-001',
+    description: 'Aşı ücreti - Kredi kartı ile ödeme',
+    status: 'completed',
+    posTerminal: mockPOSTerminals[0],
+    cardInfo: {
+      cardType: 'visa',
+      lastFourDigits: '1234',
+      bankName: 'Garanti BBVA',
+      cardHolderName: 'AYSE DEMIR'
+    },
+    authorizationCode: 'AUTH123456',
+    batchNumber: 'BATCH001',
+    notes: 'Başarılı POS işlemi',
     createdBy: 'Dr. Zeynep Kaya',
     createdAt: new Date('2024-01-20')
+  },
+  {
+    id: 2,
+    invoiceId: 3,
+    amount: 800,
+    paymentDate: new Date('2024-01-22'),
+    paymentMethod: 'cash',
+    transactionNumber: 'TXN-20240122-001',
+    description: 'Cerrahi operasyon - Nakit ödeme (1. taksit)',
+    status: 'completed',
+    cashReceived: 800,
+    changeGiven: 0,
+    notes: 'Nakit ödeme - İlk taksit',
+    createdBy: 'Dr. Ahmet Şen',
+    createdAt: new Date('2024-01-22')
+  },
+  {
+    id: 3,
+    invoiceId: 3,
+    amount: 752,
+    paymentDate: new Date('2024-01-22'),
+    paymentMethod: 'debit_card',
+    transactionNumber: 'TXN-20240122-002',
+    description: 'Cerrahi operasyon - Banka kartı ile ödeme (2. taksit)',
+    status: 'completed',
+    posTerminal: mockPOSTerminals[1],
+    cardInfo: {
+      cardType: 'mastercard',
+      lastFourDigits: '5678',
+      bankName: 'Türkiye İş Bankası',
+      cardHolderName: 'MEHMET KAYA'
+    },
+    authorizationCode: 'AUTH789012',
+    batchNumber: 'BATCH002',
+    notes: 'Banka kartı ile kalan tutar ödendi',
+    createdBy: 'Dr. Ahmet Şen',
+    createdAt: new Date('2024-01-22')
+  },
+  {
+    id: 4,
+    invoiceId: 1,
+    amount: 250,
+    paymentDate: new Date('2024-01-25'),
+    paymentMethod: 'bank_transfer',
+    transactionNumber: 'TXN-20240125-001',
+    description: 'Muayene ve tahlil - Havale ile ödeme',
+    status: 'completed',
+    bankAccount: 'TR33 0006 1005 1978 6457 8413 26',
+    referenceNumber: 'REF2024012500001',
+    notes: 'EFT ile ödeme yapıldı',
+    createdBy: 'Dr. Mehmet Öz',
+    createdAt: new Date('2024-01-25')
   }
 ];
 
+// İşlem numarası generator
+const generateTransactionNumber = (): string => {
+  const date = new Date();
+  const dateStr = date.toISOString().slice(0, 10).replace(/-/g, '');
+  const timeStr = Date.now().toString().slice(-4);
+  return `TXN-${dateStr}-${timeStr}`;
+};
+
 export const billingService = {
+  // POS Terminal operations
+  async getPOSTerminals(): Promise<POSTerminal[]> {
+    await new Promise(resolve => setTimeout(resolve, 300));
+    return mockPOSTerminals.filter(pos => pos.isActive);
+  },
+
   // Invoice operations
   async getInvoices(filters?: InvoiceFilters): Promise<Invoice[]> {
     // Simulating API call
@@ -135,23 +240,43 @@ export const billingService = {
       filtered = filtered.filter(payment => payment.paymentMethod === filters.paymentMethod);
     }
     
+    if (filters?.status) {
+      filtered = filtered.filter(payment => payment.status === filters.status);
+    }
+    
+    if (filters?.posTerminalId) {
+      filtered = filtered.filter(payment => payment.posTerminal?.id === filters.posTerminalId);
+    }
+    
+    if (filters?.search) {
+      const searchLower = filters.search.toLowerCase();
+      filtered = filtered.filter(payment => 
+        payment.transactionNumber.toLowerCase().includes(searchLower) ||
+        payment.description?.toLowerCase().includes(searchLower) ||
+        payment.authorizationCode?.toLowerCase().includes(searchLower)
+      );
+    }
+    
     return filtered;
   },
 
-  async createPayment(paymentData: Omit<Payment, 'id' | 'createdAt'>): Promise<Payment> {
+  async createPayment(paymentData: Omit<Payment, 'id' | 'createdAt' | 'transactionNumber'>): Promise<Payment> {
     await new Promise(resolve => setTimeout(resolve, 1000));
+    
     const newPayment: Payment = {
       ...paymentData,
       id: Date.now(),
+      transactionNumber: generateTransactionNumber(),
       createdAt: new Date()
     };
+    
     mockPayments.push(newPayment);
     
     // Update invoice status if fully paid
     const invoice = mockInvoices.find(inv => inv.id === paymentData.invoiceId);
     if (invoice) {
       const totalPaid = mockPayments
-        .filter(p => p.invoiceId === invoice.id)
+        .filter(p => p.invoiceId === invoice.id && p.status === 'completed')
         .reduce((sum, p) => sum + p.amount, 0);
       
       if (totalPaid >= invoice.total) {
@@ -161,6 +286,43 @@ export const billingService = {
     }
     
     return newPayment;
+  },
+
+  // POS Payment simulation
+  async processCardPayment(amount: number, posTerminalId: string, cardType: string): Promise<{
+    success: boolean;
+    authorizationCode?: string;
+    batchNumber?: string;
+    errorMessage?: string;
+  }> {
+    await new Promise(resolve => setTimeout(resolve, 2000)); // Simulating POS processing time
+    
+    const terminal = mockPOSTerminals.find(pos => pos.id === posTerminalId);
+    if (!terminal || !terminal.isActive) {
+      return { success: false, errorMessage: 'POS terminali aktif değil' };
+    }
+    
+    // %5 başarısızlık oranı simülasyonu
+    const success = Math.random() > 0.05;
+    
+    if (success) {
+      return {
+        success: true,
+        authorizationCode: `AUTH${Math.random().toString(36).substr(2, 6).toUpperCase()}`,
+        batchNumber: `BATCH${Math.random().toString(36).substr(2, 3).toUpperCase()}`
+      };
+    } else {
+      const errorMessages = [
+        'Kartınız okunmadı, lütfen tekrar deneyin',
+        'İşlem reddedildi - Yetersiz bakiye',
+        'Kart geçerli değil',
+        'Banka bağlantı hatası'
+      ];
+      return { 
+        success: false, 
+        errorMessage: errorMessages[Math.floor(Math.random() * errorMessages.length)]
+      };
+    }
   },
 
   // Service operations
@@ -183,7 +345,8 @@ export const billingService = {
   async getBillingStats(): Promise<BillingStatsData> {
     await new Promise(resolve => setTimeout(resolve, 600));
     
-    const totalRevenue = mockPayments.reduce((sum, payment) => sum + payment.amount, 0);
+    const completedPayments = mockPayments.filter(p => p.status === 'completed');
+    const totalRevenue = completedPayments.reduce((sum, payment) => sum + payment.amount, 0);
     const pendingInvoices = mockInvoices.filter(inv => inv.status === 'sent');
     const overdueInvoices = mockInvoices.filter(inv => inv.status === 'overdue');
     const paidInvoices = mockInvoices.filter(inv => inv.status === 'paid');

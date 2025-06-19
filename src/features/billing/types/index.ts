@@ -43,17 +43,81 @@ export interface Invoice {
   updatedAt: Date;
 }
 
+// POS Cihazı Bilgileri
+export interface POSTerminal {
+  id: string;
+  name: string;
+  serialNumber: string;
+  bank: string;
+  isActive: boolean;
+}
+
+// Kart Bilgileri (POS için)
+export interface CardInfo {
+  cardType: 'visa' | 'mastercard' | 'amex' | 'troy' | 'other';
+  lastFourDigits: string;
+  bankName: string;
+  cardHolderName?: string;
+}
+
+// Gerçek hayat senaryosuna uygun Payment interface
 export interface Payment {
   id: number;
   invoiceId: number;
   invoice?: Invoice;
   amount: number;
   paymentDate: Date;
-  paymentMethod: 'cash' | 'credit_card' | 'bank_transfer' | 'check';
-  transactionId?: string;
+  
+  // Ana ödeme yöntemi
+  paymentMethod: 'cash' | 'credit_card' | 'debit_card' | 'bank_transfer' | 'check' | 'installment';
+  
+  // İşlem numarası (her ödeme için unique)
+  transactionNumber: string;
+  
+  // Açıklama/notlar
+  description?: string;
+  
+  // POS işlemi için (kredi/banka kartı ödemeleri)
+  posTerminal?: POSTerminal;
+  cardInfo?: CardInfo;
+  authorizationCode?: string;
+  batchNumber?: string;
+  
+  // Nakit ödemeler için
+  cashReceived?: number; // Alınan miktar
+  changeGiven?: number;  // Verilen para üstü
+  
+  // Banka havalesi için
+  bankAccount?: string;
+  referenceNumber?: string;
+  
+  // Çek ödemeleri için
+  checkNumber?: string;
+  checkBank?: string;
+  checkDate?: Date;
+  
+  // Taksit ödemeleri için
+  installmentInfo?: {
+    installmentNumber: number;
+    totalInstallments: number;
+    installmentAmount: number;
+    interestRate?: number;
+  };
+  
+  // Sistem bilgileri
+  status: 'pending' | 'completed' | 'failed' | 'cancelled' | 'refunded';
   notes?: string;
   createdBy: string;
   createdAt: Date;
+  updatedAt?: Date;
+  
+  // İptal/iade işlemleri için
+  refundInfo?: {
+    refundAmount: number;
+    refundDate: Date;
+    refundReason: string;
+    refundTransactionNumber: string;
+  };
 }
 
 export interface PaymentPlan {
@@ -101,4 +165,6 @@ export interface PaymentFilters {
   dateFrom?: Date;
   dateTo?: Date;
   search?: string;
+  status?: Payment['status'];
+  posTerminalId?: string;
 } 
