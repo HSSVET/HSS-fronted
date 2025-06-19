@@ -13,6 +13,7 @@ import RadiologyImaging from './detail/RadiologyImaging';
 import LaboratoryTests from './detail/LaboratoryTests';
 import Prescriptions from './detail/Prescriptions';
 import Vaccinations from './detail/Vaccinations';
+import PathologyFindings from './detail/PathologyFindings';
 import MedicationIcon from '@mui/icons-material/Medication';
 import WarningIcon from '@mui/icons-material/Warning';
 import HistoryIcon from '@mui/icons-material/History';
@@ -22,6 +23,7 @@ import BiotechIcon from '@mui/icons-material/Biotech';
 import RadioIcon from '@mui/icons-material/Radio';
 import VaccinesIcon from '@mui/icons-material/Vaccines';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import ScienceIcon from '@mui/icons-material/Science';
 import Allergies from './detail/Allergies';
 import '../../styles/components/AnimalDetail.css';
 
@@ -110,6 +112,11 @@ const AnimalDetailPage: React.FC = () => {
       label: 'Alerjiler/Kronik Rahatsızlıklar',
       icon: <ErrorOutlineIcon />,
     },
+    {
+      id: 'pathology',
+      label: 'Patoloji Bulguları',
+      icon: <ScienceIcon />,
+    },
   ];
 
   const renderContent = () => {
@@ -132,6 +139,19 @@ const AnimalDetailPage: React.FC = () => {
         return <Vaccinations />;
       case 8: // Alerjiler/Kronik Rahatsızlıklar
         return <Allergies />;
+      case 9: // Patoloji Bulguları
+        return <PathologyFindings 
+          reportInfo={{
+            reportNo: '2025-PAT-0142',
+            date: '24.08.2035',
+            pathologist: 'AHMET YILDIZ',
+            sampleNo: 'S-2025-742'
+          }}
+          sampleInfo={{
+            sampleType: 'DOKU BİYOPSİSİ',
+            location: 'DERİ - SOL ÖN BACAK'
+          }}
+        />;
       default:
         return <ImportantAlerts />;
     }
