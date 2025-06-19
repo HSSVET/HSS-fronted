@@ -6,6 +6,9 @@ import { ArrowBack } from '@mui/icons-material';
 import ProfileHeader from './detail/ProfileHeader';
 import SidebarMenu from './detail/SidebarMenu';
 import ImportantAlerts from './detail/ImportantAlerts';
+import DiseaseHistory from './detail/DiseaseHistory';
+import ClinicalExamination from './detail/ClinicalExamination';
+import AppointmentTracking from './detail/AppointmentTracking';
 import '../../styles/components/AnimalDetail.css';
 
 const theme = createTheme({
@@ -43,6 +46,34 @@ const AnimalDetailPage: React.FC = () => {
   const animalId = id ? parseInt(id) : 1;
   const animalData = mockAnimalData[animalId as keyof typeof mockAnimalData] || mockAnimalData[1];
 
+  const handleAddDiseaseHistory = () => {
+    // TODO: Implement add disease history functionality
+    console.log('Add new disease history');
+  };
+
+  const handleAddClinicalExamination = () => {
+    // TODO: Implement add clinical examination functionality
+    console.log('Add new clinical examination');
+  };
+
+  const handleAddAppointment = () => {
+    // TODO: Implement add appointment functionality
+    console.log('Add new appointment');
+  };
+
+  const renderContent = () => {
+    switch (selectedMenu) {
+      case 0: // Hastalık Geçmişi
+        return <DiseaseHistory onAddClick={handleAddDiseaseHistory} />;
+      case 1: // Klinik İnceleme
+        return <ClinicalExamination onAddClick={handleAddClinicalExamination} />;
+      case 2: // Randevu Takip Sistemi
+        return <AppointmentTracking onAddClick={handleAddAppointment} />;
+      default:
+        return <ImportantAlerts />;
+    }
+  };
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -69,8 +100,7 @@ const AnimalDetailPage: React.FC = () => {
             </Box>
             <Box sx={{ flex: 1 }}>
               <Paper elevation={3} sx={{ p: 3, minHeight: 400, bgcolor: 'background.paper' }}>
-                {/* Menüye göre içerik değişecek. Şimdilik sadece önemli uyarılar gösteriliyor. */}
-                <ImportantAlerts />
+                {renderContent()}
               </Paper>
             </Box>
           </Box>
