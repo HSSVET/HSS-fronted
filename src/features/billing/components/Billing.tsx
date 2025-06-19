@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useBilling } from '../hooks/useBilling';
 import { InvoiceList } from './invoices/InvoiceList';
 import { PaymentList } from './payments/PaymentList';
-import { BillingStats } from './BillingStats';
 import { CreateInvoiceModal } from './invoices/CreateInvoiceModal';
 import { CreatePaymentModal } from './payments/CreatePaymentModal';
 import { BillingReports } from './reports/BillingReports';
@@ -18,17 +17,14 @@ export const Billing: React.FC = () => {
   const { 
     invoices, 
     payments, 
-    stats, 
     loading, 
     error, 
     fetchInvoices, 
     fetchPayments, 
-    fetchStats,
     fetchServices 
   } = useBilling();
 
   useEffect(() => {
-    fetchStats();
     fetchServices();
   }, []);
 
@@ -52,23 +48,25 @@ export const Billing: React.FC = () => {
     switch (activeTab) {
       case 'invoices':
         return (
-          <button className="action-button" onClick={handleCreateInvoice}>
-            <span>+</span>
-            Yeni Fatura
-          </button>
+          <div className="action-buttons">
+            <button className="action-button primary" onClick={handleCreateInvoice}>
+              + Fatura Oluştur
+            </button>
+            <button className="action-button secondary" onClick={handleCreateInvoice}>
+              + Yeni Fatura
+            </button>
+          </div>
         );
       case 'payments':
         return (
-          <button className="action-button success" onClick={handleCreatePayment}>
-            <span>+</span>
-            Ödeme Kaydet
+          <button className="action-button primary" onClick={handleCreatePayment}>
+            + Ödeme Kaydet
           </button>
         );
       case 'reports':
         return (
           <button className="action-button secondary">
-            <span>📊</span>
-            Rapor İndir
+            📊 Rapor İndir
           </button>
         );
       default:
@@ -117,8 +115,6 @@ export const Billing: React.FC = () => {
         </div>
       </div>
 
-      {stats && <BillingStats stats={stats} />}
-
       <div className="billing-tabs">
         <div className="tab-navigation">
           <button
@@ -158,7 +154,6 @@ export const Billing: React.FC = () => {
           onSuccess={() => {
             setShowCreateInvoice(false);
             fetchInvoices();
-            fetchStats();
           }}
         />
       )}
@@ -169,7 +164,6 @@ export const Billing: React.FC = () => {
           onSuccess={() => {
             setShowCreatePayment(false);
             fetchPayments();
-            fetchStats();
           }}
         />
       )}

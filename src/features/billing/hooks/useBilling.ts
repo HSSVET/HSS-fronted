@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Invoice, Payment, Service, BillingStatsData, InvoiceFilters, PaymentFilters } from '../types';
+import { Invoice, Payment, Service, InvoiceFilters, PaymentFilters } from '../types';
 import { billingService } from '../services/billingService';
 
 export const useBilling = () => {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [payments, setPayments] = useState<Payment[]>([]);
   const [services, setServices] = useState<Service[]>([]);
-  const [stats, setStats] = useState<BillingStatsData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -44,19 +43,6 @@ export const useBilling = () => {
       setServices(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Hizmetler yüklenirken hata oluştu');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchStats = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const data = await billingService.getBillingStats();
-      setStats(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'İstatistikler yüklenirken hata oluştu');
     } finally {
       setLoading(false);
     }
@@ -133,7 +119,6 @@ export const useBilling = () => {
     invoices,
     payments,
     services,
-    stats,
     loading,
     error,
     
@@ -141,7 +126,6 @@ export const useBilling = () => {
     fetchInvoices,
     fetchPayments,
     fetchServices,
-    fetchStats,
     createInvoice,
     updateInvoice,
     createPayment,
