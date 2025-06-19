@@ -8,4 +8,7 @@ export * from './appointments';
 export * from './laboratory';
 
 // Dashboard Feature
-export * from './dashboard'; 
+export * from './dashboard';
+
+// Billing Feature
+export * from './billing'; 
