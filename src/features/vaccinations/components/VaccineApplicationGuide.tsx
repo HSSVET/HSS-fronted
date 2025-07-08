@@ -42,12 +42,16 @@ const VaccineApplicationGuide: React.FC = () => {
         let filtered = [...vaccines];
 
         if (selectedAnimalType) {
-            filtered = filtered.filter(v => v.animalType === selectedAnimalType);
+            filtered = filtered.filter(v =>
+                v.animalType === selectedAnimalType ||
+                v.animalTypes?.includes(selectedAnimalType)
+            );
         }
 
         if (selectedBreed) {
             filtered = filtered.filter(v =>
-                v.animalBreeds.includes(selectedBreed) || v.animalBreeds.includes('Tüm ırklar')
+                (v.animalBreeds || v.breeds || []).includes(selectedBreed) ||
+                (v.animalBreeds || v.breeds || []).includes('Tüm ırklar')
             );
         }
 
@@ -55,11 +59,13 @@ const VaccineApplicationGuide: React.FC = () => {
     }, [vaccines, selectedAnimalType, selectedBreed]);
 
     const getApplicationMethodText = (method: ApplicationMethod) => {
-        const methods = {
+        const methods: Record<ApplicationMethod, string> = {
+            injection: 'Enjeksiyon',
+            oral: 'Ağızdan',
+            nasal: 'Burun İçi',
             subcutaneous: 'Deri Altı',
             intramuscular: 'Kas İçi',
             intranasal: 'Burun İçi',
-            oral: 'Ağızdan',
             intradermal: 'Deri İçi'
         };
         return methods[method] || method;
@@ -165,20 +171,20 @@ const VaccineApplicationGuide: React.FC = () => {
                                     </td>
                                     <td>
                                         <div style={{ fontSize: '14px' }}>
-                                            {vaccine.diseaseType}
+                                            {vaccine.diseaseType || vaccine.diseaseTargets?.join(', ') || '-'}
                                         </div>
                                     </td>
-                                    <td>{getAnimalTypeText(vaccine.animalType)}</td>
+                                    <td>{vaccine.animalType ? getAnimalTypeText(vaccine.animalType) : (vaccine.animalTypes?.join(', ') || '-')}</td>
                                     <td>
                                         <div style={{ fontSize: '13px' }}>
-                                            {vaccine.animalBreeds.join(', ')}
+                                            {(vaccine.animalBreeds || vaccine.breeds || []).join(', ') || 'Tüm ırklar'}
                                         </div>
                                     </td>
-                                    <td>{vaccine.minimumAge}</td>
+                                    <td>{vaccine.minimumAge || '-'}</td>
                                     <td>{vaccine.dose}</td>
                                     <td>
                                         <div style={{ fontSize: '12px', color: '#6c757d', maxWidth: '200px' }}>
-                                            {vaccine.sideEffects}
+                                            {Array.isArray(vaccine.sideEffects) ? vaccine.sideEffects.join(', ') : (vaccine.sideEffects || '-')}
                                         </div>
                                     </td>
                                     <td>

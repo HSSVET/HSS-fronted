@@ -7,7 +7,12 @@ const VaccineStockInfo: React.FC = () => {
     const [filteredVaccines, setFilteredVaccines] = useState<Array<Vaccine & { stock: VaccineStock[] }>>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
-    const [filters, setFilters] = useState<VaccinationFilters>({});
+    const [filters, setFilters] = useState<VaccinationFilters>({
+        search: '',
+        animalType: '',
+        breed: '',
+        stockStatus: ''
+    });
     const [availableBreeds, setAvailableBreeds] = useState<string[]>([]);
     const [showAddModal, setShowAddModal] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -75,21 +80,25 @@ const VaccineStockInfo: React.FC = () => {
             filtered = filtered.filter(vaccine =>
                 vaccine.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 vaccine.manufacturer.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                vaccine.diseaseType.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                getAnimalTypeText(vaccine.animalType).toLowerCase().includes(searchTerm.toLowerCase()) ||
-                vaccine.animalBreeds.some(breed => breed.toLowerCase().includes(searchTerm.toLowerCase()))
+                (vaccine.diseaseType || vaccine.diseaseTargets?.join(' ') || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                (vaccine.animalType ? getAnimalTypeText(vaccine.animalType).toLowerCase().includes(searchTerm.toLowerCase()) : true) ||
+                (vaccine.animalBreeds || vaccine.breeds || []).some((breed: string) => breed.toLowerCase().includes(searchTerm.toLowerCase()))
             );
         }
 
         // Hayvan türü filtresi
         if (filters.animalType) {
-            filtered = filtered.filter(vaccine => vaccine.animalType === filters.animalType);
+            filtered = filtered.filter(vaccine =>
+                vaccine.animalType === filters.animalType ||
+                (filters.animalType && vaccine.animalTypes?.includes(filters.animalType))
+            );
         }
 
         // Hayvan ırkı filtresi
         if (filters.breed) {
             filtered = filtered.filter(vaccine =>
-                vaccine.animalBreeds.includes(filters.breed!) || vaccine.animalBreeds.includes('Tüm ırklar')
+                (vaccine.animalBreeds || vaccine.breeds || []).includes(filters.breed!) ||
+                (vaccine.animalBreeds || vaccine.breeds || []).includes('Tüm ırklar')
             );
         }
 
@@ -128,11 +137,13 @@ const VaccineStockInfo: React.FC = () => {
     };
 
     const getApplicationMethodText = (method: ApplicationMethod) => {
-        const methods = {
+        const methods: Record<ApplicationMethod, string> = {
+            injection: 'Enjeksiyon',
+            oral: 'Ağızdan',
+            nasal: 'Burun İçi',
             subcutaneous: 'Deri Altı',
             intramuscular: 'Kas İçi',
             intranasal: 'Burun İçi',
-            oral: 'Ağızdan',
             intradermal: 'Deri İçi'
         };
         return methods[method] || method;
@@ -381,10 +392,10 @@ const VaccineStockInfo: React.FC = () => {
                                         </td>
                                         <td>{vaccine.manufacturer}</td>
                                         <td>
-                                            <div>{getAnimalTypeText(vaccine.animalType)}</div>
+                                            <div>{vaccine.animalType ? getAnimalTypeText(vaccine.animalType) : (vaccine.animalTypes?.join(', ') || '-')}</div>
                                             <div style={{ fontSize: '12px', color: '#6c757d' }}>
-                                                {vaccine.animalBreeds.slice(0, 2).join(', ')}
-                                                {vaccine.animalBreeds.length > 2 && '...'}
+                                                {(vaccine.animalBreeds || vaccine.breeds || []).slice(0, 2).join(', ')}
+                                                {(vaccine.animalBreeds || vaccine.breeds || []).length > 2 && '...'}
                                             </div>
                                         </td>
                                         <td>
@@ -399,12 +410,12 @@ const VaccineStockInfo: React.FC = () => {
                                         <td>{vaccine.dose}</td>
                                         <td>
                                             <div style={{ maxWidth: '200px', fontSize: '13px' }}>
-                                                {vaccine.diseaseType}
+                                                {vaccine.diseaseType || vaccine.diseaseTargets?.join(', ') || '-'}
                                             </div>
                                         </td>
                                         <td>
                                             <div style={{ maxWidth: '150px', fontSize: '12px', color: '#6c757d' }}>
-                                                {vaccine.sideEffects}
+                                                {Array.isArray(vaccine.sideEffects) ? vaccine.sideEffects.join(', ') : (vaccine.sideEffects || '-')}
                                             </div>
                                         </td>
                                         <td>

@@ -5,10 +5,11 @@ import VaccineStockInfo from './VaccineStockInfo';
 import VaccineApplicationGuide from './VaccineApplicationGuide';
 import VaccineHistory from './VaccineHistory';
 import StockNotifications from './StockNotifications';
+import VaccinationCard from './VaccinationCard';
 import '../styles/Vaccination.css';
 
 const VaccinationDashboard: React.FC = () => {
-    const [activeTab, setActiveTab] = useState<'stock' | 'guide' | 'history' | 'notifications'>('stock');
+    const [activeTab, setActiveTab] = useState<'stock' | 'guide' | 'history' | 'card' | 'notifications'>('stock');
     const [stats, setStats] = useState<VaccinationStats | null>(null);
     const [stockAlerts, setStockAlerts] = useState<StockAlert[]>([]);
     const [loading, setLoading] = useState(true);
@@ -40,6 +41,7 @@ const VaccinationDashboard: React.FC = () => {
         { id: 'stock', label: 'Aşı Stok Bilgisi', icon: '📦' },
         { id: 'guide', label: 'Aşı Uygulama Rehberi', icon: '📋' },
         { id: 'history', label: 'Aşı Geçmişi', icon: '📊' },
+        { id: 'card', label: 'Aşı Karnesi', icon: '🐾' },
         {
             id: 'notifications',
             label: 'Stok Bildirimleri',
@@ -56,6 +58,8 @@ const VaccinationDashboard: React.FC = () => {
                 return <VaccineApplicationGuide />;
             case 'history':
                 return <VaccineHistory />;
+            case 'card':
+                return <VaccinationCard />;
             case 'notifications':
                 return <StockNotifications />;
             default:

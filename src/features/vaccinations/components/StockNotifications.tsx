@@ -44,8 +44,9 @@ const StockNotifications: React.FC = () => {
         alert(`${vaccineId} ID'li aşı için sipariş talebi oluşturuldu.`);
     };
 
-    const formatDate = (dateString: string) => {
-        return new Date(dateString).toLocaleDateString('tr-TR');
+    const formatDate = (date: Date | string) => {
+        const d = typeof date === 'string' ? new Date(date) : date;
+        return d.toLocaleDateString('tr-TR');
     };
 
     if (loading) {
