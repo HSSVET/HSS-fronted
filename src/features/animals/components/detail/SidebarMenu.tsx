@@ -1,54 +1,49 @@
 import React from 'react';
-import { List, ListItemButton, ListItemText, Box } from '@mui/material';
+import { List, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
 
-const menuItems = [
-  'Hastalık Geçmişi',
-  'Klinik İnceleme',
-  'Randevu Takip Sistemi',
-  'Radyolojik Görüntüleme',
-  'Lab Testleri/Sonuçları',
-  'Reçete',
-  'Aşılar',
-  'Alerji/Kronik Rahatsızlık',
-  'Patoloji Bulguları',
-  'Nekropsi Bulguları',
-  'Not',
-];
-
-interface SidebarMenuProps {
-  onSelect: (index: number) => void;
-  selectedIndex: number;
+interface MenuItem {
+  id: string;
+  label: string;
+  icon: React.ReactNode;
 }
 
-const SidebarMenu: React.FC<SidebarMenuProps> = ({ onSelect, selectedIndex }) => {
+interface SidebarMenuProps {
+  items: MenuItem[];
+  selectedIndex: number;
+  onItemSelect: (index: number) => void;
+}
+
+const SidebarMenu: React.FC<SidebarMenuProps> = ({ items, selectedIndex, onItemSelect }) => {
   return (
-    <Box sx={{ width: '100%', bgcolor: '#F5F5F5', borderRadius: 3, p: 2 }}>
-      <List component="nav">
-        {menuItems.map((item, idx) => (
+    <List component="nav" sx={{ width: '100%', bgcolor: 'background.paper' }}>
+      {items.map((item, index) => (
+        <ListItem key={item.id} disablePadding>
           <ListItemButton
-            key={item}
-            selected={selectedIndex === idx}
-            onClick={() => onSelect(idx)}
+            selected={selectedIndex === index}
+            onClick={() => onItemSelect(index)}
             sx={{
-              mb: 1,
-              borderRadius: 2,
-              color: 'rgba(0, 0, 0, 0.87)',
-              fontWeight: 500,
+              borderRadius: 1,
+              mb: 0.5,
               '&.Mui-selected': {
-                bgcolor: '#92A78C',
-                color: '#fff',
-                fontWeight: 700,
-              },
-              '&:hover': {
-                bgcolor: selectedIndex === idx ? '#92A78C' : 'rgba(146, 167, 140, 0.1)',
+                backgroundColor: '#92A78C',
+                color: 'white',
+                '&:hover': {
+                  backgroundColor: '#92A78C',
+                },
+                '& .MuiListItemIcon-root': {
+                  color: 'white',
+                },
               },
             }}
           >
-            <ListItemText primary={item} />
+            <ListItemIcon sx={{ minWidth: 40 }}>
+              {item.icon}
+            </ListItemIcon>
+            <ListItemText primary={item.label} />
           </ListItemButton>
-        ))}
-      </List>
-    </Box>
+        </ListItem>
+      ))}
+    </List>
   );
 };
 

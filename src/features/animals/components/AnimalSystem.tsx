@@ -1,13 +1,20 @@
 import React, { useState } from 'react';
 import AnimalList from './AnimalList';
 import AddAnimalDialog from './AddAnimalDialog';
-import { Animal } from '../types/animal';
 import '../styles/AnimalSystem.css';
 
 function AnimalSystem(): React.ReactElement {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
 
-  const handleAddAnimal = (animal: Animal) => {
+  const handleAddAnimal = (animal: {
+    name: string;
+    species: string;
+    breed: string;
+    health: string;
+    lastCheckup: string;
+    owner: string;
+    nextVaccine: string;
+  }) => {
     // Yeni hayvan eklendi, dialog'u kapat
     setIsAddDialogOpen(false);
     console.log('Yeni hayvan eklendi:', animal);
@@ -39,7 +46,7 @@ function AnimalSystem(): React.ReactElement {
       <AddAnimalDialog
         open={isAddDialogOpen}
         onClose={() => setIsAddDialogOpen(false)}
-        onSave={handleAddAnimal}
+        onAdd={handleAddAnimal}
       />
     </div>
   );

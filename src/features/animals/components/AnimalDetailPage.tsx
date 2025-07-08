@@ -6,6 +6,27 @@ import { ArrowBack } from '@mui/icons-material';
 import ProfileHeader from './detail/ProfileHeader';
 import SidebarMenu from './detail/SidebarMenu';
 import ImportantAlerts from './detail/ImportantAlerts';
+import DiseaseHistory from './detail/DiseaseHistory';
+import ClinicalExamination from './detail/ClinicalExamination';
+import AppointmentTracking from './detail/AppointmentTracking';
+import RadiologyImaging from './detail/RadiologyImaging';
+import LaboratoryTests from './detail/LaboratoryTests';
+import Prescriptions from './detail/Prescriptions';
+import Vaccinations from './detail/Vaccinations';
+import PathologyFindings from './detail/PathologyFindings';
+import MedicationIcon from '@mui/icons-material/Medication';
+import WarningIcon from '@mui/icons-material/Warning';
+import HistoryIcon from '@mui/icons-material/History';
+import MedicalInformationIcon from '@mui/icons-material/MedicalInformation';
+import EventNoteIcon from '@mui/icons-material/EventNote';
+import BiotechIcon from '@mui/icons-material/Biotech';
+import RadioIcon from '@mui/icons-material/Radio';
+import VaccinesIcon from '@mui/icons-material/Vaccines';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import ScienceIcon from '@mui/icons-material/Science';
+import Allergies from './detail/Allergies';
+import Notes from './detail/Notes';
+import NoteIcon from '@mui/icons-material/Note';
 import '../styles/AnimalDetail.css';
 
 const theme = createTheme({
@@ -38,10 +59,112 @@ const mockAnimalData = {
 const AnimalDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [selectedMenu, setSelectedMenu] = useState(0);
+  const [selectedTab, setSelectedTab] = useState(0);
 
   const animalId = id ? parseInt(id) : 1;
   const animalData = mockAnimalData[animalId as keyof typeof mockAnimalData] || mockAnimalData[1];
+
+  const handleTabChange = (index: number) => {
+    setSelectedTab(index);
+  };
+
+  const menuItems = [
+    {
+      id: 'important-alerts',
+      label: 'Önemli Uyarılar',
+      icon: <WarningIcon />,
+    },
+    {
+      id: 'disease-history',
+      label: 'Hastalık Geçmişi',
+      icon: <HistoryIcon />,
+    },
+    {
+      id: 'clinical-examination',
+      label: 'Klinik Muayene',
+      icon: <MedicalInformationIcon />,
+    },
+    {
+      id: 'appointment-tracking',
+      label: 'Randevu Takibi',
+      icon: <EventNoteIcon />,
+    },
+    {
+      id: 'lab-tests',
+      label: 'Lab Testleri/Sonuçları',
+      icon: <BiotechIcon />,
+    },
+    {
+      id: 'radiology',
+      label: 'Radyoloji Görüntüleme',
+      icon: <RadioIcon />,
+    },
+    {
+      id: 'prescriptions',
+      label: 'Reçeteler',
+      icon: <MedicationIcon />,
+    },
+    {
+      id: 'vaccinations',
+      label: 'Aşılar',
+      icon: <VaccinesIcon />,
+    },
+    {
+      id: 'allergies',
+      label: 'Alerjiler/Kronik Rahatsızlıklar',
+      icon: <ErrorOutlineIcon />,
+    },
+    {
+      id: 'pathology',
+      label: 'Patoloji Bulguları',
+      icon: <ScienceIcon />,
+    },
+    {
+      id: 'notes',
+      label: 'Notlar',
+      icon: <NoteIcon />,
+    },
+  ];
+
+  const renderContent = () => {
+    switch (selectedTab) {
+      case 0: // Önemli Uyarılar
+        return <ImportantAlerts />;
+      case 1: // Hastalık Geçmişi
+        return <DiseaseHistory />;
+      case 2: // Klinik Muayene
+        return <ClinicalExamination />;
+      case 3: // Randevu Takibi
+        return <AppointmentTracking />;
+      case 4: // Lab Testleri/Sonuçları
+        return <LaboratoryTests />;
+      case 5: // Radyoloji Görüntüleme
+        return <RadiologyImaging />;
+      case 6: // Reçeteler
+        return <Prescriptions />;
+      case 7: // Aşılar
+        return <Vaccinations />;
+      case 8: // Alerjiler/Kronik Rahatsızlıklar
+        return <Allergies />;
+      case 9: // Patoloji Bulguları
+        return <PathologyFindings 
+          reportInfo={{
+            reportNo: '2025-PAT-0142',
+            date: '24.08.2035',
+            pathologist: 'AHMET YILDIZ',
+            sampleNo: 'S-2025-742'
+          }}
+          sampleInfo={{
+            sampleType: 'DOKU BİYOPSİSİ',
+            location: 'DERİ - SOL ÖN BACAK'
+          }}
+        />;
+      case 10: // Notlar
+        return <Notes onAddClick={() => console.log('Add new note')} />;
+      default:
+        return <ImportantAlerts />;
+    }
+  };
 
   return (
     <ThemeProvider theme={theme}>
@@ -65,12 +188,15 @@ const AnimalDetailPage: React.FC = () => {
           <ProfileHeader animalData={animalData} />
           <Box sx={{ display: 'flex', gap: 3, flexDirection: { xs: 'column', md: 'row' } }}>
             <Box sx={{ width: { xs: '100%', md: '25%', lg: '20%' } }}>
-              <SidebarMenu selectedIndex={selectedMenu} onSelect={setSelectedMenu} />
+              <SidebarMenu
+                items={menuItems}
+                selectedIndex={selectedTab}
+                onItemSelect={handleTabChange}
+              />
             </Box>
             <Box sx={{ flex: 1 }}>
               <Paper elevation={3} sx={{ p: 3, minHeight: 400, bgcolor: 'background.paper' }}>
-                {/* Menüye göre içerik değişecek. Şimdilik sadece önemli uyarılar gösteriliyor. */}
-                <ImportantAlerts />
+                {renderContent()}
               </Paper>
             </Box>
           </Box>

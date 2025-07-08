@@ -277,14 +277,12 @@ const AnimalList: React.FC<AnimalListProps> = ({ onAddAnimal }) => {
                 <Button
                   onClick={() => handleSortChange({ target: { value: 'name' } } as SelectChangeEvent)}
                   className={`sort-option ${sortBy === 'name' ? 'active' : ''}`}
-                  fullWidth
                 >
                   İsim (A-Z)
                 </Button>
                 <Button
                   onClick={() => handleSortChange({ target: { value: 'name-desc' } } as SelectChangeEvent)}
                   className={`sort-option ${sortBy === 'name-desc' ? 'active' : ''}`}
-                  fullWidth
                 >
                   İsim (Z-A)
                 </Button>
@@ -292,14 +290,12 @@ const AnimalList: React.FC<AnimalListProps> = ({ onAddAnimal }) => {
                 <Button
                   onClick={() => handleSortChange({ target: { value: 'nextVaccine' } } as SelectChangeEvent)}
                   className={`sort-option ${sortBy === 'nextVaccine' ? 'active' : ''}`}
-                  fullWidth
                 >
                   Sonraki Aşı (Yakın-Uzak)
                 </Button>
                 <Button
                   onClick={() => handleSortChange({ target: { value: 'nextVaccine-desc' } } as SelectChangeEvent)}
                   className={`sort-option ${sortBy === 'nextVaccine-desc' ? 'active' : ''}`}
-                  fullWidth
                 >
                   Sonraki Aşı (Uzak-Yakın)
                 </Button>
@@ -307,14 +303,12 @@ const AnimalList: React.FC<AnimalListProps> = ({ onAddAnimal }) => {
                 <Button
                   onClick={() => handleSortChange({ target: { value: 'health' } } as SelectChangeEvent)}
                   className={`sort-option ${sortBy === 'health' ? 'active' : ''}`}
-                  fullWidth
                 >
                   Sağlık Durumu (A-Z)
                 </Button>
                 <Button
                   onClick={() => handleSortChange({ target: { value: 'health-desc' } } as SelectChangeEvent)}
                   className={`sort-option ${sortBy === 'health-desc' ? 'active' : ''}`}
-                  fullWidth
                 >
                   Sağlık Durumu (Z-A)
                 </Button>
@@ -322,14 +316,12 @@ const AnimalList: React.FC<AnimalListProps> = ({ onAddAnimal }) => {
                 <Button
                   onClick={() => handleSortChange({ target: { value: 'lastCheckup' } } as SelectChangeEvent)}
                   className={`sort-option ${sortBy === 'lastCheckup' ? 'active' : ''}`}
-                  fullWidth
                 >
                   Son Kontrol (Yeni-Eski)
                 </Button>
                 <Button
                   onClick={() => handleSortChange({ target: { value: 'lastCheckup-desc' } } as SelectChangeEvent)}
                   className={`sort-option ${sortBy === 'lastCheckup-desc' ? 'active' : ''}`}
-                  fullWidth
                 >
                   Son Kontrol (Eski-Yeni)
                 </Button>

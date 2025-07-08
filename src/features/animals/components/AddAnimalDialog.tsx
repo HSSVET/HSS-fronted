@@ -4,24 +4,31 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  TextField,
   Button,
+  TextField,
   FormControl,
   InputLabel,
   Select,
   MenuItem,
-  SelectChangeEvent
+  SelectChangeEvent,
 } from '@mui/material';
-import { Animal, AnimalSpecies, AnimalGender } from '../types/animal';
 import '../styles/AddAnimalDialog.css';
 
 interface AddAnimalDialogProps {
   open: boolean;
   onClose: () => void;
-  onSave: (animal: Animal) => void;
+  onAdd: (animal: {
+    name: string;
+    species: string;
+    breed: string;
+    health: string;
+    lastCheckup: string;
+    owner: string;
+    nextVaccine: string;
+  }) => void;
 }
 
-const AddAnimalDialog: React.FC<AddAnimalDialogProps> = ({ open, onClose, onSave }) => {
+const AddAnimalDialog: React.FC<AddAnimalDialogProps> = ({ open, onClose, onAdd }) => {
   const [formData, setFormData] = useState({
     name: '',
     species: '',
@@ -47,29 +54,7 @@ const AddAnimalDialog: React.FC<AddAnimalDialogProps> = ({ open, onClose, onSave
   };
 
   const handleSubmit = () => {
-    // Create proper Animal object (simplified for now)
-    const animalData: any = {
-      id: Date.now().toString(),
-      name: formData.name,
-      species: formData.species as AnimalSpecies,
-      breed: formData.breed,
-      age: 0, // Default values for required fields
-      gender: 'Erkek' as AnimalGender,
-      owner: {
-        id: Date.now().toString(),
-        name: formData.owner,
-        phone: '',
-      },
-      status: 'active',
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      // Backward compatibility fields
-      health: formData.health,
-      lastCheckup: formData.lastCheckup,
-      nextVaccine: formData.nextVaccine,
-    };
-    
-    onSave(animalData);
+    onAdd(formData);
     setFormData({
       name: '',
       species: '',
