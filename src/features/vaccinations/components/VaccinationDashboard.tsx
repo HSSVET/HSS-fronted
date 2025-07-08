@@ -78,10 +78,6 @@ const VaccinationDashboard: React.FC = () => {
             {/* Header */}
             <div className="vaccination-header">
                 <h1 className="vaccination-title">Aşı Yönetim Sistemi</h1>
-                <button className="add-vaccine-btn">
-                    <span className="icon">+</span>
-                    Yeni Aşı Ekle
-                </button>
             </div>
 
             {/* Stats Overview */}

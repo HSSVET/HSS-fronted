@@ -359,7 +359,7 @@ const VaccineStockInfo: React.FC = () => {
                                 <th>Koruma Sağladığı Hastalıklar</th>
                                 <th>Yan Etkiler</th>
                                 <th>Stok Durumu</th>
-                                <th>İşlemler</th>
+                                <th>Toplam Stok</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -420,12 +420,9 @@ const VaccineStockInfo: React.FC = () => {
                                         </td>
                                         <td>
                                             <div className="action-buttons">
-                                                <button className="action-btn view">
-                                                    👁️ Görüntüle
-                                                </button>
-                                                <button className="action-btn edit">
-                                                    ✏️ Düzenle
-                                                </button>
+                                                <span style={{ color: '#6c757d', fontSize: '13px' }}>
+                                                    Stok: {vaccine.stock.reduce((sum, s) => sum + s.quantity, 0)} adet
+                                                </span>
                                             </div>
                                         </td>
                                     </tr>
