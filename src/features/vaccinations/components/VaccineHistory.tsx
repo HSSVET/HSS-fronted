@@ -90,76 +90,78 @@ const VaccineHistory: React.FC = () => {
                         <p>Arama kriterlerinize uygun aşı kaydı bulunamadı.</p>
                     </div>
                 ) : (
-                    <table className="vaccine-table">
-                        <thead>
-                            <tr>
-                                <th>Hayvan</th>
-                                <th>Aşı</th>
-                                <th>Uygulama Tarihi</th>
-                                <th>Sonraki Aşı</th>
-                                <th>Veteriner</th>
-                                <th>Seri No</th>
-                                <th>Durum</th>
-                                <th>İşlemler</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {filteredHistory.map((record) => (
-                                <tr key={record.id}>
-                                    <td>
-                                        <div style={{ fontWeight: '600', marginBottom: '4px' }}>
-                                            {record.animalName}
-                                        </div>
-                                        <div style={{ fontSize: '12px', color: '#6c757d' }}>
-                                            {record.animalType} - {record.breed}
-                                        </div>
-                                    </td>
-                                    <td>{record.vaccineName}</td>
-                                    <td>
-                                        {new Date(record.applicationDate).toLocaleDateString('tr-TR')}
-                                    </td>
-                                    <td>
-                                        <div style={{ fontSize: '13px' }}>
-                                            {new Date(record.nextDueDate).toLocaleDateString('tr-TR')}
-                                        </div>
-                                        <div style={{ fontSize: '11px', color: '#6c757d' }}>
-                                            {Math.ceil((new Date(record.nextDueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} gün kaldı
-                                        </div>
-                                    </td>
-                                    <td>{record.veterinarian}</td>
-                                    <td>
-                                        <div style={{ fontSize: '12px', fontFamily: 'monospace' }}>
-                                            {record.serialNumber}
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <span
-                                            style={{
-                                                padding: '4px 8px',
-                                                borderRadius: '4px',
-                                                fontSize: '12px',
-                                                fontWeight: '500',
-                                                backgroundColor: getStatusColor(record.status) + '20',
-                                                color: getStatusColor(record.status)
-                                            }}
-                                        >
-                                            {getStatusText(record.status)}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <div className="action-buttons">
-                                            <button className="action-btn view">
-                                                📄 Detay
-                                            </button>
-                                            <button className="action-btn edit">
-                                                🖨️ Yazdır
-                                            </button>
-                                        </div>
-                                    </td>
+                    <div className="vaccine-table-wrapper">
+                        <table className="vaccine-table">
+                            <thead>
+                                <tr>
+                                    <th>Hayvan</th>
+                                    <th>Aşı</th>
+                                    <th>Uygulama Tarihi</th>
+                                    <th>Sonraki Aşı</th>
+                                    <th>Veteriner</th>
+                                    <th>Seri No</th>
+                                    <th>Durum</th>
+                                    <th>İşlemler</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                {filteredHistory.map((record) => (
+                                    <tr key={record.id}>
+                                        <td>
+                                            <div style={{ fontWeight: '600', marginBottom: '4px' }}>
+                                                {record.animalName}
+                                            </div>
+                                            <div style={{ fontSize: '12px', color: '#6c757d' }}>
+                                                {record.animalType} - {record.breed}
+                                            </div>
+                                        </td>
+                                        <td>{record.vaccineName}</td>
+                                        <td>
+                                            {new Date(record.applicationDate).toLocaleDateString('tr-TR')}
+                                        </td>
+                                        <td>
+                                            <div style={{ fontSize: '13px' }}>
+                                                {new Date(record.nextDueDate).toLocaleDateString('tr-TR')}
+                                            </div>
+                                            <div style={{ fontSize: '11px', color: '#6c757d' }}>
+                                                {Math.ceil((new Date(record.nextDueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} gün kaldı
+                                            </div>
+                                        </td>
+                                        <td>{record.veterinarian}</td>
+                                        <td>
+                                            <div style={{ fontSize: '12px', fontFamily: 'monospace' }}>
+                                                {record.serialNumber}
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span
+                                                style={{
+                                                    padding: '4px 8px',
+                                                    borderRadius: '4px',
+                                                    fontSize: '12px',
+                                                    fontWeight: '500',
+                                                    backgroundColor: getStatusColor(record.status) + '20',
+                                                    color: getStatusColor(record.status)
+                                                }}
+                                            >
+                                                {getStatusText(record.status)}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div className="action-buttons">
+                                                <button className="action-btn view">
+                                                    📄 Detay
+                                                </button>
+                                                <button className="action-btn edit">
+                                                    🖨️ Yazdır
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
                 )}
             </div>
         </div>
