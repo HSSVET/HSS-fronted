@@ -139,59 +139,57 @@ const VaccineApplicationGuide: React.FC = () => {
                         <p>Seçilen kriterlere uygun aşı rehberi bulunamadı.</p>
                     </div>
                 ) : (
-                    <div className="vaccine-table-wrapper">
-                        <table className="vaccine-table">
-                            <thead>
-                                <tr>
-                                    <th>Aşı Adı</th>
-                                    <th>Koruma Sağladığı Hastalıklar</th>
-                                    <th>Uygun Türler</th>
-                                    <th>Uygun İrklar</th>
-                                    <th>Minimum Yaş</th>
-                                    <th>Doz</th>
-                                    <th>Yan Etkiler</th>
-                                    <th>Notlar</th>
+                    <table className="vaccine-table">
+                        <thead>
+                            <tr>
+                                <th>Aşı Adı</th>
+                                <th>Koruma Sağladığı Hastalıklar</th>
+                                <th>Uygun Türler</th>
+                                <th>Uygun İrklar</th>
+                                <th>Minimum Yaş</th>
+                                <th>Doz</th>
+                                <th>Yan Etkiler</th>
+                                <th>Notlar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {filteredVaccines.map((vaccine) => (
+                                <tr key={vaccine.id}>
+                                    <td>
+                                        <div style={{ fontWeight: '600', marginBottom: '4px' }}>
+                                            {vaccine.name}
+                                        </div>
+                                        <div style={{ fontSize: '12px', color: '#6c757d' }}>
+                                            {getApplicationMethodText(vaccine.applicationMethod)}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div style={{ fontSize: '14px' }}>
+                                            {vaccine.diseaseType}
+                                        </div>
+                                    </td>
+                                    <td>{getAnimalTypeText(vaccine.animalType)}</td>
+                                    <td>
+                                        <div style={{ fontSize: '13px' }}>
+                                            {vaccine.animalBreeds.join(', ')}
+                                        </div>
+                                    </td>
+                                    <td>{vaccine.minimumAge}</td>
+                                    <td>{vaccine.dose}</td>
+                                    <td>
+                                        <div style={{ fontSize: '12px', color: '#6c757d', maxWidth: '200px' }}>
+                                            {vaccine.sideEffects}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div style={{ fontSize: '12px', color: '#6c757d', maxWidth: '200px' }}>
+                                            {vaccine.notes}
+                                        </div>
+                                    </td>
                                 </tr>
-                            </thead>
-                            <tbody>
-                                {filteredVaccines.map((vaccine) => (
-                                    <tr key={vaccine.id}>
-                                        <td>
-                                            <div style={{ fontWeight: '600', marginBottom: '4px' }}>
-                                                {vaccine.name}
-                                            </div>
-                                            <div style={{ fontSize: '12px', color: '#6c757d' }}>
-                                                {getApplicationMethodText(vaccine.applicationMethod)}
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div style={{ fontSize: '14px' }}>
-                                                {vaccine.diseaseType}
-                                            </div>
-                                        </td>
-                                        <td>{getAnimalTypeText(vaccine.animalType)}</td>
-                                        <td>
-                                            <div style={{ fontSize: '13px' }}>
-                                                {vaccine.animalBreeds.join(', ')}
-                                            </div>
-                                        </td>
-                                        <td>{vaccine.minimumAge}</td>
-                                        <td>{vaccine.dose}</td>
-                                        <td>
-                                            <div style={{ fontSize: '12px', color: '#6c757d', maxWidth: '200px' }}>
-                                                {vaccine.sideEffects}
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div style={{ fontSize: '12px', color: '#6c757d', maxWidth: '200px' }}>
-                                                {vaccine.notes}
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
+                            ))}
+                        </tbody>
+                    </table>
                 )}
             </div>
         </div>

@@ -348,90 +348,88 @@ const VaccineStockInfo: React.FC = () => {
                         <p>Arama kriterlerinize uygun aşı bulunamadı.</p>
                     </div>
                 ) : (
-                    <div className="vaccine-table-wrapper">
-                        <table className="vaccine-table">
-                            <thead>
-                                <tr>
-                                    <th>Aşı Adı</th>
-                                    <th>Üretici</th>
-                                    <th>Uygun Türler</th>
-                                    <th>Son Kullanma</th>
-                                    <th>Doz</th>
-                                    <th>Koruma Sağladığı Hastalıklar</th>
-                                    <th>Yan Etkiler</th>
-                                    <th>Stok Durumu</th>
-                                    <th>Toplam Stok</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {filteredVaccines.map((vaccine) => {
-                                    const stockStatus = getStockStatus(vaccine.stock);
-                                    const latestStock = vaccine.stock.sort((a, b) =>
-                                        new Date(b.expiryDate).getTime() - new Date(a.expiryDate).getTime()
-                                    )[0];
+                    <table className="vaccine-table">
+                        <thead>
+                            <tr>
+                                <th>Aşı Adı</th>
+                                <th>Üretici</th>
+                                <th>Uygun Türler</th>
+                                <th>Son Kullanma</th>
+                                <th>Doz</th>
+                                <th>Koruma Sağladığı Hastalıklar</th>
+                                <th>Yan Etkiler</th>
+                                <th>Stok Durumu</th>
+                                <th>Toplam Stok</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {filteredVaccines.map((vaccine) => {
+                                const stockStatus = getStockStatus(vaccine.stock);
+                                const latestStock = vaccine.stock.sort((a, b) =>
+                                    new Date(b.expiryDate).getTime() - new Date(a.expiryDate).getTime()
+                                )[0];
 
-                                    return (
-                                        <tr key={vaccine.id}>
-                                            <td>
-                                                <div style={{ fontWeight: '600', marginBottom: '4px' }}>
-                                                    {vaccine.name}
+                                return (
+                                    <tr key={vaccine.id}>
+                                        <td>
+                                            <div style={{ fontWeight: '600', marginBottom: '4px' }}>
+                                                {vaccine.name}
+                                            </div>
+                                            <div style={{ fontSize: '12px', color: '#6c757d' }}>
+                                                {getApplicationMethodText(vaccine.applicationMethod)}
+                                            </div>
+                                        </td>
+                                        <td>{vaccine.manufacturer}</td>
+                                        <td>
+                                            <div>{getAnimalTypeText(vaccine.animalType)}</div>
+                                            <div style={{ fontSize: '12px', color: '#6c757d' }}>
+                                                {vaccine.animalBreeds.slice(0, 2).join(', ')}
+                                                {vaccine.animalBreeds.length > 2 && '...'}
+                                            </div>
+                                        </td>
+                                        <td>
+                                            {latestStock ? (
+                                                <div style={{ fontSize: '13px' }}>
+                                                    {new Date(latestStock.expiryDate).toLocaleDateString('tr-TR')}
                                                 </div>
-                                                <div style={{ fontSize: '12px', color: '#6c757d' }}>
-                                                    {getApplicationMethodText(vaccine.applicationMethod)}
+                                            ) : (
+                                                <span style={{ color: '#6c757d' }}>-</span>
+                                            )}
+                                        </td>
+                                        <td>{vaccine.dose}</td>
+                                        <td>
+                                            <div style={{ maxWidth: '200px', fontSize: '13px' }}>
+                                                {vaccine.diseaseType}
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div style={{ maxWidth: '150px', fontSize: '12px', color: '#6c757d' }}>
+                                                {vaccine.sideEffects}
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div className={`stock-status ${stockStatus.status}`}>
+                                                <span style={{ marginRight: '5px' }}>●</span>
+                                                {stockStatus.text}
+                                            </div>
+                                            {vaccine.stock.length > 0 && (
+                                                <div style={{ fontSize: '11px', color: '#6c757d', marginTop: '2px' }}>
+                                                    Seri: {vaccine.stock[0].serialNumber}
                                                 </div>
-                                            </td>
-                                            <td>{vaccine.manufacturer}</td>
-                                            <td>
-                                                <div>{getAnimalTypeText(vaccine.animalType)}</div>
-                                                <div style={{ fontSize: '12px', color: '#6c757d' }}>
-                                                    {vaccine.animalBreeds.slice(0, 2).join(', ')}
-                                                    {vaccine.animalBreeds.length > 2 && '...'}
-                                                </div>
-                                            </td>
-                                            <td>
-                                                {latestStock ? (
-                                                    <div style={{ fontSize: '13px' }}>
-                                                        {new Date(latestStock.expiryDate).toLocaleDateString('tr-TR')}
-                                                    </div>
-                                                ) : (
-                                                    <span style={{ color: '#6c757d' }}>-</span>
-                                                )}
-                                            </td>
-                                            <td>{vaccine.dose}</td>
-                                            <td>
-                                                <div style={{ maxWidth: '200px', fontSize: '13px' }}>
-                                                    {vaccine.diseaseType}
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <div style={{ maxWidth: '150px', fontSize: '12px', color: '#6c757d' }}>
-                                                    {vaccine.sideEffects}
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <div className={`stock-status ${stockStatus.status}`}>
-                                                    <span style={{ marginRight: '5px' }}>●</span>
-                                                    {stockStatus.text}
-                                                </div>
-                                                {vaccine.stock.length > 0 && (
-                                                    <div style={{ fontSize: '11px', color: '#6c757d', marginTop: '2px' }}>
-                                                        Seri: {vaccine.stock[0].serialNumber}
-                                                    </div>
-                                                )}
-                                            </td>
-                                            <td>
-                                                <div className="action-buttons">
-                                                    <span style={{ color: '#6c757d', fontSize: '13px' }}>
-                                                        Stok: {vaccine.stock.reduce((sum, s) => sum + s.quantity, 0)} adet
-                                                    </span>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    );
-                                })}
-                            </tbody>
-                        </table>
-                    </div>
+                                            )}
+                                        </td>
+                                        <td>
+                                            <div className="action-buttons">
+                                                <span style={{ color: '#6c757d', fontSize: '13px' }}>
+                                                    Stok: {vaccine.stock.reduce((sum, s) => sum + s.quantity, 0)} adet
+                                                </span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                );
+                            })}
+                        </tbody>
+                    </table>
                 )}
             </div>
 

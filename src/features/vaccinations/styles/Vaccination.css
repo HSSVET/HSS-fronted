@@ -1,4 +1,10 @@
-/* Aşı Yönetim Sistemi CSS - Eski stiller, yeni tema altta tanımlı */
+/* Aşı Yönetim Sistemi CSS */
+
+.vaccination-container {
+    padding: 20px;
+    background-color: #f8f9fa;
+    min-height: calc(100vh - 60px);
+}
 
 .vaccination-header {
     display: flex;
@@ -137,21 +143,10 @@
     box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
 }
 
-/* Tablo Wrapper - Scroll Fix */
-.vaccine-table-wrapper {
-    overflow-x: auto;
-    overflow-y: visible;
-    max-width: 100%;
-}
-
-/* Tablo Stiller */
+/* Aşı Tablosu */
 .vaccine-table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 13px;
-    background: var(--bg-card);
-    min-width: 800px;
-    /* Minimum width to prevent cramped layout */
 }
 
 .vaccine-table th {
@@ -390,12 +385,10 @@
 .vaccination-dashboard,
 .vaccination-container {
     background-color: var(--bg-primary);
-    height: 100%;
-    max-height: calc(100vh - 60px);
+    min-height: 100vh;
     padding: var(--spacing-1);
     display: flex;
     flex-direction: column;
-    overflow-y: auto;
 }
 
 .vaccination-header {
@@ -490,9 +483,6 @@
 .fade-in {
     padding: 0;
     background: var(--bg-card);
-    flex: 1;
-    overflow-y: auto;
-    max-height: calc(100vh - 200px);
 }
 
 /* Filtreleme Bölümü */
@@ -1060,23 +1050,11 @@
     .vaccination-dashboard,
     .vaccination-container {
         padding: var(--spacing-1);
-        max-height: calc(100vh - 40px);
-    }
-
-    .vaccination-header {
-        flex-direction: column;
-        gap: var(--spacing-1);
-        align-items: stretch;
     }
 
     .tabs-nav,
     .vaccination-tabs {
         flex-direction: column;
-    }
-
-    .tab-content,
-    .fade-in {
-        max-height: calc(100vh - 280px);
     }
 
     .filters-section {
