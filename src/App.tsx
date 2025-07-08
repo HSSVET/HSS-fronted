@@ -6,6 +6,7 @@ import { AnimalPage, AnimalDetailPage } from './features/animals';
 import { AppointmentPage } from './features/appointments';
 import { LabDashboard, LabTestTypes } from './features/laboratory';
 import { Billing } from './features/billing';
+import { VaccinationDashboard } from './features/vaccinations';
 import './shared/styles/App.css';
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
           <Route path="/laboratory" element={<LabDashboard />} />
           <Route path="/laboratory/test-types" element={<LabTestTypes />} />
           <Route path="/billing" element={<Billing />} />
+          <Route path="/vaccinations" element={<VaccinationDashboard />} />
           <Route path="/inventory" element={<div>Envanter/Stok Sayfası (Yakında)</div>} />
           <Route path="/reports" element={<div>Raporlar Sayfası (Yakında)</div>} />
           <Route path="/settings" element={<div>Ayarlar Sayfası (Yakında)</div>} />
