@@ -99,7 +99,6 @@ export interface VaccinationFilters {
     animalType?: AnimalType;
     breed?: string;
     diseaseType?: string;
-    applicationMethod?: ApplicationMethod;
     manufacturer?: string;
     stockStatus?: 'available' | 'low' | 'out_of_stock' | 'expiring';
 }

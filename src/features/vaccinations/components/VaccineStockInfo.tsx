@@ -8,6 +8,7 @@ const VaccineStockInfo: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [filters, setFilters] = useState<VaccinationFilters>({});
+    const [availableBreeds, setAvailableBreeds] = useState<string[]>([]);
 
     useEffect(() => {
         const fetchVaccines = async () => {
@@ -26,33 +27,55 @@ const VaccineStockInfo: React.FC = () => {
         fetchVaccines();
     }, []);
 
+    // Hayvan türü değiştiğinde ırkları güncelle
+    useEffect(() => {
+        if (filters.animalType) {
+            const breeds = vaccinationService.getBreedsByAnimalType(filters.animalType);
+            setAvailableBreeds(breeds);
+            // Mevcut ırk seçimi geçerli değilse temizle
+            if (filters.breed && !breeds.includes(filters.breed)) {
+                setFilters(prev => ({ ...prev, breed: undefined }));
+            }
+        } else {
+            setAvailableBreeds([]);
+            setFilters(prev => ({ ...prev, breed: undefined }));
+        }
+    }, [filters.animalType]);
+
     useEffect(() => {
         let filtered = [...vaccines];
 
-        // Arama filtresi
+        // Arama filtresi - genişletildi
         if (searchTerm) {
             filtered = filtered.filter(vaccine =>
                 vaccine.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 vaccine.manufacturer.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                vaccine.diseaseType.toLowerCase().includes(searchTerm.toLowerCase())
+                vaccine.diseaseType.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                getAnimalTypeText(vaccine.animalType).toLowerCase().includes(searchTerm.toLowerCase()) ||
+                vaccine.animalBreeds.some(breed => breed.toLowerCase().includes(searchTerm.toLowerCase()))
             );
         }
 
-        // Diğer filtreler
+        // Hayvan türü filtresi
         if (filters.animalType) {
             filtered = filtered.filter(vaccine => vaccine.animalType === filters.animalType);
         }
 
-        if (filters.applicationMethod) {
-            filtered = filtered.filter(vaccine => vaccine.applicationMethod === filters.applicationMethod);
+        // Hayvan ırkı filtresi
+        if (filters.breed) {
+            filtered = filtered.filter(vaccine =>
+                vaccine.animalBreeds.includes(filters.breed!) || vaccine.animalBreeds.includes('Tüm ırklar')
+            );
         }
 
+        // Üretici filtresi
         if (filters.manufacturer) {
             filtered = filtered.filter(vaccine =>
                 vaccine.manufacturer.toLowerCase().includes(filters.manufacturer!.toLowerCase())
             );
         }
 
+        // Stok durumu filtresi
         if (filters.stockStatus) {
             filtered = filtered.filter(vaccine => {
                 const totalStock = vaccine.stock.reduce((sum, stock) => sum + stock.quantity, 0);
@@ -102,6 +125,14 @@ const VaccineStockInfo: React.FC = () => {
         return types[type] || type;
     };
 
+    const handleAnimalTypeChange = (animalType: string) => {
+        setFilters({
+            ...filters,
+            animalType: animalType as AnimalType || undefined,
+            breed: undefined // Tür değiştiğinde ırkı sıfırla
+        });
+    };
+
     if (loading) {
         return (
             <div className="loading-state">
@@ -117,7 +148,7 @@ const VaccineStockInfo: React.FC = () => {
                 <input
                     type="text"
                     className="search-input"
-                    placeholder="Aşı adı, üretici veya hastalık ara..."
+                    placeholder="Aşı adı, üretici, hastalık türü veya hayvan türü ara..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                 />
@@ -127,7 +158,7 @@ const VaccineStockInfo: React.FC = () => {
                     <select
                         className="filter-select"
                         value={filters.animalType || ''}
-                        onChange={(e) => setFilters({ ...filters, animalType: e.target.value as AnimalType || undefined })}
+                        onChange={(e) => handleAnimalTypeChange(e.target.value)}
                     >
                         <option value="">Tümü</option>
                         <option value="dog">Köpek</option>
@@ -139,21 +170,24 @@ const VaccineStockInfo: React.FC = () => {
                     </select>
                 </div>
 
-                <div className="filter-group">
-                    <span className="filter-label">Uygulama Şekli:</span>
-                    <select
-                        className="filter-select"
-                        value={filters.applicationMethod || ''}
-                        onChange={(e) => setFilters({ ...filters, applicationMethod: e.target.value as ApplicationMethod || undefined })}
-                    >
-                        <option value="">Tümü</option>
-                        <option value="subcutaneous">Deri Altı</option>
-                        <option value="intramuscular">Kas İçi</option>
-                        <option value="intranasal">Burun İçi</option>
-                        <option value="oral">Ağızdan</option>
-                        <option value="intradermal">Deri İçi</option>
-                    </select>
-                </div>
+                {/* Hayvan türü seçilince ırk filtresi göster */}
+                {filters.animalType && availableBreeds.length > 0 && (
+                    <div className="filter-group">
+                        <span className="filter-label">Hayvan Irkı:</span>
+                        <select
+                            className="filter-select"
+                            value={filters.breed || ''}
+                            onChange={(e) => setFilters({ ...filters, breed: e.target.value || undefined })}
+                        >
+                            <option value="">Tüm Irklar</option>
+                            {availableBreeds.map((breed) => (
+                                <option key={breed} value={breed}>
+                                    {breed}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                )}
 
                 <div className="filter-group">
                     <span className="filter-label">Stok Durumu:</span>

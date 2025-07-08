@@ -10,6 +10,63 @@ import {
     ApplicationMethod
 } from '../types/vaccination';
 
+// Hayvan türlerine göre ırklar
+export const animalBreeds = {
+    dog: [
+        'Golden Retriever',
+        'Labrador',
+        'Alman Çoban Köpeği',
+        'Bulldog',
+        'Rottweiler',
+        'Pitbull',
+        'Husky',
+        'Poodle',
+        'Beagle',
+        'Kangal',
+        'Akbaş',
+        'Diğer'
+    ],
+    cat: [
+        'Persian',
+        'British Shorthair',
+        'Maine Coon',
+        'Siamese',
+        'Ragdoll',
+        'Scottish Fold',
+        'Sphynx',
+        'Bengal',
+        'Tekir',
+        'Van Kedisi',
+        'Ankara Kedisi',
+        'Diğer'
+    ],
+    bird: [
+        'Muhabbet Kuşu',
+        'Kanarya',
+        'Sultan Papağanı',
+        'Jako',
+        'Cennet Papağanı',
+        'Güvercin',
+        'Diğer'
+    ],
+    rabbit: [
+        'Holland Lop',
+        'Angora',
+        'Rex',
+        'Flemish Giant',
+        'Mini Lop',
+        'Diğer'
+    ],
+    hamster: [
+        'Syrian Hamster',
+        'Dwarf Hamster',
+        'Roborovski',
+        'Chinese Hamster',
+        'Diğer'
+    ],
+    other: ['Diğer']
+};
+
 // Mock Data
 export const mockVaccines: Vaccine[] = [
     {
@@ -86,6 +143,36 @@ export const mockVaccines: Vaccine[] = [
         sideEffects: 'Ateş, hassasiyet',
         notes: 'Risk altındaki köpekler için önerilir',
         isActive: true
+    },
+    {
+        id: '6',
+        name: 'Kedi Karma Aşısı (FVRCP)',
+        manufacturer: 'FelineVax',
+        diseaseType: 'Feline Viral Rhinotracheitis, Calicivirus, Panleukopenia',
+        animalType: 'cat',
+        animalBreeds: ['Tüm ırklar'],
+        dose: '1 ml',
+        applicationMethod: 'subcutaneous',
+        protectionPeriod: '3 ay',
+        minimumAge: 'Hafif ateş, letarji',
+        sideEffects: 'Hafif ateş, letarji',
+        notes: 'Kediler için temel aşı',
+        isActive: true
+    },
+    {
+        id: '7',
+        name: 'FeLV Aşısı',
+        manufacturer: 'FelineVax',
+        diseaseType: 'Feline Leukemia Virus',
+        animalType: 'cat',
+        animalBreeds: ['Persian', 'British Shorthair', 'Diğer'],
+        dose: '1 ml',
+        applicationMethod: 'subcutaneous',
+        protectionPeriod: '12 ay',
+        minimumAge: 'Enjeksiyon yerinde şişlik',
+        sideEffects: 'Enjeksiyon yerinde şişlik',
+        notes: 'Dışarı çıkan kediler için önerilir',
+        isActive: true
     }
 ];
 
@@ -149,6 +236,30 @@ export const mockVaccineStock: VaccineStock[] = [
         supplier: 'VetBioTech Distribütörü',
         receivedDate: '2024-05-30',
         isUsed: false
+    },
+    {
+        id: '6',
+        vaccineId: '6',
+        serialNumber: 'FV-FVRCP-2024-001',
+        batchNumber: 'BTH-2024-08',
+        expiryDate: '2024-08-15',
+        quantity: 15,
+        unitPrice: 27.75,
+        supplier: 'FelineVax Turkey',
+        receivedDate: '2024-03-15',
+        isUsed: false
+    },
+    {
+        id: '7',
+        vaccineId: '7',
+        serialNumber: 'FV-FELV-2024-001',
+        batchNumber: 'BTH-2024-09',
+        expiryDate: '2024-09-30',
+        quantity: 8,
+        unitPrice: 35.00,
+        supplier: 'FelineVax Turkey',
+        receivedDate: '2024-04-30',
+        isUsed: false
     }
 ];
 
@@ -194,6 +305,11 @@ class VaccinationService {
     private vaccineStock: VaccineStock[] = mockVaccineStock;
     private stockAlerts: StockAlert[] = mockStockAlerts;
 
+    // Hayvan türüne göre ırkları getir
+    getBreedsByAnimalType(animalType: AnimalType): string[] {
+        return animalBreeds[animalType] || [];
+    }
+
     // Aşı Listesi
     async getVaccines(filters?: VaccinationFilters): Promise<Vaccine[]> {
         let filtered = [...this.vaccines];
@@ -202,14 +318,16 @@ class VaccinationService {
             filtered = filtered.filter(v => v.animalType === filters.animalType);
         }
 
+        if (filters?.breed) {
+            filtered = filtered.filter(v =>
+                v.animalBreeds.includes(filters.breed!) || v.animalBreeds.includes('Tüm ırklar')
+            );
+        }
+
         if (filters?.diseaseType) {
             filtered = filtered.filter(v =>
                 v.diseaseType.toLowerCase().includes(filters.diseaseType!.toLowerCase())
             );
-        }
-
-        if (filters?.applicationMethod) {
-            filtered = filtered.filter(v => v.applicationMethod === filters.applicationMethod);
         }
 
         if (filters?.manufacturer) {
