@@ -1,13 +1,11 @@
 import {
     Vaccine,
     VaccineStock,
-    VaccinationRecord,
     VaccineCard,
     StockAlert,
     VaccinationStats,
     VaccinationFilters,
-    AnimalType,
-    ApplicationMethod
+    AnimalType
 } from '../types/vaccination';
 
 // Hayvan türlerine göre ırklar
@@ -394,15 +392,64 @@ class VaccinationService {
         return true;
     }
 
-    // Yeni Aşı Ekleme
-    async addVaccine(vaccine: Omit<Vaccine, 'id'>): Promise<Vaccine> {
+    // Yeni Aşı Ekleme (Hem aşı hem de stok bilgileri ile)
+    async addVaccine(vaccine: Omit<Vaccine, 'id'>, stockData?: Omit<VaccineStock, 'id' | 'vaccineId'>): Promise<Vaccine> {
+        const newVaccineId = (this.vaccines.length + 1).toString();
+
         const newVaccine: Vaccine = {
             ...vaccine,
-            id: (this.vaccines.length + 1).toString()
+            id: newVaccineId
         };
 
         this.vaccines.push(newVaccine);
+
+        // Eğer stok bilgileri verilmişse, stoku da ekle
+        if (stockData) {
+            await this.addVaccineStock(newVaccineId, stockData);
+        }
+
         return newVaccine;
+    }
+
+    // Stok Ekleme
+    async addVaccineStock(vaccineId: string, stockData: Omit<VaccineStock, 'id' | 'vaccineId'>): Promise<VaccineStock> {
+        const newStock: VaccineStock = {
+            ...stockData,
+            id: (this.vaccineStock.length + 1).toString(),
+            vaccineId,
+            isUsed: false
+        };
+
+        this.vaccineStock.push(newStock);
+        return newStock;
+    }
+
+    // Aşı ve Stok Bilgilerini Birlikte Ekleme (Form için optimize edilmiş)
+    async addVaccineWithStock(vaccineData: Omit<Vaccine, 'id'>, stockData: {
+        serialNumber: string;
+        batchNumber?: string;
+        expiryDate?: string;
+        quantity: number;
+        unitPrice: number;
+        supplier?: string;
+        receivedDate: string;
+    }): Promise<{ vaccine: Vaccine; stock: VaccineStock }> {
+        // Önce aşıyı ekle
+        const vaccine = await this.addVaccine(vaccineData);
+
+        // Sonra stok bilgilerini ekle
+        const stock = await this.addVaccineStock(vaccine.id, {
+            serialNumber: stockData.serialNumber,
+            batchNumber: stockData.batchNumber || '',
+            expiryDate: stockData.expiryDate || '',
+            quantity: stockData.quantity,
+            unitPrice: stockData.unitPrice,
+            supplier: stockData.supplier || '',
+            receivedDate: stockData.receivedDate,
+            isUsed: false
+        });
+
+        return { vaccine, stock };
     }
 
     // Aşı Kartı Mock Data
