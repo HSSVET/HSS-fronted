@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useKeycloak } from '@react-keycloak/web';
 
 interface UserInfo {
@@ -17,14 +17,14 @@ const AuthButton: React.FC = () => {
   const [tokenTimeRemaining, setTokenTimeRemaining] = useState<number>(0);
 
   // Token süresini hesapla
-  const getTokenTimeRemaining = (): number => {
+  const getTokenTimeRemaining = useCallback((): number => {
     if (!keycloak?.tokenParsed?.exp) {
       return 0;
     }
     const tokenExpiration = keycloak.tokenParsed.exp * 1000;
     const now = Date.now();
     return Math.max(0, Math.floor((tokenExpiration - now) / 1000));
-  };
+  }, [keycloak?.tokenParsed?.exp]);
 
   // Token süresini güncelle
   useEffect(() => {
@@ -37,12 +37,13 @@ const AuthButton: React.FC = () => {
     };
     
     updateTokenTime();
-    const interval = setInterval(updateTokenTime, 1000);
+    // Reduce frequency to prevent excessive re-renders
+    const interval = setInterval(updateTokenTime, 5000);
 
     return () => {
       clearInterval(interval);
     };
-  }, [initialized, keycloak.authenticated, keycloak.tokenParsed]);
+  }, [initialized, keycloak.authenticated, keycloak.tokenParsed, getTokenTimeRemaining]);
 
   if (!initialized) {
     return <div>Yükleniyor...</div>;

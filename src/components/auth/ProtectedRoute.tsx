@@ -229,7 +229,7 @@ const useAccessControl = (props: ProtectedRouteProps) => {
           }
         }
 
-        // Step 5: Token Validation
+        // Step 5: Token Validation (less frequent check)
         if (tokenValidation !== false && state.tokenTimeRemaining <= 0) {
           setAccessResult({
             level: 'expired',
@@ -357,29 +357,24 @@ const useAccessControl = (props: ProtectedRouteProps) => {
 
     validateAccess();
   }, [
+    // Core auth state - only update when these change
     state.isAuthenticated,
     state.isInitialized,
     state.isLoading,
-    state.user,
+    
+    // User roles and permissions
     state.roles,
     state.permissions,
-    state.tokenTimeRemaining,
-    state.security,
+    
+    // Security state
+    state.security?.mfaEnabled,
+    state.security?.accountLocked,
+    
+    // Route-specific requirements
     requiredRoles,
     requiredPermissions,
-    requireAuth,
-    requireMFA,
-    sessionValidation,
-    tokenValidation,
-    customValidator,
-    validateRoles,
-    validatePermissions,
-    validateRoleHierarchy,
-    validatePermissionRoleMapping,
-    validateSession,
-    addAuditLog,
-    auditAccess,
-    onAccessGranted,
+    
+    // Location
     location.pathname
   ]);
 

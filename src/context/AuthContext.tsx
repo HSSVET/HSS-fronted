@@ -346,7 +346,10 @@ export interface AuthProviderProps {
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
   const { keycloak, initialized } = useKeycloak();
-  const tokenManager = useMemo(() => keycloak ? new TokenManager(keycloak) : null, [keycloak]);
+  const tokenManager = useMemo(() => {
+    if (!keycloak || !keycloak.authenticated) return null;
+    return new TokenManager(keycloak);
+  }, [keycloak?.authenticated, keycloak?.token]);
 
   // ============================================================================
   // Helper Functions
@@ -573,16 +576,42 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // ============================================================================
 
   useEffect(() => {
-    if (!initialized) return;
+    console.log('🔄 AuthContext: useEffect called with:', {
+      initialized,
+      authenticated: keycloak.authenticated,
+      tokenExists: !!keycloak.token,
+      tokenParsedExists: !!keycloak.tokenParsed,
+      isInitialized: state.isInitialized
+    });
+    
+    if (!initialized) {
+      console.log('⏳ AuthContext: Waiting for keycloak initialization...');
+      return;
+    }
+    
+    if (state.isInitialized) {
+      console.log('✅ AuthContext: Already initialized, skipping...');
+      return;
+    }
 
     const initializeAuth = async () => {
       try {
+        console.log('🔄 AuthContext: Starting authentication initialization');
+        console.log('🔐 Keycloak authenticated:', keycloak.authenticated);
+        console.log('🔐 Keycloak token:', keycloak.token ? 'EXISTS' : 'MISSING');
+        console.log('🔐 Keycloak tokenParsed:', keycloak.tokenParsed);
+        
         dispatch({ type: 'AUTH_INITIALIZE_START' });
 
         if (keycloak.authenticated && keycloak.tokenParsed) {
+          console.log('✅ User is authenticated, creating auth user');
+          
           // Create user and session
           const user = createAuthUser(keycloak.tokenParsed);
           const session = createAuthSession(keycloak.tokenParsed);
+
+          console.log('👤 Created auth user:', user);
+          console.log('🔗 Created auth session:', session);
 
           // Setup API client
           apiClient.setKeycloak(keycloak);
@@ -594,6 +623,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             });
           }
 
+          console.log('✅ Dispatching AUTH_INITIALIZE_SUCCESS');
           dispatch({ 
             type: 'AUTH_INITIALIZE_SUCCESS', 
             payload: { user, session } 
@@ -607,19 +637,22 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
           // Handle post-login redirect
           const savedRedirectUrl = localStorage.getItem('auth_redirect_url');
+          console.log('🔗 Saved redirect URL:', savedRedirectUrl);
           if (savedRedirectUrl && savedRedirectUrl !== window.location.pathname) {
             localStorage.removeItem('auth_redirect_url');
-            setTimeout(() => {
-              window.location.href = savedRedirectUrl;
-            }, 100); // Small delay to ensure state update
+            // Don't use window.location.href here, let LoginPage handle navigation
+            // The LoginPage component will handle the redirect with React Router
+            console.log('✅ Post-login redirect URL ready:', savedRedirectUrl);
           }
         } else {
+          console.log('❌ User is not authenticated');
           dispatch({ 
             type: 'AUTH_INITIALIZE_FAILURE', 
             payload: { error: 'Not authenticated' } 
           });
         }
       } catch (error) {
+        console.error('❌ AuthContext initialization error:', error);
         const errorMessage = error instanceof Error ? error.message : 'Initialization failed';
         dispatch({ type: 'AUTH_INITIALIZE_FAILURE', payload: { error: errorMessage } });
         addAuditLog('error', { action: 'initialization', error: errorMessage });
@@ -627,7 +660,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     };
 
     initializeAuth();
-  }, [initialized, keycloak, tokenManager, createAuthUser, createAuthSession, addAuditLog]);
+  }, [initialized, keycloak.authenticated, keycloak.tokenParsed, state.isInitialized]);
 
   // ============================================================================
   // Token Time Update Effect
@@ -638,14 +671,33 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     const updateTokenTime = () => {
       const timeRemaining = tokenManager.getTokenTimeRemaining();
-      dispatch({ type: 'AUTH_TOKEN_REFRESH', payload: { tokenTimeRemaining: timeRemaining } });
+      // Only update if time remaining has changed significantly (more than 5 seconds)
+      if (Math.abs(timeRemaining - state.tokenTimeRemaining) > 5) {
+        dispatch({ type: 'AUTH_TOKEN_REFRESH', payload: { tokenTimeRemaining: timeRemaining } });
+      }
     };
 
     updateTokenTime();
-    const interval = setInterval(updateTokenTime, 1000);
+    // Update less frequently to reduce re-renders
+    const interval = setInterval(updateTokenTime, 10000); // Changed from 1000ms to 10000ms
 
     return () => clearInterval(interval);
-  }, [keycloak.authenticated, tokenManager]);
+  }, [keycloak.authenticated, tokenManager, state.tokenTimeRemaining]);
+
+  // ============================================================================
+  // Debug: Add auth state to window for debugging
+  // ============================================================================
+
+  useEffect(() => {
+    (window as any).authContextState = state;
+    (window as any).authDebugFull = {
+      ...state,
+      keycloakInitialized: initialized,
+      keycloakAuthenticated: keycloak.authenticated,
+      keycloakToken: keycloak.token ? 'EXISTS' : 'MISSING',
+      keycloakTokenParsed: keycloak.tokenParsed ? 'EXISTS' : 'MISSING'
+    };
+  }, [state, initialized, keycloak.authenticated, keycloak.token, keycloak.tokenParsed]);
 
   // ============================================================================
   // Context Value
