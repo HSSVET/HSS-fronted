@@ -1,5 +1,8 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { usePermissions } from '../../hooks/usePermissions';
+import { useAuth } from '../../context/AuthContext';
+import { useKeycloak } from '@react-keycloak/web';
 import '../styles/components/Sidebar.css';
 
 interface SidebarProps {
@@ -9,6 +12,9 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ collapsed, toggleSidebar }) => {
   const location = useLocation();
+  const { hasPermission } = usePermissions();
+  const { user } = useAuth();
+  const { keycloak } = useKeycloak();
   
   React.useEffect(() => {
     if (collapsed) {
@@ -22,16 +28,27 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, toggleSidebar }) => {
     };
   }, [collapsed]);
   
-  const menuItems = [
-    { icon: 'icon-dashboard', text: 'Panel', path: '/dashboard' },
-    { icon: 'icon-calendar', text: 'Randevular', path: '/appointments' },
-    { icon: 'icon-paw', text: 'Hastalar/Hayvanlar', path: '/animals' },
-    { icon: 'icon-lab', text: 'Laboratuvar', path: '/laboratory' },
-    { icon: 'icon-billing', text: 'Ödeme & Fatura', path: '/billing' },
-    { icon: 'icon-box', text: 'Envanter/Stok', path: '/inventory' },
-    { icon: 'icon-chart', text: 'Raporlar', path: '/reports' },
-    { icon: 'icon-settings', text: 'Ayarlar', path: '/settings' },
+  // Menu items with permission requirements
+  const allMenuItems = [
+    { icon: 'icon-dashboard', text: 'Panel', path: '/dashboard', permission: 'dashboard:read' },
+    { icon: 'icon-calendar', text: 'Randevular', path: '/appointments', permission: 'appointments:read' },
+    { icon: 'icon-paw', text: 'Hastalar/Hayvanlar', path: '/animals', permission: 'animals:read' },
+    { icon: 'icon-lab', text: 'Laboratuvar', path: '/laboratory', permission: 'laboratory:read' },
+    { icon: 'icon-billing', text: 'Ödeme & Fatura', path: '/billing', permission: 'billing:read' },
+    { icon: 'icon-box', text: 'Envanter/Stok', path: '/inventory', permission: 'inventory:read' },
+    { icon: 'icon-chart', text: 'Raporlar', path: '/reports', permission: 'reports:read' },
+    { icon: 'icon-settings', text: 'Ayarlar', path: '/settings', permission: 'settings:read' },
   ];
+
+  // Filter menu items based on user permissions
+  const menuItems = allMenuItems.filter(item => hasPermission(item.permission));
+
+  // Handle logout
+  const handleLogout = () => {
+    keycloak.logout({
+      redirectUri: window.location.origin + '/login'
+    });
+  };
 
   return (
     <div className={`sidebar ${collapsed ? 'collapsed' : ''}`}>
@@ -61,12 +78,22 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, toggleSidebar }) => {
           <span className="icon icon-user"></span>
           {!collapsed && (
             <div className="user-info">
-              <span className="user-name">Dr. Yılmaz</span>
-              <span className="user-role">Veteriner Hekim</span>
+              <span className="user-name">
+                {user?.firstName && user?.lastName 
+                  ? `${user.firstName} ${user.lastName}` 
+                  : user?.username || 'Kullanıcı'}
+              </span>
+              <span className="user-role">
+                {user?.roles?.includes('ADMIN') && 'Yönetici'}
+                {user?.roles?.includes('VETERINER') && !user?.roles?.includes('ADMIN') && 'Veteriner Hekim'}
+                {user?.roles?.includes('SEKRETER') && !user?.roles?.includes('ADMIN') && !user?.roles?.includes('VETERINER') && 'Sekreter'}
+                {user?.roles?.includes('TEKNISYEN') && !user?.roles?.includes('ADMIN') && !user?.roles?.includes('VETERINER') && !user?.roles?.includes('SEKRETER') && 'Teknisyen'}
+                {!user?.roles?.length && 'Kullanıcı'}
+              </span>
             </div>
           )}
         </div>
-        <button className="logout">
+        <button className="logout" onClick={handleLogout}>
           <span className="icon icon-logout"></span>
           {!collapsed && <span className="text">Çıkış</span>}
         </button>

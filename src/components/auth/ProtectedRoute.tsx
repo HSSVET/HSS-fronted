@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { Box, CircularProgress, Alert, Fade, Backdrop } from '@mui/material';
-import { Security, Block, VpnKey } from '@mui/icons-material';
+import { Box, CircularProgress, Backdrop } from '@mui/material';
+import AccessDenied from '../common/AccessDenied';
 
 // ============================================================================
 // Types & Interfaces
@@ -59,17 +59,6 @@ interface AccessResult {
 }
 
 // ============================================================================
-// Default Role Hierarchy
-// ============================================================================
-
-const ROLE_HIERARCHY = {
-  'ADMIN': ['ADMIN', 'VETERINER', 'SEKRETER', 'TEKNISYEN'],
-  'VETERINER': ['VETERINER', 'TEKNISYEN'],
-  'SEKRETER': ['SEKRETER'],
-  'TEKNISYEN': ['TEKNISYEN']
-};
-
-// ============================================================================
 // Permission Mappings
 // ============================================================================
 
@@ -106,16 +95,13 @@ const useAccessControl = (props: ProtectedRouteProps) => {
     requireAllRoles, 
     requireAllPermissions,
     requireAuth,
-    requireMFA,
     sessionValidation,
-    tokenValidation,
     customValidator,
-    auditAccess,
     onAccessGranted,
     onAccessDenied
   } = props;
   
-  const { state, hasPermission, hasAnyRole, hasAllRoles, addAuditLog, validateSession } = useAuth();
+  const { state } = useAuth();
   const location = useLocation();
   
   const [accessResult, setAccessResult] = useState<AccessResult>({
@@ -124,60 +110,46 @@ const useAccessControl = (props: ProtectedRouteProps) => {
   });
 
   // ============================================================================
-  // Role & Permission Validation
+  // Role Validation
   // ============================================================================
 
   const validateRoles = useMemo(() => {
     if (!requiredRoles || requiredRoles.length === 0) return true;
     
-    const hasRequiredRoles = requireAllRoles 
-      ? hasAllRoles(requiredRoles)
-      : hasAnyRole(requiredRoles);
+    const userRoles = state.roles || [];
     
-    return hasRequiredRoles;
-  }, [requiredRoles, requireAllRoles, hasAllRoles, hasAnyRole]);
+    if (requireAllRoles) {
+      // User must have ALL required roles
+      return requiredRoles.every(role => userRoles.includes(role));
+    } else {
+      // User must have AT LEAST ONE of the required roles
+      return requiredRoles.some(role => userRoles.includes(role));
+    }
+  }, [requiredRoles, requireAllRoles, state.roles]);
+
+  // ============================================================================
+  // Permission Validation
+  // ============================================================================
 
   const validatePermissions = useMemo(() => {
     if (!requiredPermissions || requiredPermissions.length === 0) return true;
     
-    const hasRequiredPermissions = requireAllPermissions
-      ? requiredPermissions.every(permission => hasPermission(permission))
-      : requiredPermissions.some(permission => hasPermission(permission));
-    
-    return hasRequiredPermissions;
-  }, [requiredPermissions, requireAllPermissions, hasPermission]);
-
-  // ============================================================================
-  // Role Hierarchy Check
-  // ============================================================================
-
-  const validateRoleHierarchy = useMemo(() => {
-    if (!requiredRoles || requiredRoles.length === 0) return true;
-    
     const userRoles = state.roles || [];
     
-    return requiredRoles.some(requiredRole => {
-      return userRoles.some(userRole => {
-        const allowedRoles = ROLE_HIERARCHY[userRole as keyof typeof ROLE_HIERARCHY] || [];
-        return allowedRoles.includes(requiredRole);
+    if (requireAllPermissions) {
+      // User must have ALL required permissions
+      return requiredPermissions.every(permission => {
+        const allowedRoles = PERMISSION_MAPPINGS[permission as keyof typeof PERMISSION_MAPPINGS] || [];
+        return userRoles.some(userRole => allowedRoles.includes(userRole));
       });
-    });
-  }, [requiredRoles, state.roles]);
-
-  // ============================================================================
-  // Permission-Role Mapping Check
-  // ============================================================================
-
-  const validatePermissionRoleMapping = useMemo(() => {
-    if (!requiredPermissions || requiredPermissions.length === 0) return true;
-    
-    const userRoles = state.roles || [];
-    
-    return requiredPermissions.some(permission => {
-      const allowedRoles = PERMISSION_MAPPINGS[permission as keyof typeof PERMISSION_MAPPINGS] || [];
-      return userRoles.some(userRole => allowedRoles.includes(userRole));
-    });
-  }, [requiredPermissions, state.roles]);
+    } else {
+      // User must have AT LEAST ONE of the required permissions
+      return requiredPermissions.some(permission => {
+        const allowedRoles = PERMISSION_MAPPINGS[permission as keyof typeof PERMISSION_MAPPINGS] || [];
+        return userRoles.some(userRole => allowedRoles.includes(userRole));
+      });
+    }
+  }, [requiredPermissions, requireAllPermissions, state.roles]);
 
   // ============================================================================
   // Access Validation Effect
@@ -215,92 +187,33 @@ const useAccessControl = (props: ProtectedRouteProps) => {
           return;
         }
 
-        // Step 4: Session Validation
-        if (sessionValidation !== false && state.isAuthenticated) {
-          const isSessionValid = await validateSession();
-          if (!isSessionValid) {
-            setAccessResult({
-              level: 'expired',
-              reason: 'Session expired',
-              redirect: '/login',
-              showModal: true
-            });
-            return;
-          }
-        }
-
-        // Step 5: Token Validation (less frequent check)
-        if (tokenValidation !== false && state.tokenTimeRemaining <= 0) {
-          setAccessResult({
-            level: 'expired',
-            reason: 'Token expired',
-            redirect: '/login',
-            showModal: true
-          });
-          return;
-        }
-
-        // Step 6: MFA Check
-        if (requireMFA && !state.security?.mfaEnabled) {
-          setAccessResult({
-            level: 'denied',
-            reason: 'Multi-factor authentication required',
-            showModal: true
-          });
-          return;
-        }
-
-        // Step 7: Account Lock Check
-        if (state.security?.accountLocked) {
-          setAccessResult({
-            level: 'locked',
-            reason: 'Account is locked',
-            showModal: true
-          });
-          return;
-        }
-
-        // Step 8: Role Validation
+        // Step 4: Role Validation
         if (!validateRoles) {
           setAccessResult({
             level: 'denied',
-            reason: `Required roles: ${requiredRoles?.join(', ')}`,
+            reason: `Required roles: ${requiredRoles?.join(', ')}. Your roles: ${state.roles?.join(', ') || 'None'}`,
             showModal: true
           });
+          if (onAccessDenied) {
+            onAccessDenied(`Missing required roles: ${requiredRoles?.join(', ')}`);
+          }
           return;
         }
 
-        // Step 9: Permission Validation
+        // Step 5: Permission Validation
         if (!validatePermissions) {
           setAccessResult({
             level: 'denied',
-            reason: `Required permissions: ${requiredPermissions?.join(', ')}`,
+            reason: `Required permissions: ${requiredPermissions?.join(', ')}. Your roles: ${state.roles?.join(', ') || 'None'}`,
             showModal: true
           });
+          if (onAccessDenied) {
+            onAccessDenied(`Missing required permissions: ${requiredPermissions?.join(', ')}`);
+          }
           return;
         }
 
-        // Step 10: Role Hierarchy Validation
-        if (!validateRoleHierarchy) {
-          setAccessResult({
-            level: 'denied',
-            reason: 'Insufficient role hierarchy',
-            showModal: true
-          });
-          return;
-        }
-
-        // Step 11: Permission-Role Mapping Validation
-        if (!validatePermissionRoleMapping) {
-          setAccessResult({
-            level: 'denied',
-            reason: 'Role does not have required permissions',
-            showModal: true
-          });
-          return;
-        }
-
-        // Step 12: Custom Validation
+        // Step 6: Custom Validation
         if (customValidator) {
           const customResult = await customValidator(state.user);
           if (!customResult) {
@@ -309,27 +222,18 @@ const useAccessControl = (props: ProtectedRouteProps) => {
               reason: 'Custom validation failed',
               showModal: true
             });
+            if (onAccessDenied) {
+              onAccessDenied('Custom validation failed');
+            }
             return;
           }
         }
 
-        // Step 13: All checks passed
+        // Step 7: All checks passed
         setAccessResult({
           level: 'granted',
           reason: 'Access granted'
         });
-
-        // Audit logging
-        if (auditAccess !== false) {
-          addAuditLog('permission_check', {
-            path: location.pathname,
-            requiredRoles: requiredRoles,
-            requiredPermissions: requiredPermissions,
-            userRoles: state.roles,
-            userPermissions: state.permissions,
-            result: 'granted'
-          });
-        }
 
         // Success callback
         if (onAccessGranted) {
@@ -343,50 +247,30 @@ const useAccessControl = (props: ProtectedRouteProps) => {
           reason: errorMessage,
           showModal: true
         });
-
-        // Audit logging for error
-        if (auditAccess !== false) {
-          addAuditLog('error', {
-            path: location.pathname,
-            error: errorMessage,
-            action: 'access_validation'
-          });
-        }
       }
     };
 
     validateAccess();
   }, [
-    // Core auth state - only update when these change
+    // Core auth state
     state.isAuthenticated,
     state.isInitialized,
     state.isLoading,
     
-    // User roles and permissions
+    // User roles
     state.roles,
-    state.permissions,
     
-    // Security state
-    state.security?.mfaEnabled,
-    state.security?.accountLocked,
-    
-    // Route-specific requirements
+    // Route requirements
     requiredRoles,
     requiredPermissions,
+    
+    // Validation flags
+    validateRoles,
+    validatePermissions,
     
     // Location
     location.pathname
   ]);
-
-  // ============================================================================
-  // Access Denied Callback
-  // ============================================================================
-
-  useEffect(() => {
-    if (accessResult.level === 'denied' && onAccessDenied) {
-      onAccessDenied(accessResult.reason);
-    }
-  }, [accessResult.level, accessResult.reason, onAccessDenied]);
 
   return accessResult;
 };
@@ -404,87 +288,7 @@ const LoadingComponent: React.FC<{ message?: string }> = ({ message = 'Loading..
   </Backdrop>
 );
 
-// ============================================================================
-// Access Denied Component
-// ============================================================================
 
-const AccessDeniedComponent: React.FC<{ 
-  reason: string; 
-  level: AccessLevel;
-  onRetry?: () => void;
-}> = ({ reason, level, onRetry }) => {
-  const getIcon = () => {
-    switch (level) {
-      case 'locked': return <Block color="error" sx={{ fontSize: 48 }} />;
-      case 'expired': return <VpnKey color="warning" sx={{ fontSize: 48 }} />;
-      default: return <Security color="error" sx={{ fontSize: 48 }} />;
-    }
-  };
-
-  const getTitle = () => {
-    switch (level) {
-      case 'locked': return 'Account Locked';
-      case 'expired': return 'Session Expired';
-      default: return 'Access Denied';
-    }
-  };
-
-  const getSeverity = () => {
-    switch (level) {
-      case 'locked': return 'error';
-      case 'expired': return 'warning';
-      default: return 'error';
-    }
-  };
-
-  return (
-    <Box
-      display="flex"
-      flexDirection="column"
-      alignItems="center"
-      justifyContent="center"
-      minHeight="50vh"
-      textAlign="center"
-      p={4}
-    >
-      <Fade in={true} timeout={800}>
-        <Box>
-          {getIcon()}
-          <Box sx={{ mt: 2, mb: 3 }}>
-            <Box sx={{ fontSize: '24px', fontWeight: 'bold', mb: 1 }}>
-              {getTitle()}
-            </Box>
-            <Box sx={{ fontSize: '16px', color: 'text.secondary', mb: 3 }}>
-              {reason}
-            </Box>
-          </Box>
-          <Alert severity={getSeverity() as any} sx={{ mb: 2 }}>
-            <Box sx={{ fontSize: '14px' }}>
-              Contact your administrator if you believe this is an error.
-            </Box>
-          </Alert>
-          {onRetry && (
-            <Box sx={{ mt: 2 }}>
-              <button
-                onClick={onRetry}
-                style={{
-                  padding: '8px 16px',
-                  backgroundColor: '#1976d2',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '4px',
-                  cursor: 'pointer'
-                }}
-              >
-                Retry
-              </button>
-            </Box>
-          )}
-        </Box>
-      </Fade>
-    </Box>
-  );
-};
 
 // ============================================================================
 // Main Protected Route Component
@@ -538,11 +342,15 @@ const ProtectedRoute = (props: ProtectedRouteProps): React.ReactElement | null =
     }
     
     if (props.showAccessDenied !== false) {
+      // Determine required roles/permissions from context
+      const requiredRoleText = props.requiredRoles?.join(', ') || 'Belirtilmemiş';
+      const requiredPermissionText = props.requiredPermissions?.join(', ') || 'Belirtilmemiş';
+      
       return (
-        <AccessDeniedComponent 
-          reason={accessResult.reason} 
-          level={accessResult.level}
-          onRetry={() => window.location.reload()}
+        <AccessDenied
+          message={accessResult.reason}
+          requiredRole={props.requiredRoles?.length ? requiredRoleText : undefined}
+          requiredPermission={props.requiredPermissions?.length ? requiredPermissionText : undefined}
         />
       );
     }
