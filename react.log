@@ -1,0 +1,1182 @@
+
+> hss-prototip@0.1.0 start
+> react-scripts start
+
+(node:66009) [DEP_WEBPACK_DEV_SERVER_ON_AFTER_SETUP_MIDDLEWARE] DeprecationWarning: 'onAfterSetupMiddleware' option is deprecated. Please use the 'setupMiddlewares' option.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:66009) [DEP_WEBPACK_DEV_SERVER_ON_BEFORE_SETUP_MIDDLEWARE] DeprecationWarning: 'onBeforeSetupMiddleware' option is deprecated. Please use the 'setupMiddlewares' option.
+Starting the development server...
+
+Compiled with warnings.
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/context.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/context.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/index.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/index.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/provider.tsx' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/provider.tsx'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/types.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/types.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/context.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/context.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/index.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/index.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/provider.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/provider.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/useKeycloak.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/useKeycloak.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/withKeycloak.tsx' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/withKeycloak.tsx'
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+WARNING in ./node_modules/@react-keycloak/core/lib/context.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/context.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/context.ts'
+
+WARNING in ./node_modules/@react-keycloak/core/lib/index.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/index.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/index.ts'
+
+WARNING in ./node_modules/@react-keycloak/core/lib/provider.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/provider.tsx' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/provider.tsx'
+
+WARNING in ./node_modules/@react-keycloak/core/lib/types.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/types.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/types.ts'
+
+WARNING in ./node_modules/@react-keycloak/web/lib/context.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/context.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/context.ts'
+
+WARNING in ./node_modules/@react-keycloak/web/lib/index.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/index.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/index.ts'
+
+WARNING in ./node_modules/@react-keycloak/web/lib/provider.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/provider.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/provider.ts'
+
+WARNING in ./node_modules/@react-keycloak/web/lib/useKeycloak.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/useKeycloak.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/useKeycloak.ts'
+
+WARNING in ./node_modules/@react-keycloak/web/lib/withKeycloak.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/withKeycloak.tsx' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/withKeycloak.tsx'
+
+webpack compiled with 9 warnings
+No issues found.
+Compiling...
+Compiled with warnings.
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/context.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/context.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/index.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/index.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/provider.tsx' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/provider.tsx'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/types.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/types.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/context.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/context.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/index.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/index.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/provider.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/provider.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/useKeycloak.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/useKeycloak.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/withKeycloak.tsx' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/withKeycloak.tsx'
+
+[eslint] 
+src/components/auth/AuthButton.tsx
+  Line 45:6:  React Hook useEffect has a missing dependency: 'keycloak'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+WARNING in ./node_modules/@react-keycloak/core/lib/context.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/context.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/context.ts'
+
+WARNING in ./node_modules/@react-keycloak/core/lib/index.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/index.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/index.ts'
+
+WARNING in ./node_modules/@react-keycloak/core/lib/provider.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/provider.tsx' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/provider.tsx'
+
+WARNING in ./node_modules/@react-keycloak/core/lib/types.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/types.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/types.ts'
+
+WARNING in ./node_modules/@react-keycloak/web/lib/context.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/context.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/context.ts'
+
+WARNING in ./node_modules/@react-keycloak/web/lib/index.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/index.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/index.ts'
+
+WARNING in ./node_modules/@react-keycloak/web/lib/provider.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/provider.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/provider.ts'
+
+WARNING in ./node_modules/@react-keycloak/web/lib/useKeycloak.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/useKeycloak.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/useKeycloak.ts'
+
+WARNING in ./node_modules/@react-keycloak/web/lib/withKeycloak.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/withKeycloak.tsx' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/withKeycloak.tsx'
+
+WARNING in [eslint] 
+src/components/auth/AuthButton.tsx
+  Line 45:6:  React Hook useEffect has a missing dependency: 'keycloak'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+webpack compiled with 10 warnings
+Compiling...
+No issues found.
+Compiled with warnings.
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/context.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/context.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/index.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/index.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/provider.tsx' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/provider.tsx'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/types.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/types.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/context.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/context.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/index.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/index.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/provider.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/provider.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/useKeycloak.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/useKeycloak.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/withKeycloak.tsx' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/withKeycloak.tsx'
+
+[eslint] 
+src/components/auth/AuthButton.tsx
+  Line 45:6:  React Hook useEffect has a missing dependency: 'keycloak'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+WARNING in ./node_modules/@react-keycloak/core/lib/context.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/context.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/context.ts'
+
+WARNING in ./node_modules/@react-keycloak/core/lib/index.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/index.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/index.ts'
+
+WARNING in ./node_modules/@react-keycloak/core/lib/provider.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/provider.tsx' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/provider.tsx'
+
+WARNING in ./node_modules/@react-keycloak/core/lib/types.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/types.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/types.ts'
+
+WARNING in ./node_modules/@react-keycloak/web/lib/context.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/context.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/context.ts'
+
+WARNING in ./node_modules/@react-keycloak/web/lib/index.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/index.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/index.ts'
+
+WARNING in ./node_modules/@react-keycloak/web/lib/provider.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/provider.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/provider.ts'
+
+WARNING in ./node_modules/@react-keycloak/web/lib/useKeycloak.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/useKeycloak.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/useKeycloak.ts'
+
+WARNING in ./node_modules/@react-keycloak/web/lib/withKeycloak.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/withKeycloak.tsx' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/withKeycloak.tsx'
+
+WARNING in [eslint] 
+src/components/auth/AuthButton.tsx
+  Line 45:6:  React Hook useEffect has a missing dependency: 'keycloak'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+webpack compiled with 10 warnings
+No issues found.
+Compiling...
+Compiled with warnings.
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/context.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/context.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/index.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/index.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/provider.tsx' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/provider.tsx'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/types.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/types.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/context.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/context.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/index.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/index.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/provider.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/provider.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/useKeycloak.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/useKeycloak.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/withKeycloak.tsx' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/withKeycloak.tsx'
+
+[eslint] 
+src/components/auth/AuthButton.tsx
+  Line 45:6:  React Hook useEffect has a missing dependency: 'keycloak'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+src/services/tokenManager.ts
+  Line 2:8:  'Keycloak' is defined but never used  @typescript-eslint/no-unused-vars
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+WARNING in ./node_modules/@react-keycloak/core/lib/context.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/context.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/context.ts'
+
+WARNING in ./node_modules/@react-keycloak/core/lib/index.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/index.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/index.ts'
+
+WARNING in ./node_modules/@react-keycloak/core/lib/provider.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/provider.tsx' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/provider.tsx'
+
+WARNING in ./node_modules/@react-keycloak/core/lib/types.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/types.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/types.ts'
+
+WARNING in ./node_modules/@react-keycloak/web/lib/context.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/context.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/context.ts'
+
+WARNING in ./node_modules/@react-keycloak/web/lib/index.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/index.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/index.ts'
+
+WARNING in ./node_modules/@react-keycloak/web/lib/provider.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/provider.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/provider.ts'
+
+WARNING in ./node_modules/@react-keycloak/web/lib/useKeycloak.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/useKeycloak.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/useKeycloak.ts'
+
+WARNING in ./node_modules/@react-keycloak/web/lib/withKeycloak.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/withKeycloak.tsx' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/withKeycloak.tsx'
+
+WARNING in [eslint] 
+src/components/auth/AuthButton.tsx
+  Line 45:6:  React Hook useEffect has a missing dependency: 'keycloak'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+src/services/tokenManager.ts
+  Line 2:8:  'Keycloak' is defined but never used  @typescript-eslint/no-unused-vars
+
+webpack compiled with 10 warnings
+Compiling...
+No issues found.
+Compiled with warnings.
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/context.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/context.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/index.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/index.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/provider.tsx' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/provider.tsx'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/types.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/types.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/context.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/context.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/index.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/index.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/provider.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/provider.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/useKeycloak.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/useKeycloak.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/withKeycloak.tsx' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/withKeycloak.tsx'
+
+[eslint] 
+src/components/auth/AuthButton.tsx
+  Line 45:6:  React Hook useEffect has a missing dependency: 'keycloak'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+src/services/tokenManager.ts
+  Line 2:8:  'Keycloak' is defined but never used  @typescript-eslint/no-unused-vars
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+WARNING in ./node_modules/@react-keycloak/core/lib/context.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/context.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/context.ts'
+
+WARNING in ./node_modules/@react-keycloak/core/lib/index.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/index.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/index.ts'
+
+WARNING in ./node_modules/@react-keycloak/core/lib/provider.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/provider.tsx' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/provider.tsx'
+
+WARNING in ./node_modules/@react-keycloak/core/lib/types.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/types.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/types.ts'
+
+WARNING in ./node_modules/@react-keycloak/web/lib/context.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/context.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/context.ts'
+
+WARNING in ./node_modules/@react-keycloak/web/lib/index.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/index.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/index.ts'
+
+WARNING in ./node_modules/@react-keycloak/web/lib/provider.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/provider.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/provider.ts'
+
+WARNING in ./node_modules/@react-keycloak/web/lib/useKeycloak.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/useKeycloak.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/useKeycloak.ts'
+
+WARNING in ./node_modules/@react-keycloak/web/lib/withKeycloak.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/withKeycloak.tsx' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/withKeycloak.tsx'
+
+WARNING in [eslint] 
+src/components/auth/AuthButton.tsx
+  Line 45:6:  React Hook useEffect has a missing dependency: 'keycloak'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+src/services/tokenManager.ts
+  Line 2:8:  'Keycloak' is defined but never used  @typescript-eslint/no-unused-vars
+
+webpack compiled with 10 warnings
+No issues found.
+Compiling...
+Compiled with warnings.
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/context.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/context.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/index.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/index.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/provider.tsx' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/provider.tsx'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/types.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/types.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/context.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/context.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/index.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/index.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/provider.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/provider.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/useKeycloak.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/useKeycloak.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/withKeycloak.tsx' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/withKeycloak.tsx'
+
+[eslint] 
+src/components/auth/AuthButton.tsx
+  Line 45:6:  React Hook useEffect has a missing dependency: 'keycloak'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+src/config/keycloak.ts
+  Line 1:8:  'React' is defined but never used  @typescript-eslint/no-unused-vars
+
+src/services/tokenManager.ts
+  Line 2:8:  'Keycloak' is defined but never used  @typescript-eslint/no-unused-vars
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+WARNING in ./node_modules/@react-keycloak/core/lib/context.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/context.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/context.ts'
+
+WARNING in ./node_modules/@react-keycloak/core/lib/index.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/index.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/index.ts'
+
+WARNING in ./node_modules/@react-keycloak/core/lib/provider.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/provider.tsx' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/provider.tsx'
+
+WARNING in ./node_modules/@react-keycloak/core/lib/types.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/types.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/types.ts'
+
+WARNING in ./node_modules/@react-keycloak/web/lib/context.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/context.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/context.ts'
+
+WARNING in ./node_modules/@react-keycloak/web/lib/index.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/index.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/index.ts'
+
+WARNING in ./node_modules/@react-keycloak/web/lib/provider.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/provider.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/provider.ts'
+
+WARNING in ./node_modules/@react-keycloak/web/lib/useKeycloak.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/useKeycloak.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/useKeycloak.ts'
+
+WARNING in ./node_modules/@react-keycloak/web/lib/withKeycloak.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/withKeycloak.tsx' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/withKeycloak.tsx'
+
+WARNING in [eslint] 
+src/components/auth/AuthButton.tsx
+  Line 45:6:  React Hook useEffect has a missing dependency: 'keycloak'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+src/config/keycloak.ts
+  Line 1:8:  'React' is defined but never used  @typescript-eslint/no-unused-vars
+
+src/services/tokenManager.ts
+  Line 2:8:  'Keycloak' is defined but never used  @typescript-eslint/no-unused-vars
+
+webpack compiled with 10 warnings
+Compiling...
+No issues found.
+Compiled with warnings.
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/context.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/context.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/index.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/index.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/provider.tsx' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/provider.tsx'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/types.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/types.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/context.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/context.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/index.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/index.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/provider.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/provider.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/useKeycloak.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/useKeycloak.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/withKeycloak.tsx' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/withKeycloak.tsx'
+
+[eslint] 
+src/components/auth/AuthButton.tsx
+  Line 45:6:  React Hook useEffect has a missing dependency: 'keycloak'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+src/config/keycloak.ts
+  Line 1:8:  'React' is defined but never used  @typescript-eslint/no-unused-vars
+
+src/services/tokenManager.ts
+  Line 2:8:  'Keycloak' is defined but never used  @typescript-eslint/no-unused-vars
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+WARNING in ./node_modules/@react-keycloak/core/lib/context.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/context.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/context.ts'
+
+WARNING in ./node_modules/@react-keycloak/core/lib/index.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/index.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/index.ts'
+
+WARNING in ./node_modules/@react-keycloak/core/lib/provider.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/provider.tsx' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/provider.tsx'
+
+WARNING in ./node_modules/@react-keycloak/core/lib/types.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/types.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/types.ts'
+
+WARNING in ./node_modules/@react-keycloak/web/lib/context.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/context.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/context.ts'
+
+WARNING in ./node_modules/@react-keycloak/web/lib/index.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/index.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/index.ts'
+
+WARNING in ./node_modules/@react-keycloak/web/lib/provider.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/provider.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/provider.ts'
+
+WARNING in ./node_modules/@react-keycloak/web/lib/useKeycloak.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/useKeycloak.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/useKeycloak.ts'
+
+WARNING in ./node_modules/@react-keycloak/web/lib/withKeycloak.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/withKeycloak.tsx' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/withKeycloak.tsx'
+
+WARNING in [eslint] 
+src/components/auth/AuthButton.tsx
+  Line 45:6:  React Hook useEffect has a missing dependency: 'keycloak'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+src/config/keycloak.ts
+  Line 1:8:  'React' is defined but never used  @typescript-eslint/no-unused-vars
+
+src/services/tokenManager.ts
+  Line 2:8:  'Keycloak' is defined but never used  @typescript-eslint/no-unused-vars
+
+webpack compiled with 10 warnings
+No issues found.
+Compiling...
+Compiled with warnings.
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/context.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/context.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/index.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/index.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/provider.tsx' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/provider.tsx'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/types.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/types.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/context.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/context.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/index.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/index.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/provider.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/provider.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/useKeycloak.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/useKeycloak.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/withKeycloak.tsx' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/withKeycloak.tsx'
+
+[eslint] 
+src/components/auth/AuthButton.tsx
+  Line 45:6:  React Hook useEffect has a missing dependency: 'keycloak'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+src/config/keycloak.ts
+  Line 1:8:  'React' is defined but never used  @typescript-eslint/no-unused-vars
+
+src/services/tokenManager.ts
+  Line 2:8:  'Keycloak' is defined but never used  @typescript-eslint/no-unused-vars
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+WARNING in ./node_modules/@react-keycloak/core/lib/context.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/context.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/context.ts'
+
+WARNING in ./node_modules/@react-keycloak/core/lib/index.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/index.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/index.ts'
+
+WARNING in ./node_modules/@react-keycloak/core/lib/provider.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/provider.tsx' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/provider.tsx'
+
+WARNING in ./node_modules/@react-keycloak/core/lib/types.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/types.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/types.ts'
+
+WARNING in ./node_modules/@react-keycloak/web/lib/context.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/context.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/context.ts'
+
+WARNING in ./node_modules/@react-keycloak/web/lib/index.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/index.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/index.ts'
+
+WARNING in ./node_modules/@react-keycloak/web/lib/provider.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/provider.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/provider.ts'
+
+WARNING in ./node_modules/@react-keycloak/web/lib/useKeycloak.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/useKeycloak.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/useKeycloak.ts'
+
+WARNING in ./node_modules/@react-keycloak/web/lib/withKeycloak.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/withKeycloak.tsx' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/withKeycloak.tsx'
+
+WARNING in [eslint] 
+src/components/auth/AuthButton.tsx
+  Line 45:6:  React Hook useEffect has a missing dependency: 'keycloak'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+src/config/keycloak.ts
+  Line 1:8:  'React' is defined but never used  @typescript-eslint/no-unused-vars
+
+src/services/tokenManager.ts
+  Line 2:8:  'Keycloak' is defined but never used  @typescript-eslint/no-unused-vars
+
+webpack compiled with 10 warnings
+Compiling...
+No issues found.
+Compiled with warnings.
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/context.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/context.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/index.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/index.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/provider.tsx' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/provider.tsx'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/types.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/types.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/context.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/context.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/index.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/index.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/provider.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/provider.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/useKeycloak.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/useKeycloak.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/withKeycloak.tsx' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/withKeycloak.tsx'
+
+[eslint] 
+src/components/auth/AuthButton.tsx
+  Line 45:6:  React Hook useEffect has a missing dependency: 'keycloak'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+src/config/keycloak.ts
+  Line 1:8:  'React' is defined but never used  @typescript-eslint/no-unused-vars
+
+src/services/tokenManager.ts
+  Line 2:8:  'Keycloak' is defined but never used  @typescript-eslint/no-unused-vars
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+WARNING in ./node_modules/@react-keycloak/core/lib/context.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/context.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/context.ts'
+
+WARNING in ./node_modules/@react-keycloak/core/lib/index.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/index.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/index.ts'
+
+WARNING in ./node_modules/@react-keycloak/core/lib/provider.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/provider.tsx' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/provider.tsx'
+
+WARNING in ./node_modules/@react-keycloak/core/lib/types.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/types.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/types.ts'
+
+WARNING in ./node_modules/@react-keycloak/web/lib/context.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/context.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/context.ts'
+
+WARNING in ./node_modules/@react-keycloak/web/lib/index.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/index.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/index.ts'
+
+WARNING in ./node_modules/@react-keycloak/web/lib/provider.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/provider.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/provider.ts'
+
+WARNING in ./node_modules/@react-keycloak/web/lib/useKeycloak.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/useKeycloak.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/useKeycloak.ts'
+
+WARNING in ./node_modules/@react-keycloak/web/lib/withKeycloak.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/withKeycloak.tsx' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/withKeycloak.tsx'
+
+WARNING in [eslint] 
+src/components/auth/AuthButton.tsx
+  Line 45:6:  React Hook useEffect has a missing dependency: 'keycloak'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+src/config/keycloak.ts
+  Line 1:8:  'React' is defined but never used  @typescript-eslint/no-unused-vars
+
+src/services/tokenManager.ts
+  Line 2:8:  'Keycloak' is defined but never used  @typescript-eslint/no-unused-vars
+
+webpack compiled with 10 warnings
+No issues found.
+Compiling...
+Compiled with warnings.
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/context.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/context.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/index.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/index.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/provider.tsx' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/provider.tsx'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/types.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/types.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/context.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/context.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/index.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/index.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/provider.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/provider.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/useKeycloak.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/useKeycloak.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/withKeycloak.tsx' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/withKeycloak.tsx'
+
+[eslint] 
+src/components/auth/AuthButton.tsx
+  Line 45:6:  React Hook useEffect has a missing dependency: 'keycloak'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+src/config/keycloak.ts
+  Line 1:8:  'React' is defined but never used  @typescript-eslint/no-unused-vars
+
+src/services/tokenManager.ts
+  Line 2:8:  'Keycloak' is defined but never used  @typescript-eslint/no-unused-vars
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+WARNING in ./node_modules/@react-keycloak/core/lib/context.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/context.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/context.ts'
+
+WARNING in ./node_modules/@react-keycloak/core/lib/index.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/index.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/index.ts'
+
+WARNING in ./node_modules/@react-keycloak/core/lib/provider.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/provider.tsx' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/provider.tsx'
+
+WARNING in ./node_modules/@react-keycloak/core/lib/types.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/types.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/types.ts'
+
+WARNING in ./node_modules/@react-keycloak/web/lib/context.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/context.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/context.ts'
+
+WARNING in ./node_modules/@react-keycloak/web/lib/index.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/index.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/index.ts'
+
+WARNING in ./node_modules/@react-keycloak/web/lib/provider.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/provider.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/provider.ts'
+
+WARNING in ./node_modules/@react-keycloak/web/lib/useKeycloak.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/useKeycloak.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/useKeycloak.ts'
+
+WARNING in ./node_modules/@react-keycloak/web/lib/withKeycloak.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/withKeycloak.tsx' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/withKeycloak.tsx'
+
+WARNING in [eslint] 
+src/components/auth/AuthButton.tsx
+  Line 45:6:  React Hook useEffect has a missing dependency: 'keycloak'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+src/config/keycloak.ts
+  Line 1:8:  'React' is defined but never used  @typescript-eslint/no-unused-vars
+
+src/services/tokenManager.ts
+  Line 2:8:  'Keycloak' is defined but never used  @typescript-eslint/no-unused-vars
+
+webpack compiled with 10 warnings
+Compiling...
+No issues found.
+Compiled with warnings.
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/context.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/context.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/index.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/index.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/provider.tsx' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/provider.tsx'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/types.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/types.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/context.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/context.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/index.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/index.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/provider.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/provider.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/useKeycloak.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/useKeycloak.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/withKeycloak.tsx' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/withKeycloak.tsx'
+
+[eslint] 
+src/components/auth/AuthButton.tsx
+  Line 45:6:  React Hook useEffect has a missing dependency: 'keycloak'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+src/config/keycloak.ts
+  Line 1:8:  'React' is defined but never used  @typescript-eslint/no-unused-vars
+
+src/services/tokenManager.ts
+  Line 2:8:  'Keycloak' is defined but never used  @typescript-eslint/no-unused-vars
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+WARNING in ./node_modules/@react-keycloak/core/lib/context.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/context.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/context.ts'
+
+WARNING in ./node_modules/@react-keycloak/core/lib/index.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/index.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/index.ts'
+
+WARNING in ./node_modules/@react-keycloak/core/lib/provider.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/provider.tsx' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/provider.tsx'
+
+WARNING in ./node_modules/@react-keycloak/core/lib/types.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/types.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/types.ts'
+
+WARNING in ./node_modules/@react-keycloak/web/lib/context.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/context.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/context.ts'
+
+WARNING in ./node_modules/@react-keycloak/web/lib/index.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/index.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/index.ts'
+
+WARNING in ./node_modules/@react-keycloak/web/lib/provider.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/provider.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/provider.ts'
+
+WARNING in ./node_modules/@react-keycloak/web/lib/useKeycloak.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/useKeycloak.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/useKeycloak.ts'
+
+WARNING in ./node_modules/@react-keycloak/web/lib/withKeycloak.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/withKeycloak.tsx' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/withKeycloak.tsx'
+
+WARNING in [eslint] 
+src/components/auth/AuthButton.tsx
+  Line 45:6:  React Hook useEffect has a missing dependency: 'keycloak'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+src/config/keycloak.ts
+  Line 1:8:  'React' is defined but never used  @typescript-eslint/no-unused-vars
+
+src/services/tokenManager.ts
+  Line 2:8:  'Keycloak' is defined but never used  @typescript-eslint/no-unused-vars
+
+webpack compiled with 10 warnings
+No issues found.
+Compiling...
+Compiled with warnings.
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/context.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/context.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/index.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/index.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/provider.tsx' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/provider.tsx'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/types.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/types.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/context.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/context.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/index.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/index.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/provider.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/provider.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/useKeycloak.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/useKeycloak.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/withKeycloak.tsx' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/withKeycloak.tsx'
+
+[eslint] 
+src/components/auth/AuthButton.tsx
+  Line 45:6:  React Hook useEffect has a missing dependency: 'keycloak'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+src/config/keycloak.ts
+  Line 1:8:  'React' is defined but never used  @typescript-eslint/no-unused-vars
+
+src/services/tokenManager.ts
+  Line 2:8:  'Keycloak' is defined but never used  @typescript-eslint/no-unused-vars
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+WARNING in ./node_modules/@react-keycloak/core/lib/context.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/context.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/context.ts'
+
+WARNING in ./node_modules/@react-keycloak/core/lib/index.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/index.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/index.ts'
+
+WARNING in ./node_modules/@react-keycloak/core/lib/provider.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/provider.tsx' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/provider.tsx'
+
+WARNING in ./node_modules/@react-keycloak/core/lib/types.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/types.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/types.ts'
+
+WARNING in ./node_modules/@react-keycloak/web/lib/context.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/context.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/context.ts'
+
+WARNING in ./node_modules/@react-keycloak/web/lib/index.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/index.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/index.ts'
+
+WARNING in ./node_modules/@react-keycloak/web/lib/provider.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/provider.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/provider.ts'
+
+WARNING in ./node_modules/@react-keycloak/web/lib/useKeycloak.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/useKeycloak.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/useKeycloak.ts'
+
+WARNING in ./node_modules/@react-keycloak/web/lib/withKeycloak.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/withKeycloak.tsx' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/withKeycloak.tsx'
+
+WARNING in [eslint] 
+src/components/auth/AuthButton.tsx
+  Line 45:6:  React Hook useEffect has a missing dependency: 'keycloak'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+src/config/keycloak.ts
+  Line 1:8:  'React' is defined but never used  @typescript-eslint/no-unused-vars
+
+src/services/tokenManager.ts
+  Line 2:8:  'Keycloak' is defined but never used  @typescript-eslint/no-unused-vars
+
+webpack compiled with 10 warnings
+Compiling...
+No issues found.
+Compiled with warnings.
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/context.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/context.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/index.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/index.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/provider.tsx' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/provider.tsx'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/types.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/types.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/context.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/context.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/index.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/index.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/provider.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/provider.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/useKeycloak.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/useKeycloak.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/withKeycloak.tsx' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/withKeycloak.tsx'
+
+[eslint] 
+src/components/auth/AuthButton.tsx
+  Line 45:6:  React Hook useEffect has a missing dependency: 'keycloak'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+src/config/keycloak.ts
+  Line 1:8:  'React' is defined but never used  @typescript-eslint/no-unused-vars
+
+src/services/tokenManager.ts
+  Line 2:8:  'Keycloak' is defined but never used  @typescript-eslint/no-unused-vars
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+WARNING in ./node_modules/@react-keycloak/core/lib/context.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/context.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/context.ts'
+
+WARNING in ./node_modules/@react-keycloak/core/lib/index.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/index.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/index.ts'
+
+WARNING in ./node_modules/@react-keycloak/core/lib/provider.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/provider.tsx' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/provider.tsx'
+
+WARNING in ./node_modules/@react-keycloak/core/lib/types.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/types.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/types.ts'
+
+WARNING in ./node_modules/@react-keycloak/web/lib/context.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/context.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/context.ts'
+
+WARNING in ./node_modules/@react-keycloak/web/lib/index.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/index.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/index.ts'
+
+WARNING in ./node_modules/@react-keycloak/web/lib/provider.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/provider.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/provider.ts'
+
+WARNING in ./node_modules/@react-keycloak/web/lib/useKeycloak.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/useKeycloak.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/useKeycloak.ts'
+
+WARNING in ./node_modules/@react-keycloak/web/lib/withKeycloak.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/withKeycloak.tsx' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/withKeycloak.tsx'
+
+WARNING in [eslint] 
+src/components/auth/AuthButton.tsx
+  Line 45:6:  React Hook useEffect has a missing dependency: 'keycloak'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+src/config/keycloak.ts
+  Line 1:8:  'React' is defined but never used  @typescript-eslint/no-unused-vars
+
+src/services/tokenManager.ts
+  Line 2:8:  'Keycloak' is defined but never used  @typescript-eslint/no-unused-vars
+
+webpack compiled with 10 warnings
+No issues found.
+Compiling...
+Compiled with warnings.
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/context.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/context.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/index.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/index.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/provider.tsx' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/provider.tsx'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/types.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/types.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/context.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/context.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/index.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/index.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/provider.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/provider.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/useKeycloak.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/useKeycloak.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/withKeycloak.tsx' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/withKeycloak.tsx'
+
+[eslint] 
+src/components/auth/AuthButton.tsx
+  Line 45:6:  React Hook useEffect has a missing dependency: 'getTokenTimeRemaining'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+src/config/keycloak.ts
+  Line 1:8:  'React' is defined but never used  @typescript-eslint/no-unused-vars
+
+src/services/tokenManager.ts
+  Line 2:8:  'Keycloak' is defined but never used  @typescript-eslint/no-unused-vars
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+WARNING in ./node_modules/@react-keycloak/core/lib/context.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/context.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/context.ts'
+
+WARNING in ./node_modules/@react-keycloak/core/lib/index.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/index.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/index.ts'
+
+WARNING in ./node_modules/@react-keycloak/core/lib/provider.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/provider.tsx' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/provider.tsx'
+
+WARNING in ./node_modules/@react-keycloak/core/lib/types.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/types.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/types.ts'
+
+WARNING in ./node_modules/@react-keycloak/web/lib/context.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/context.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/context.ts'
+
+WARNING in ./node_modules/@react-keycloak/web/lib/index.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/index.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/index.ts'
+
+WARNING in ./node_modules/@react-keycloak/web/lib/provider.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/provider.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/provider.ts'
+
+WARNING in ./node_modules/@react-keycloak/web/lib/useKeycloak.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/useKeycloak.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/useKeycloak.ts'
+
+WARNING in ./node_modules/@react-keycloak/web/lib/withKeycloak.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/withKeycloak.tsx' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/withKeycloak.tsx'
+
+WARNING in [eslint] 
+src/components/auth/AuthButton.tsx
+  Line 45:6:  React Hook useEffect has a missing dependency: 'getTokenTimeRemaining'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+src/config/keycloak.ts
+  Line 1:8:  'React' is defined but never used  @typescript-eslint/no-unused-vars
+
+src/services/tokenManager.ts
+  Line 2:8:  'Keycloak' is defined but never used  @typescript-eslint/no-unused-vars
+
+webpack compiled with 10 warnings
+Compiling...
+No issues found.
+Compiled with warnings.
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/context.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/context.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/index.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/index.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/provider.tsx' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/provider.tsx'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/types.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/types.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/context.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/context.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/index.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/index.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/provider.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/provider.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/useKeycloak.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/useKeycloak.ts'
+
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/withKeycloak.tsx' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/withKeycloak.tsx'
+
+[eslint] 
+src/components/auth/AuthButton.tsx
+  Line 45:6:  React Hook useEffect has a missing dependency: 'getTokenTimeRemaining'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+src/config/keycloak.ts
+  Line 1:8:  'React' is defined but never used  @typescript-eslint/no-unused-vars
+
+src/services/tokenManager.ts
+  Line 2:8:  'Keycloak' is defined but never used  @typescript-eslint/no-unused-vars
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+WARNING in ./node_modules/@react-keycloak/core/lib/context.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/context.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/context.ts'
+
+WARNING in ./node_modules/@react-keycloak/core/lib/index.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/index.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/index.ts'
+
+WARNING in ./node_modules/@react-keycloak/core/lib/provider.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/provider.tsx' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/provider.tsx'
+
+WARNING in ./node_modules/@react-keycloak/core/lib/types.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/types.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/core/lib/@react-keycloak/core/types.ts'
+
+WARNING in ./node_modules/@react-keycloak/web/lib/context.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/context.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/context.ts'
+
+WARNING in ./node_modules/@react-keycloak/web/lib/index.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/index.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/index.ts'
+
+WARNING in ./node_modules/@react-keycloak/web/lib/provider.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/provider.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/provider.ts'
+
+WARNING in ./node_modules/@react-keycloak/web/lib/useKeycloak.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/useKeycloak.ts' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/useKeycloak.ts'
+
+WARNING in ./node_modules/@react-keycloak/web/lib/withKeycloak.js
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/withKeycloak.tsx' file: Error: ENOENT: no such file or directory, open '/Users/sevketugurel/Desktop/HSS/HSS/node_modules/@react-keycloak/web/lib/@react-keycloak/web/withKeycloak.tsx'
+
+WARNING in [eslint] 
+src/components/auth/AuthButton.tsx
+  Line 45:6:  React Hook useEffect has a missing dependency: 'getTokenTimeRemaining'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+src/config/keycloak.ts
+  Line 1:8:  'React' is defined but never used  @typescript-eslint/no-unused-vars
+
+src/services/tokenManager.ts
+  Line 2:8:  'Keycloak' is defined but never used  @typescript-eslint/no-unused-vars
+
+webpack compiled with 10 warnings
+No issues found.

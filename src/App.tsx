@@ -6,6 +6,8 @@ import { AnimalPage, AnimalDetailPage } from './features/animals';
 import { AppointmentPage } from './features/appointments';
 import { LabDashboard, LabTestTypes } from './features/laboratory';
 import { Billing } from './features/billing';
+import AuthButton from './components/auth/AuthButton';
+import ApiTestComponent from './components/auth/ApiTestComponent';
 import './shared/styles/App.css';
 
 function App() {
@@ -24,6 +26,14 @@ function App() {
           <Route path="/inventory" element={<div>Envanter/Stok Sayfası (Yakında)</div>} />
           <Route path="/reports" element={<div>Raporlar Sayfası (Yakında)</div>} />
           <Route path="/settings" element={<div>Ayarlar Sayfası (Yakında)</div>} />
+          
+          {/* Keycloak Test Sayfaları - Geliştirme */}
+          <Route path="/auth-test" element={
+            <div>
+              <AuthButton />
+              <ApiTestComponent />
+            </div>
+          } />
         </Routes>
       </Layout>
     </Router>
