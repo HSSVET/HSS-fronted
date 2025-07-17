@@ -18,6 +18,7 @@ import ProtectedRoute, {
   AdminRoute, 
   VeterinarianRoute 
 } from './components/auth/ProtectedRoute';
+import AccessDenied from './components/common/AccessDenied';
 
 // Error Boundaries
 import { 
@@ -124,6 +125,16 @@ function App() {
                   element={
                     <PageErrorBoundary pageName="Login">
                       <LoginPage />
+                    </PageErrorBoundary>
+                  } 
+                />
+                
+                {/* Access Denied Route */}
+                <Route 
+                  path="/access-denied" 
+                  element={
+                    <PageErrorBoundary pageName="Access Denied">
+                      <AccessDenied />
                     </PageErrorBoundary>
                   } 
                 />

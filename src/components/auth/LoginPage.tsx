@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import {
@@ -210,54 +210,11 @@ const LoginPage: React.FC<LoginPageProps> = ({
     };
   }, [state, loginStep]);
 
-  // Early redirect if user is already authenticated
+  // Clean up any auth redirect URLs when component mounts
   useEffect(() => {
-    // Check if redirect is already in progress
-    const redirectInProgress = localStorage.getItem('login_redirect_in_progress');
-    
-    if (state.isAuthenticated && state.isInitialized && !state.isLoading && !redirectInProgress) {
-      // Don't redirect if we're already at the target location
-      if (location.pathname === '/dashboard' || location.pathname === '/') {
-        console.log('🔄 LoginPage: Already at dashboard, skipping redirect');
-        return;
-      }
-      
-      console.log('🔄 LoginPage: User already authenticated, immediate redirect');
-      
-      // Mark redirect as in progress
-      localStorage.setItem('login_redirect_in_progress', 'true');
-      
-      const urlRedirect = new URLSearchParams(location.search).get('redirect');
-      const storageRedirect = localStorage.getItem('auth_redirect_url');
-      let redirectUrl = urlRedirect || storageRedirect || '/dashboard';
-      
-      // Decode URL if it's encoded
-      if (redirectUrl) {
-        redirectUrl = decodeURIComponent(redirectUrl);
-      }
-      
-      if (redirectUrl === '/') {
-        redirectUrl = '/dashboard';
-      }
-      
-      // Clean up localStorage
-      if (storageRedirect) {
-        localStorage.removeItem('auth_redirect_url');
-      }
-      
-      console.log('🔄 LoginPage immediate redirect to:', redirectUrl);
-      
-      // Use window.location.href for more reliable redirect
-      console.log('🔄 Using window.location.href for redirect');
-      window.location.href = redirectUrl;
-    }
-  }, [state.isAuthenticated, state.isInitialized, state.isLoading, navigate, location.search]);
-
-  // Clean up redirect flag when component unmounts
-  useEffect(() => {
-    return () => {
-      localStorage.removeItem('login_redirect_in_progress');
-    };
+    localStorage.removeItem('auth_redirect_url');
+    localStorage.removeItem('login_redirect_in_progress');
+    console.log('🧹 LoginPage: Cleaned up redirect URLs on mount');
   }, []);
 
   useEffect(() => {
@@ -267,7 +224,20 @@ const LoginPage: React.FC<LoginPageProps> = ({
     console.log('  - isLoading:', state.isLoading);
     console.log('  - error:', state.error);
     console.log('  - loginStep:', loginStep);
-  }, [state.isAuthenticated, state.isInitialized, state.isLoading, loginStep]);
+
+    // Redirect after successful authentication
+    if (state.isAuthenticated && state.isInitialized && !state.isLoading) {
+      console.log('✅ Authentication successful, redirecting...');
+      const redirectUrl = new URLSearchParams(location.search).get('redirect') || '/dashboard';
+      console.log('🔗 Redirecting to:', redirectUrl);
+      
+      // Set success state and redirect after a short delay
+      setLoginStep('success');
+      setTimeout(() => {
+        navigate(redirectUrl, { replace: true });
+      }, 1500);
+    }
+  }, [state.isAuthenticated, state.isInitialized, state.isLoading, loginStep, location.search, navigate]);
 
   useEffect(() => {
     // Only show error if it's not an initialization error
@@ -472,29 +442,7 @@ const LoginPage: React.FC<LoginPageProps> = ({
   const renderLoginOptions = () => (
     <Fade in={animationStep >= 1} timeout={1200}>
       <Box sx={{ mb: 3 }}>
-        {/* Debug Information */}
-        <Box sx={{ mb: 2, p: 2, bgcolor: 'grey.100', borderRadius: 1 }}>
-          <Typography variant="caption" sx={{ fontWeight: 'bold', display: 'block', mb: 1 }}>
-            Debug Info:
-          </Typography>
-          <Typography variant="caption" sx={{ display: 'block', fontFamily: 'monospace', fontSize: '10px' }}>
-            isAuthenticated: {state.isAuthenticated ? '✅' : '❌'} | 
-            isInitialized: {state.isInitialized ? '✅' : '❌'} | 
-            isLoading: {state.isLoading ? '⏳' : '✅'} | 
-            loginStep: {loginStep}
-          </Typography>
-          <Typography variant="caption" sx={{ display: 'block', fontFamily: 'monospace', fontSize: '10px' }}>
-            Error: {state.error || 'None'}
-          </Typography>
-          <Button
-            size="small"
-            variant="outlined"
-            onClick={() => window.location.reload()}
-            sx={{ mt: 1, fontSize: '10px' }}
-          >
-            Reload Page
-          </Button>
-        </Box>
+
 
         {loginMethods.includes('sso') && (
           <Slide in={animationStep >= 1} direction="up" timeout={800}>
@@ -935,9 +883,25 @@ const LoginPage: React.FC<LoginPageProps> = ({
   // Main Render
   // ============================================================================
 
-  // Don't render LoginPage for authenticated users - redirect will handle it
+  // Show success state for authenticated users while redirecting
   if (state.isAuthenticated && state.isInitialized) {
-    return null;
+    return (
+      <Container maxWidth="lg" sx={{ minHeight: '100vh', py: 4 }}>
+        <Box sx={{ 
+          display: 'flex', 
+          flexDirection: 'column', 
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100vh'
+        }}>
+          <Card elevation={8} sx={{ borderRadius: 4, p: 4, textAlign: 'center' }}>
+            <CardContent>
+              {renderSuccessState()}
+            </CardContent>
+          </Card>
+        </Box>
+      </Container>
+    );
   }
 
   return (

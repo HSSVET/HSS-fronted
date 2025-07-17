@@ -291,6 +291,14 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
 export interface AuthContextType {
   state: AuthState;
   
+  // Direct access to state properties (for convenience)
+  user: AuthUser | null;
+  roles: string[];
+  permissions: string[];
+  isAuthenticated: boolean;
+  isLoading: boolean;
+  error: string | null;
+  
   // Auth Actions
   login: (redirectUrl?: string) => Promise<void>;
   logout: () => Promise<void>;
@@ -367,6 +375,52 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }, []);
 
   const createAuthUser = useCallback((keycloakUser: any): AuthUser => {
+    // Get roles from Keycloak
+    const roles = keycloakUser.realm_access?.roles || [];
+    
+    // Map roles to permissions
+    const permissions: string[] = [];
+    
+    // Add permissions based on roles
+    if (roles.includes('ADMIN')) {
+      permissions.push(
+        'animals:read', 'animals:write', 'animals:delete',
+        'appointments:read', 'appointments:write', 'appointments:delete',
+        'laboratory:read', 'laboratory:write', 'laboratory:delete',
+        'billing:read', 'billing:write', 'billing:delete',
+        'reports:read', 'reports:write',
+        'settings:read', 'settings:write',
+        'users:read', 'users:write',
+        'audit:read'
+      );
+    } else if (roles.includes('VETERINER')) {
+      permissions.push(
+        'animals:read', 'animals:write', 'animals:delete',
+        'appointments:read', 'appointments:write', 'appointments:delete',
+        'laboratory:read', 'laboratory:write', 'laboratory:delete',
+        'billing:read',
+        'reports:read'
+      );
+    } else if (roles.includes('SEKRETER')) {
+      permissions.push(
+        'animals:read', 'animals:write',
+        'appointments:read', 'appointments:write',
+        'billing:read', 'billing:write'
+      );
+    } else if (roles.includes('TEKNISYEN')) {
+      permissions.push(
+        'animals:read',
+        'laboratory:read', 'laboratory:write'
+      );
+    }
+    
+    // Determine primary role (highest in hierarchy)
+    let primaryRole: 'admin' | 'veterinarian' | 'assistant' = 'assistant';
+    if (roles.includes('ADMIN')) primaryRole = 'admin';
+    else if (roles.includes('VETERINER')) primaryRole = 'veterinarian';
+    else if (roles.includes('SEKRETER')) primaryRole = 'assistant'; // Secretary maps to assistant
+    else if (roles.includes('TEKNISYEN')) primaryRole = 'assistant'; // Technician maps to assistant
+
     return {
       id: keycloakUser.sub || crypto.randomUUID(),
       sub: keycloakUser.sub,
@@ -375,11 +429,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       name: `${keycloakUser.given_name || ''} ${keycloakUser.family_name || ''}`.trim(),
       firstName: keycloakUser.given_name || '',
       lastName: keycloakUser.family_name || '',
-      roles: keycloakUser.realm_access?.roles || [],
-      permissions: [], // Will be loaded separately
+      roles: roles,
+      permissions: permissions,
       lastLogin: new Date(),
       sessionId: keycloakUser.session_state || crypto.randomUUID(),
-      role: 'assistant', // Default role
+      role: primaryRole,
       createdAt: new Date(),
       updatedAt: new Date(),
       department: keycloakUser.department,
@@ -612,6 +666,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
           console.log('👤 Created auth user:', user);
           console.log('🔗 Created auth session:', session);
+          console.log('🎯 User roles:', user.roles);
+          console.log('🔑 User permissions:', user.permissions);
+          console.log('👨‍💼 Primary role:', user.role);
 
           // Setup API client
           apiClient.setKeycloak(keycloak);
@@ -705,6 +762,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const contextValue: AuthContextType = {
     state,
+    
+    // Direct access to state properties
+    user: state.user,
+    roles: state.roles,
+    permissions: state.permissions,
+    isAuthenticated: state.isAuthenticated,
+    isLoading: state.isLoading,
+    error: state.error,
     
     // Auth Actions
     login,
