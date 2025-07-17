@@ -8,9 +8,7 @@ import {
   Alert,
   AlertTitle,
   Collapse,
-  IconButton,
   Chip,
-  Divider,
   List,
   ListItem,
   ListItemText,
@@ -25,31 +23,22 @@ import {
   Stack,
   Paper,
   Fade,
-  Slide,
   CircularProgress
 } from '@mui/material';
 import {
   Error as ErrorIcon,
-  Warning as WarningIcon,
   Refresh as RefreshIcon,
   BugReport as BugReportIcon,
   ExpandMore as ExpandMoreIcon,
   ExpandLess as ExpandLessIcon,
   Send as SendIcon,
   Home as HomeIcon,
-  Settings as SettingsIcon,
-  Info as InfoIcon,
-  Security as SecurityIcon,
-  Visibility as VisibilityIcon,
-  VisibilityOff as VisibilityOffIcon,
   Report as ReportIcon,
   Code as CodeIcon,
   Timeline as TimelineIcon,
-  Storage as StorageIcon,
   Computer as ComputerIcon,
   Person as PersonIcon,
-  Schedule as ScheduleIcon,
-  Close as CloseIcon
+  Schedule as ScheduleIcon
 } from '@mui/icons-material';
 
 // ============================================================================
@@ -67,6 +56,13 @@ interface ErrorBoundaryState {
   reportSent: boolean;
   lastErrorTime: Date | null;
   errorHistory: ErrorLogEntry[];
+  // Report dialog form fields
+  reportDescription: string;
+  reportSteps: string;
+  reportUserEmail: string;
+  reportIncludeDetails: boolean;
+  reportSeverity: 'low' | 'medium' | 'high' | 'critical';
+  reportSending: boolean;
 }
 
 interface ErrorBoundaryProps {
@@ -195,7 +191,14 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
       showReportDialog: false,
       reportSent: false,
       lastErrorTime: null,
-      errorHistory: []
+      errorHistory: [],
+      // Report dialog form fields
+      reportDescription: '',
+      reportSteps: '',
+      reportUserEmail: '',
+      reportIncludeDetails: true,
+      reportSeverity: 'medium',
+      reportSending: false
     };
 
     this.errorReporter = ErrorReportingService.getInstance();
@@ -335,7 +338,15 @@ ${JSON.stringify(this.state.errorHistory.slice(-1)[0]?.additionalInfo || {}, nul
   };
 
   private handleCloseReportDialog = () => {
-    this.setState({ showReportDialog: false });
+    this.setState({ 
+      showReportDialog: false,
+      reportDescription: '',
+      reportSteps: '',
+      reportUserEmail: '',
+      reportIncludeDetails: true,
+      reportSeverity: 'medium',
+      reportSending: false
+    });
   };
 
   private handleSendReport = async (report: ErrorReport) => {
@@ -359,8 +370,6 @@ ${JSON.stringify(this.state.errorHistory.slice(-1)[0]?.additionalInfo || {}, nul
   private renderErrorDetails() {
     const { error, errorInfo, errorHistory } = this.state;
     if (!error || !errorInfo) return null;
-
-    const errorReport = this.generateErrorReport();
 
     return (
       <Collapse in={this.state.showDetails}>
@@ -485,27 +494,29 @@ ${JSON.stringify(this.state.errorHistory.slice(-1)[0]?.additionalInfo || {}, nul
   }
 
   private renderReportDialog() {
-    const [description, setDescription] = React.useState('');
-    const [steps, setSteps] = React.useState('');
-    const [userEmail, setUserEmail] = React.useState('');
-    const [includeDetails, setIncludeDetails] = React.useState(true);
-    const [severity, setSeverity] = React.useState<'low' | 'medium' | 'high' | 'critical'>('medium');
-    const [sending, setSending] = React.useState(false);
+    const {
+      reportDescription,
+      reportSteps,
+      reportUserEmail,
+      reportIncludeDetails,
+      reportSeverity,
+      reportSending
+    } = this.state;
 
     const handleSubmit = async () => {
-      setSending(true);
+      this.setState({ reportSending: true });
       
       const report: ErrorReport = {
         errorId: this.state.errorId || '',
-        description,
-        steps,
-        userEmail,
-        includeDetails,
-        severity
+        description: reportDescription,
+        steps: reportSteps,
+        userEmail: reportUserEmail,
+        includeDetails: reportIncludeDetails,
+        severity: reportSeverity
       };
 
       await this.handleSendReport(report);
-      setSending(false);
+      this.setState({ reportSending: false });
     };
 
     return (
@@ -527,8 +538,8 @@ ${JSON.stringify(this.state.errorHistory.slice(-1)[0]?.additionalInfo || {}, nul
             multiline
             rows={3}
             label="Describe what happened"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
+            value={reportDescription}
+            onChange={(e) => this.setState({ reportDescription: e.target.value })}
             margin="normal"
             placeholder="Please describe what you were doing when the error occurred..."
           />
@@ -537,24 +548,24 @@ ${JSON.stringify(this.state.errorHistory.slice(-1)[0]?.additionalInfo || {}, nul
             multiline
             rows={2}
             label="Steps to reproduce"
-            value={steps}
-            onChange={(e) => setSteps(e.target.value)}
+            value={reportSteps}
+            onChange={(e) => this.setState({ reportSteps: e.target.value })}
             margin="normal"
             placeholder="1. First I clicked...\n2. Then I..."
           />
           <TextField
             fullWidth
             label="Your email (optional)"
-            value={userEmail}
-            onChange={(e) => setUserEmail(e.target.value)}
+            value={reportUserEmail}
+            onChange={(e) => this.setState({ reportUserEmail: e.target.value })}
             margin="normal"
             placeholder="your.email@example.com"
           />
           <FormControlLabel
             control={
               <Switch
-                checked={includeDetails}
-                onChange={(e) => setIncludeDetails(e.target.checked)}
+                checked={reportIncludeDetails}
+                onChange={(e) => this.setState({ reportIncludeDetails: e.target.checked })}
               />
             }
             label="Include technical details"
@@ -566,10 +577,10 @@ ${JSON.stringify(this.state.errorHistory.slice(-1)[0]?.additionalInfo || {}, nul
           <Button
             onClick={handleSubmit}
             variant="contained"
-            disabled={sending || !description.trim()}
-            startIcon={sending ? <CircularProgress size={20} /> : <SendIcon />}
+            disabled={reportSending || !reportDescription.trim()}
+            startIcon={reportSending ? <CircularProgress size={20} /> : <SendIcon />}
           >
-            {sending ? 'Sending...' : 'Send Report'}
+            {reportSending ? 'Sending...' : 'Send Report'}
           </Button>
         </DialogActions>
       </Dialog>
@@ -706,6 +717,7 @@ ${JSON.stringify(this.state.errorHistory.slice(-1)[0]?.additionalInfo || {}, nul
                   {this.renderErrorDetails()}
                 </Box>
               )}
+              {this.renderReportDialog()}
             </CardContent>
           </Card>
         </Fade>
