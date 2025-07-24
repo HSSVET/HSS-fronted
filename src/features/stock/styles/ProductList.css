@@ -1,0 +1,334 @@
+/* Product List Styles */
+.product-list-container {
+    padding: var(--spacing-2);
+    height: 100%;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+}
+
+.loading-state,
+.empty-state {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: var(--spacing-4);
+    color: var(--text-secondary);
+    font-size: 16px;
+}
+
+/* Header */
+.product-list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: var(--spacing-1);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.section-info {
+    flex: 1;
+}
+
+.section-title {
+    font-size: 20px;
+    color: var(--text-primary);
+    margin: 0 0 4px 0;
+    font-weight: var(--font-weight-medium);
+}
+
+.section-subtitle {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin: 0;
+    font-weight: var(--font-weight-regular);
+}
+
+.add-product-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: var(--primary-color);
+    color: var(--text-on-primary);
+    border: none;
+    padding: 12px 16px;
+    border-radius: var(--border-radius-sm);
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: var(--font-weight-medium);
+    transition: background-color var(--transition-speed) var(--transition-function);
+    box-shadow: var(--elevation-1);
+}
+
+.add-product-btn:hover {
+    background-color: var(--primary-dark);
+    box-shadow: var(--elevation-2);
+}
+
+.btn-icon {
+    font-size: 18px;
+    line-height: 1;
+}
+
+/* Filters */
+.filters-section {
+    display: flex;
+    gap: var(--spacing-2);
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.search-box {
+    flex: 1;
+    min-width: 300px;
+}
+
+.search-input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: var(--border-radius-sm);
+    font-size: 14px;
+    transition: border-color var(--transition-speed) var(--transition-function);
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.1);
+}
+
+.filter-group {
+    display: flex;
+    gap: var(--spacing-1);
+}
+
+.filter-select {
+    padding: 12px 16px;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: var(--border-radius-sm);
+    font-size: 14px;
+    background: white;
+    cursor: pointer;
+    transition: border-color var(--transition-speed) var(--transition-function);
+}
+
+.filter-select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+/* Table */
+.products-table-container {
+    flex: 1;
+    overflow: auto;
+    border: 1px solid rgba(0, 0, 0, 0.04);
+    border-radius: var(--border-radius-sm);
+}
+
+.products-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.products-table th {
+    background-color: #f8f9fa;
+    color: var(--text-primary);
+    font-weight: var(--font-weight-medium);
+    padding: 16px 12px;
+    text-align: left;
+    border-bottom: 2px solid rgba(0, 0, 0, 0.04);
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+.products-table td {
+    padding: 12px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+    vertical-align: middle;
+}
+
+.product-row:hover {
+    background-color: rgba(0, 0, 0, 0.02);
+}
+
+.product-name {
+    font-weight: var(--font-weight-medium);
+    color: var(--text-primary);
+}
+
+.product-code {
+    color: var(--text-secondary);
+    font-family: monospace;
+    font-size: 13px;
+}
+
+.category-badge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: var(--font-weight-medium);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.category-medication {
+    background-color: rgba(33, 150, 243, 0.1);
+    color: #1976D2;
+}
+
+.category-vaccine {
+    background-color: rgba(76, 175, 80, 0.1);
+    color: #388E3C;
+}
+
+.category-supply {
+    background-color: rgba(255, 152, 0, 0.1);
+    color: #F57C00;
+}
+
+.category-equipment {
+    background-color: rgba(156, 39, 176, 0.1);
+    color: #7B1FA2;
+}
+
+.stock-value {
+    font-weight: var(--font-weight-medium);
+}
+
+.stock-value.status-good {
+    color: #4CAF50;
+}
+
+.stock-value.status-low {
+    color: #FF9800;
+}
+
+.stock-value.status-critical {
+    color: #F44336;
+}
+
+.stock-value.status-expired {
+    color: #F44336;
+}
+
+.date-value.expired {
+    color: #F44336;
+    font-weight: var(--font-weight-medium);
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: var(--font-weight-bold);
+    text-transform: uppercase;
+    margin-left: 8px;
+}
+
+.status-badge.status-good {
+    background-color: rgba(76, 175, 80, 0.1);
+    color: #4CAF50;
+}
+
+.status-badge.status-low {
+    background-color: rgba(255, 152, 0, 0.1);
+    color: #FF9800;
+}
+
+.status-badge.status-critical {
+    background-color: rgba(244, 67, 54, 0.1);
+    color: #F44336;
+}
+
+.status-badge.status-expired {
+    background-color: rgba(244, 67, 54, 0.1);
+    color: #F44336;
+}
+
+.actions {
+    display: flex;
+    gap: 4px;
+}
+
+.action-btn {
+    padding: 6px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color var(--transition-speed) var(--transition-function);
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.edit-btn {
+    background-color: rgba(33, 150, 243, 0.1);
+    color: #1976D2;
+}
+
+.edit-btn:hover {
+    background-color: rgba(33, 150, 243, 0.2);
+}
+
+.delete-btn {
+    background-color: rgba(244, 67, 54, 0.1);
+    color: #F44336;
+}
+
+.delete-btn:hover {
+    background-color: rgba(244, 67, 54, 0.2);
+}
+
+/* Action Icons */
+.icon-edit::before {
+    content: '✏️';
+    font-size: 12px;
+}
+
+.icon-delete::before {
+    content: '🗑️';
+    font-size: 12px;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .product-list-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spacing-1);
+    }
+
+    .filters-section {
+        flex-direction: column;
+    }
+
+    .search-box {
+        min-width: 100%;
+    }
+
+    .filter-group {
+        width: 100%;
+    }
+
+    .filter-select {
+        flex: 1;
+    }
+}
+
+@media (max-width: 768px) {
+    .products-table-container {
+        overflow-x: auto;
+    }
+
+    .products-table {
+        min-width: 800px;
+    }
+}
