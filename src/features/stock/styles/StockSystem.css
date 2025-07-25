@@ -1,8 +1,7 @@
 /* Stock System Main Styles */
 .stock-system {
     padding: var(--spacing-1);
-    height: 100vh;
-    overflow-y: auto;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
     background-color: var(--background-color);
@@ -20,6 +19,7 @@
 .stock-system.loading {
     justify-content: center;
     align-items: center;
+    height: 100vh;
 }
 
 .loading-spinner {
@@ -183,11 +183,9 @@
 
 /* Tab Content */
 .tab-content {
-    flex: 1;
     background: var(--surface-color);
     border-radius: var(--border-radius-lg);
     box-shadow: var(--elevation-1);
-    overflow: hidden;
     border: 1px solid rgba(0, 0, 0, 0.04);
 }
 

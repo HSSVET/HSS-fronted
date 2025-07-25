@@ -135,10 +135,8 @@ const StockSystem: React.FC = () => {
                     ))}
                 </div>
 
-                {/* Tab Content */}
-                <div className="tab-content">
-                    {renderTabContent()}
-                </div>
+                {/* Tab Content - Directly render without wrapper */}
+                {renderTabContent()}
             </div>
         </div>
     );

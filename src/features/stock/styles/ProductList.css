@@ -1,8 +1,8 @@
 /* Product List Styles */
 .product-list-container {
     padding: var(--spacing-2);
-    height: 100%;
-    overflow-y: auto;
+    overflow-y: visible;
+    /* scroll'u kaldır */
     display: flex;
     flex-direction: column;
     gap: var(--spacing-2);
@@ -121,10 +121,10 @@
 
 /* Table */
 .products-table-container {
-    flex: 1;
-    overflow: auto;
     border: 1px solid rgba(0, 0, 0, 0.04);
     border-radius: var(--border-radius-sm);
+    overflow: visible;
+    /* Tablo overflow'unu da visible yap */
 }
 
 .products-table {
@@ -140,9 +140,6 @@
     padding: 16px 12px;
     text-align: left;
     border-bottom: 2px solid rgba(0, 0, 0, 0.04);
-    position: sticky;
-    top: 0;
-    z-index: 1;
 }
 
 .products-table td {
@@ -326,6 +323,7 @@
 @media (max-width: 768px) {
     .products-table-container {
         overflow-x: auto;
+        /* Sadece yatay scroll için gerekli */
     }
 
     .products-table {

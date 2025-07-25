@@ -1,13 +1,16 @@
 /* Layout Styles - Material Design Inspired */
 :root {
   /* Material Design renk paleti - daha minimal */
-  --primary-color: #92A78C; /* Yeşil */
+  --primary-color: #92A78C;
+  /* Yeşil */
   --primary-light: #B4C7AF;
   --primary-dark: #6A7B65;
-  --secondary-color: #F7CD82; /* Sarı */
+  --secondary-color: #F7CD82;
+  /* Sarı */
   --secondary-light: #FFEEB0;
   --secondary-dark: #D5AE60;
-  --accent-color: #F79E6B; /* Turuncu */
+  --accent-color: #F79E6B;
+  /* Turuncu */
   --accent-light: #FFD0B0;
   --accent-dark: #D57A4A;
   --surface-color: #FFFFFF;
@@ -18,13 +21,13 @@
   --text-disabled: rgba(0, 0, 0, 0.38);
   --text-on-primary: #FFFFFF;
   --text-on-secondary: rgba(0, 0, 0, 0.87);
-  
+
   /* Material Design elevations - daha hafif gölgeler */
-  --elevation-1: 0 1px 2px rgba(0,0,0,0.08);
-  --elevation-2: 0 2px 4px rgba(0,0,0,0.10);
-  --elevation-3: 0 4px 8px rgba(0,0,0,0.12);
-  --elevation-4: 0 6px 12px rgba(0,0,0,0.14);
-  
+  --elevation-1: 0 1px 2px rgba(0, 0, 0, 0.08);
+  --elevation-2: 0 2px 4px rgba(0, 0, 0, 0.10);
+  --elevation-3: 0 4px 8px rgba(0, 0, 0, 0.12);
+  --elevation-4: 0 6px 12px rgba(0, 0, 0, 0.14);
+
   /* Material Design spacing */
   --spacing-unit: 8px;
   --spacing-1: 8px;
@@ -32,19 +35,19 @@
   --spacing-3: 24px;
   --spacing-4: 32px;
   --spacing-5: 40px;
-  
+
   /* Material Design typography */
   --font-family: 'Roboto', 'Segoe UI', sans-serif;
   --font-weight-regular: 400;
   --font-weight-medium: 500;
   --font-weight-bold: 700;
-  
+
   /* Material Design shapes - daha yumuşak köşeler */
   --border-radius-sm: 6px;
   --border-radius-md: 8px;
   --border-radius-lg: 12px;
   --border-radius-xl: 16px;
-  
+
   /* Transitions */
   --transition-speed: 0.2s;
   --transition-function: cubic-bezier(0.4, 0, 0.2, 1);
@@ -75,12 +78,14 @@ body {
   height: 100vh;
   z-index: 10;
   transition: width var(--transition-speed) var(--transition-function);
-  width: 60px; /* Daha ince sidebar */
+  width: 60px;
+  /* Daha ince sidebar */
   box-shadow: var(--elevation-1);
 }
 
 .layout:not(.sidebar-collapsed) .sidebar-hover-area {
-  width: 240px; /* Daha ince sidebar */
+  width: 240px;
+  /* Daha ince sidebar */
 }
 
 /* Hover alanını genişletmek için */
@@ -96,11 +101,10 @@ body {
 
 .main-content {
   flex: 1;
-  margin-left: 60px; /* Daha ince sidebar */
+  margin-left: 60px;
+  /* Daha ince sidebar */
   transition: margin-left var(--transition-speed) var(--transition-function);
   min-height: 100vh;
-  max-height: 100vh;
-  overflow-y: auto;
   background-color: var(--background-color);
   padding: var(--spacing-3);
   display: flex;
@@ -114,15 +118,17 @@ body {
 @media (max-width: 768px) {
   .main-content {
     margin-left: 0;
-    padding: calc(56px + var(--spacing-2)) var(--spacing-2) var(--spacing-2); /* Material Design mobile header height + padding */
+    padding: calc(56px + var(--spacing-2)) var(--spacing-2) var(--spacing-2);
+    /* Material Design mobile header height + padding */
   }
-  
+
   .layout:not(.sidebar-collapsed) .main-content {
     margin-left: 0;
   }
-  
+
   .sidebar-hover-area {
-    width: 56px; /* Material Design mobile standard */
+    width: 56px;
+    /* Material Design mobile standard */
   }
 }
 
@@ -169,4 +175,4 @@ body {
   .placeholder-page p {
     font-size: 1rem;
   }
-} 
+}
