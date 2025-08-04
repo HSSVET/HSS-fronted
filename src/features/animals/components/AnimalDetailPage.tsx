@@ -61,8 +61,14 @@ const AnimalDetailPage: React.FC = () => {
   const navigate = useNavigate();
   const [selectedTab, setSelectedTab] = useState(0);
 
+  // Debug log
+  console.log('AnimalDetailPage rendered with id:', id);
+
   const animalId = id ? parseInt(id) : 1;
   const animalData = mockAnimalData[animalId as keyof typeof mockAnimalData] || mockAnimalData[1];
+  
+  // Debug log
+  console.log('Animal data:', animalData);
 
   const handleTabChange = (index: number) => {
     setSelectedTab(index);

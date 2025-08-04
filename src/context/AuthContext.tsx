@@ -377,6 +377,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const createAuthUser = useCallback((keycloakUser: any): AuthUser => {
     // Get roles from Keycloak
     const roles = keycloakUser.realm_access?.roles || [];
+    console.log('🔐 Keycloak roles:', roles);
     
     // Map roles to permissions
     const permissions: string[] = [];
@@ -393,6 +394,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         'users:read', 'users:write',
         'audit:read'
       );
+      console.log('👑 Admin permissions assigned:', permissions);
     } else if (roles.includes('VETERINER')) {
       permissions.push(
         'animals:read', 'animals:write', 'animals:delete',
@@ -401,17 +403,22 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         'billing:read',
         'reports:read'
       );
+      console.log('🐾 Veterinarian permissions assigned:', permissions);
     } else if (roles.includes('SEKRETER')) {
       permissions.push(
         'animals:read', 'animals:write',
         'appointments:read', 'appointments:write',
         'billing:read', 'billing:write'
       );
+      console.log('📝 Secretary permissions assigned:', permissions);
     } else if (roles.includes('TEKNISYEN')) {
       permissions.push(
         'animals:read',
         'laboratory:read', 'laboratory:write'
       );
+      console.log('🔬 Technician permissions assigned:', permissions);
+    } else {
+      console.log('⚠️ No matching roles found, no permissions assigned');
     }
     
     // Determine primary role (highest in hierarchy)
@@ -669,6 +676,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           console.log('🎯 User roles:', user.roles);
           console.log('🔑 User permissions:', user.permissions);
           console.log('👨‍💼 Primary role:', user.role);
+          console.log('🔍 Has laboratory:read permission:', user.permissions.includes('laboratory:read'));
+          console.log('🔍 Has animals:read permission:', user.permissions.includes('animals:read'));
+          console.log('🔍 Has appointments:read permission:', user.permissions.includes('appointments:read'));
 
           // Setup API client
           apiClient.setKeycloak(keycloak);

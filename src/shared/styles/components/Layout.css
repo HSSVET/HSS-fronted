@@ -107,6 +107,15 @@ body {
   flex-direction: column;
 }
 
+.main-header {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: var(--spacing-2) 0;
+  margin-bottom: var(--spacing-3);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
 .layout:not(.sidebar-collapsed) .main-content {
   margin-left: 240px;
 }

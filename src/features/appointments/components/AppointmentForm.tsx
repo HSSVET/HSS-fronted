@@ -1,5 +1,6 @@
 import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import { Clock } from 'lucide-react';
+import webSocketService from '../../../services/websocketService';
 import '../styles/AppointmentForm.css';
 import { LegacyAppointment, AppointmentFormData } from '../types/appointment';
 
@@ -54,6 +55,18 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
 
     const handleSubmit = (e: FormEvent<HTMLFormElement>): void => {
         e.preventDefault();
+        
+        // WebSocket: Yeni randevu bildirimi
+        const isEmergency = formData.description.toLowerCase().includes('acil') || 
+                           formData.description.toLowerCase().includes('kritik') ||
+                           formData.description.toLowerCase().includes('emergency');
+        
+        if (isEmergency) {
+            webSocketService.sendEmergencyMessage(`ACİL RANDEVU: ${formData.patientName} - ${formData.time} - ${formData.description}`);
+        } else {
+            webSocketService.sendAppointmentMessage(`Yeni randevu: ${formData.patientName} - ${formData.time} - ${formData.ownerName}`);
+        }
+        
         onSave(formData);
     };
 

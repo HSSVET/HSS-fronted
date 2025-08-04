@@ -645,4 +645,127 @@
   font-size: 12px;
   font-weight: var(--font-weight-medium);
   letter-spacing: 0.3px;
+}
+
+/* Emergency Button */
+.emergency-btn {
+  background-color: #f44336 !important;
+  color: white !important;
+}
+
+.emergency-btn:hover {
+  background-color: #d32f2f !important;
+}
+
+/* Emergency Modal */
+.emergency-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.emergency-modal {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  width: 90%;
+  max-width: 500px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.modal-header h3 {
+  margin: 0;
+  color: #f44336;
+  font-size: 18px;
+}
+
+.modal-header button {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #666;
+}
+
+.modal-content {
+  padding: 20px;
+}
+
+.quick-emergency-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.emergency-quick-btn {
+  padding: 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  color: white;
+  transition: opacity 0.2s;
+}
+
+.emergency-quick-btn:hover {
+  opacity: 0.8;
+}
+
+.emergency-quick-btn.trauma {
+  background-color: #f44336;
+}
+
+.emergency-quick-btn.cardiac {
+  background-color: #e91e63;
+}
+
+.emergency-quick-btn.respiratory {
+  background-color: #ff9800;
+}
+
+.emergency-quick-btn.toxic {
+  background-color: #9c27b0;
+}
+
+.custom-emergency textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  resize: vertical;
+  font-family: inherit;
+  margin-bottom: 10px;
+}
+
+.send-emergency-btn {
+  width: 100%;
+  padding: 12px;
+  background-color: #f44336;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.send-emergency-btn:hover {
+  background-color: #d32f2f;
 } 

@@ -158,8 +158,18 @@ const useAccessControl = (props: ProtectedRouteProps) => {
   useEffect(() => {
     const validateAccess = async () => {
       try {
+        console.log('🔐 ProtectedRoute: Validating access for path:', location.pathname);
+        console.log('👤 User roles:', state.roles);
+        console.log('🔑 User permissions:', state.permissions);
+        console.log('📋 Required roles:', requiredRoles);
+        console.log('🔐 Required permissions:', requiredPermissions);
+        console.log('✅ Is authenticated:', state.isAuthenticated);
+        console.log('✅ Is initialized:', state.isInitialized);
+        console.log('⏳ Is loading:', state.isLoading);
+
         // Step 1: Authentication Check
         if (requireAuth !== false && !state.isAuthenticated) {
+          console.log('❌ Authentication required');
           setAccessResult({
             level: 'denied',
             reason: 'Authentication required',
@@ -171,6 +181,7 @@ const useAccessControl = (props: ProtectedRouteProps) => {
 
         // Step 2: Initialization Check
         if (!state.isInitialized) {
+          console.log('⏳ Waiting for initialization');
           setAccessResult({
             level: 'pending',
             reason: 'Initializing authentication...'
@@ -180,6 +191,7 @@ const useAccessControl = (props: ProtectedRouteProps) => {
 
         // Step 3: Loading Check
         if (state.isLoading) {
+          console.log('⏳ Still loading');
           setAccessResult({
             level: 'pending',
             reason: 'Loading user data...'
@@ -189,6 +201,7 @@ const useAccessControl = (props: ProtectedRouteProps) => {
 
         // Step 4: Role Validation
         if (!validateRoles) {
+          console.log('❌ Role validation failed');
           setAccessResult({
             level: 'denied',
             reason: `Required roles: ${requiredRoles?.join(', ')}. Your roles: ${state.roles?.join(', ') || 'None'}`,
@@ -202,6 +215,7 @@ const useAccessControl = (props: ProtectedRouteProps) => {
 
         // Step 5: Permission Validation
         if (!validatePermissions) {
+          console.log('❌ Permission validation failed');
           setAccessResult({
             level: 'denied',
             reason: `Required permissions: ${requiredPermissions?.join(', ')}. Your roles: ${state.roles?.join(', ') || 'None'}`,
@@ -217,6 +231,7 @@ const useAccessControl = (props: ProtectedRouteProps) => {
         if (customValidator) {
           const customResult = await customValidator(state.user);
           if (!customResult) {
+            console.log('❌ Custom validation failed');
             setAccessResult({
               level: 'denied',
               reason: 'Custom validation failed',
@@ -230,6 +245,7 @@ const useAccessControl = (props: ProtectedRouteProps) => {
         }
 
         // Step 7: All checks passed
+        console.log('✅ Access granted');
         setAccessResult({
           level: 'granted',
           reason: 'Access granted'
@@ -241,6 +257,7 @@ const useAccessControl = (props: ProtectedRouteProps) => {
         }
 
       } catch (error) {
+        console.error('❌ Access validation error:', error);
         const errorMessage = error instanceof Error ? error.message : 'Access validation failed';
         setAccessResult({
           level: 'denied',
@@ -305,6 +322,7 @@ const ProtectedRoute = (props: ProtectedRouteProps): React.ReactElement | null =
 
   // Show loading state
   if (accessResult.level === 'pending') {
+    console.log('⏳ ProtectedRoute: Showing loading state');
     if (props.loadingFallback) {
       return <>{props.loadingFallback}</>;
     }
@@ -360,6 +378,7 @@ const ProtectedRoute = (props: ProtectedRouteProps): React.ReactElement | null =
 
   // Access granted - render children
   if (accessResult.level === 'granted') {
+    console.log('✅ ProtectedRoute: Access granted, rendering children');
     return <>{children}</>;
   }
 

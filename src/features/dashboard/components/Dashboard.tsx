@@ -1,10 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import webSocketService from '../../../services/websocketService';
 import '../styles/Dashboard.css';
 import { CalendarWidget } from '../../../shared';
+import WebSocketTest from '../../../components/common/WebSocketTest';
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
+  const [showEmergencyModal, setShowEmergencyModal] = useState(false);
+  const [emergencyMessage, setEmergencyMessage] = useState('');
   
   // Mock data mapping animal names to IDs for navigation
   const animalIdMap: { [key: string]: number } = {
@@ -25,6 +29,28 @@ const Dashboard: React.FC = () => {
     navigate(`/animals/${animalId}`);
   };
 
+  const handleEmergencyClick = () => {
+    setShowEmergencyModal(true);
+  };
+
+  const sendEmergencyMessage = () => {
+    if (emergencyMessage.trim()) {
+      webSocketService.sendEmergencyMessage(`ACİL DURUM: ${emergencyMessage}`);
+      setEmergencyMessage('');
+      setShowEmergencyModal(false);
+    }
+  };
+
+  const sendQuickEmergency = (type: string) => {
+    const messages = {
+      'trauma': 'Travma vakası - Acil müdahale gerekiyor!',
+      'cardiac': 'Kardiyak acil - Hasta kritik durumda!',
+      'respiratory': 'Solunum sıkıntısı - Acil müdahale!',
+      'toxic': 'Zehirlenme şüphesi - Acil tedavi!'
+    };
+    webSocketService.sendEmergencyMessage(`ACİL: ${messages[type as keyof typeof messages]}`);
+  };
+
   return (
     <div className="dashboard">
       <div className="dashboard-header">
@@ -37,6 +63,10 @@ const Dashboard: React.FC = () => {
           <button className="action-button">
             <span className="icon icon-plus"></span>
             Yeni Hasta Kaydı
+          </button>
+          <button className="action-button emergency-btn" onClick={handleEmergencyClick}>
+            <span className="icon icon-alert"></span>
+            Acil Durum
           </button>
         </div>
       </div>
@@ -298,7 +328,55 @@ const Dashboard: React.FC = () => {
             </ul>
           </div>
         </div>
+
+        <div className="widget websocket-test-widget">
+          <div className="widget-header">
+            <h2><span className="icon icon-wifi"></span> WebSocket Test</h2>
+          </div>
+          <div className="widget-content">
+            <WebSocketTest />
+          </div>
+        </div>
       </div>
+
+      {/* Acil Durum Modal */}
+      {showEmergencyModal && (
+        <div className="emergency-modal-overlay">
+          <div className="emergency-modal">
+            <div className="modal-header">
+              <h3>🚨 Acil Durum Bildirimi</h3>
+              <button onClick={() => setShowEmergencyModal(false)}>×</button>
+            </div>
+            <div className="modal-content">
+              <div className="quick-emergency-buttons">
+                <button onClick={() => sendQuickEmergency('trauma')} className="emergency-quick-btn trauma">
+                  Travma Vakası
+                </button>
+                <button onClick={() => sendQuickEmergency('cardiac')} className="emergency-quick-btn cardiac">
+                  Kardiyak Acil
+                </button>
+                <button onClick={() => sendQuickEmergency('respiratory')} className="emergency-quick-btn respiratory">
+                  Solunum Sıkıntısı
+                </button>
+                <button onClick={() => sendQuickEmergency('toxic')} className="emergency-quick-btn toxic">
+                  Zehirlenme
+                </button>
+              </div>
+              <div className="custom-emergency">
+                <textarea
+                  value={emergencyMessage}
+                  onChange={(e) => setEmergencyMessage(e.target.value)}
+                  placeholder="Özel acil durum mesajınızı yazın..."
+                  rows={3}
+                />
+                <button onClick={sendEmergencyMessage} className="send-emergency-btn">
+                  Acil Durum Gönder
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
