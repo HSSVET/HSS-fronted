@@ -9,6 +9,7 @@ import { AnimalPage, AnimalDetailPage } from './features/animals';
 import { AppointmentPage } from './features/appointments';
 import { LabDashboard, LabTestTypes } from './features/laboratory';
 import { Billing } from './features/billing';
+import { RemindersPage } from './features/reminders';
 
 // Auth Components
 import LoginPage from './components/auth/LoginPage';
@@ -245,6 +246,20 @@ function App() {
                         </PageErrorBoundary>
                       </Layout>
                     </ProtectedRoute>
+                  } 
+                />
+                
+                {/* Reminders - Admin/Veterinarian only */}
+                <Route 
+                  path="/reminders" 
+                  element={
+                    <VeterinarianRoute>
+                      <Layout>
+                        <PageErrorBoundary pageName="Reminders">
+                          <RemindersPage />
+                        </PageErrorBoundary>
+                      </Layout>
+                    </VeterinarianRoute>
                   } 
                 />
                 
