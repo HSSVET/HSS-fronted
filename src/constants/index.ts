@@ -11,7 +11,7 @@ export const API_ENDPOINTS = {
   ANIMALS_WITH_CHRONIC_DISEASES: '/api/animals/with-chronic-diseases',
   ANIMALS_BIRTHDAY_TODAY: '/api/animals/birthday-today',
   ANIMALS_BIRTHDAY_THIS_MONTH: '/api/animals/birthday-this-month',
-  
+
   // Appointment endpoints
   APPOINTMENTS: '/api/appointments',
   APPOINTMENTS_PAGED: '/api/appointments/paged',
@@ -27,14 +27,14 @@ export const API_ENDPOINTS = {
   // Veterinarian endpoints
   VETERINARIANS: '/api/veterinarians',
   VETERINARIANS_BASIC: '/api/veterinarians/basic',
-  
+
   // Owner endpoints
   OWNERS: '/api/owners',
-  
+
   // Species and Breed endpoints
   SPECIES: '/api/species',
   BREEDS: '/api/breeds',
-  
+
   // Medical records endpoints
   CLINICAL_EXAMINATIONS: '/api/clinical-examinations',
   DISEASE_HISTORY: '/api/disease-history',
@@ -42,30 +42,31 @@ export const API_ENDPOINTS = {
   LAB_TESTS: '/api/lab-tests',
   PATHOLOGY_FINDINGS: '/api/pathology-findings',
   RADIOLOGICAL_IMAGING: '/api/radiological-imaging',
-  
+
   // Medication and Vaccine endpoints
   MEDICATIONS: '/api/medications',
   VACCINES: '/api/vaccines',
   VACCINATIONS: '/api/vaccinations',
-  
+
   // Invoice endpoints
   INVOICES: '/api/invoices',
-  
+
   // Document endpoints
   DOCUMENTS: '/api/documents',
-  
+
   // File endpoints
   FILES: '/api/files',
-  
+
   // Communication and Reminder endpoints
   COMMUNICATIONS: '/api/communications',
   REMINDERS: '/api/reminders',
-  
+
   // User management endpoints
   USERS: '/api/users',
-  
+
   // Test endpoints
   TEST: '/api/test',
+  SMS: '/api/sms',
 } as const;
 
 // Application routes

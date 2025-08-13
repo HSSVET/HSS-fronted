@@ -27,6 +27,7 @@ const PERMISSION_MAPPINGS = {
   'audit:read': ['ADMIN'],
   'dashboard:read': ['ADMIN', 'VETERINER', 'SEKRETER', 'TEKNISYEN'], // Dashboard herkes erişebilir
   'inventory:read': ['ADMIN', 'VETERINER', 'SEKRETER'], // Envanter için eklendi
+  'sms:read': ['ADMIN', 'VETERINER', 'SEKRETER'],
 };
 
 export const usePermissions = () => {
