@@ -1,0 +1,29 @@
+{
+	"folders": [
+		{
+			"name": "Frontend (HSS)",
+			"path": "./HSS"
+		},
+		{
+			"name": "Backend (HSS-Backend)", 
+			"path": "./HSS-Backend"
+		}
+	],
+	"settings": {
+		"files.exclude": {
+			"**/node_modules": true,
+			"**/target": true,
+			"**/.git": true
+		},
+		"typescript.preferences.includePackageJsonAutoImports": "auto"
+	},
+	"extensions": {
+		"recommendations": [
+			"ms-vscode.vscode-typescript-next",
+			"ms-vscode.vscode-json",
+			"vscjava.vscode-java-pack",
+			"ms-vscode.vscode-eslint",
+			"bradlc.vscode-tailwindcss"
+		]
+	}
+}
