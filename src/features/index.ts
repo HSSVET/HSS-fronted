@@ -11,4 +11,7 @@ export * from './laboratory';
 export * from './dashboard';
 
 // Billing Feature
-export * from './billing'; 
+export * from './billing';
+
+// SMS Feature
+export * from './sms';

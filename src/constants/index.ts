@@ -4,6 +4,7 @@ export const API_ENDPOINTS = {
   APPOINTMENTS: '/api/appointments',
   LABORATORY: '/api/laboratory',
   USERS: '/api/users',
+  SMS: '/api/sms',
 } as const;
 
 // Application routes

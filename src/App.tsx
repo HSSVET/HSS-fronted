@@ -5,6 +5,7 @@ import { AuthProvider } from './context/AuthContext';
 import { AppProvider } from './context/AppContext';
 import { Layout } from './shared';
 import { Dashboard } from './features/dashboard';
+import { SmsPage } from './features/sms';
 import { AnimalPage, AnimalDetailPage } from './features/animals';
 import { AppointmentPage } from './features/appointments';
 import { LabDashboard, LabTestTypes } from './features/laboratory';
@@ -12,19 +13,19 @@ import { Billing } from './features/billing';
 
 // Auth Components
 import LoginPage from './components/auth/LoginPage';
-import ProtectedRoute, { 
-  RoleBasedRoute, 
-  PermissionBasedRoute, 
-  AdminRoute, 
-  VeterinarianRoute 
+import ProtectedRoute, {
+  RoleBasedRoute,
+  PermissionBasedRoute,
+  AdminRoute,
+  VeterinarianRoute
 } from './components/auth/ProtectedRoute';
 import AccessDenied from './components/common/AccessDenied';
 
 // Error Boundaries
-import { 
-  GlobalErrorBoundary, 
-  PageErrorBoundary, 
-  ComponentErrorBoundary 
+import {
+  GlobalErrorBoundary,
+  PageErrorBoundary,
+  ComponentErrorBoundary
 } from './components/common/ErrorBoundary';
 
 // Test Components
@@ -120,28 +121,28 @@ function App() {
             <Router>
               <Routes>
                 {/* Public Routes */}
-                <Route 
-                  path="/login" 
+                <Route
+                  path="/login"
                   element={
                     <PageErrorBoundary pageName="Login">
                       <LoginPage />
                     </PageErrorBoundary>
-                  } 
+                  }
                 />
-                
+
                 {/* Access Denied Route */}
-                <Route 
-                  path="/access-denied" 
+                <Route
+                  path="/access-denied"
                   element={
                     <PageErrorBoundary pageName="Access Denied">
                       <AccessDenied />
                     </PageErrorBoundary>
-                  } 
+                  }
                 />
-                
+
                 {/* Protected Routes */}
-                <Route 
-                  path="/" 
+                <Route
+                  path="/"
                   element={
                     <ProtectedRoute>
                       <Layout>
@@ -150,11 +151,11 @@ function App() {
                         </PageErrorBoundary>
                       </Layout>
                     </ProtectedRoute>
-                  } 
+                  }
                 />
-                
-                <Route 
-                  path="/dashboard" 
+
+                <Route
+                  path="/dashboard"
                   element={
                     <ProtectedRoute>
                       <Layout>
@@ -163,12 +164,12 @@ function App() {
                         </PageErrorBoundary>
                       </Layout>
                     </ProtectedRoute>
-                  } 
+                  }
                 />
-                
+
                 {/* Animals - Role-based access */}
-                <Route 
-                  path="/animals" 
+                <Route
+                  path="/animals"
                   element={
                     <ProtectedRoute requiredPermissions={['animals:read']}>
                       <Layout>
@@ -177,11 +178,11 @@ function App() {
                         </PageErrorBoundary>
                       </Layout>
                     </ProtectedRoute>
-                  } 
+                  }
                 />
-                
-                <Route 
-                  path="/animals/:id" 
+
+                <Route
+                  path="/animals/:id"
                   element={
                     <ProtectedRoute requiredPermissions={['animals:read']}>
                       <Layout>
@@ -190,12 +191,12 @@ function App() {
                         </PageErrorBoundary>
                       </Layout>
                     </ProtectedRoute>
-                  } 
+                  }
                 />
-                
+
                 {/* Appointments - Role-based access */}
-                <Route 
-                  path="/appointments" 
+                <Route
+                  path="/appointments"
                   element={
                     <ProtectedRoute requiredPermissions={['appointments:read']}>
                       <Layout>
@@ -204,12 +205,12 @@ function App() {
                         </PageErrorBoundary>
                       </Layout>
                     </ProtectedRoute>
-                  } 
+                  }
                 />
-                
+
                 {/* Laboratory - Role-based access */}
-                <Route 
-                  path="/laboratory" 
+                <Route
+                  path="/laboratory"
                   element={
                     <ProtectedRoute requiredPermissions={['laboratory:read']}>
                       <Layout>
@@ -218,11 +219,11 @@ function App() {
                         </PageErrorBoundary>
                       </Layout>
                     </ProtectedRoute>
-                  } 
+                  }
                 />
-                
-                <Route 
-                  path="/laboratory/test-types" 
+
+                <Route
+                  path="/laboratory/test-types"
                   element={
                     <ProtectedRoute requiredPermissions={['laboratory:read']}>
                       <Layout>
@@ -231,12 +232,12 @@ function App() {
                         </PageErrorBoundary>
                       </Layout>
                     </ProtectedRoute>
-                  } 
+                  }
                 />
-                
+
                 {/* Billing - Role-based access */}
-                <Route 
-                  path="/billing" 
+                <Route
+                  path="/billing"
                   element={
                     <ProtectedRoute requiredPermissions={['billing:read']}>
                       <Layout>
@@ -245,12 +246,26 @@ function App() {
                         </PageErrorBoundary>
                       </Layout>
                     </ProtectedRoute>
-                  } 
+                  }
                 />
-                
+
+                {/* SMS - Role-based access */}
+                <Route
+                  path="/sms"
+                  element={
+                    <ProtectedRoute requiredPermissions={['sms:read']}>
+                      <Layout>
+                        <PageErrorBoundary pageName="SMS">
+                          <SmsPage />
+                        </PageErrorBoundary>
+                      </Layout>
+                    </ProtectedRoute>
+                  }
+                />
+
                 {/* Inventory - Admin/Veterinarian only */}
-                <Route 
-                  path="/inventory" 
+                <Route
+                  path="/inventory"
                   element={
                     <VeterinarianRoute>
                       <Layout>
@@ -259,12 +274,12 @@ function App() {
                         </PageErrorBoundary>
                       </Layout>
                     </VeterinarianRoute>
-                  } 
+                  }
                 />
-                
+
                 {/* Reports - Admin/Veterinarian only */}
-                <Route 
-                  path="/reports" 
+                <Route
+                  path="/reports"
                   element={
                     <ProtectedRoute requiredPermissions={['reports:read']}>
                       <Layout>
@@ -273,12 +288,12 @@ function App() {
                         </PageErrorBoundary>
                       </Layout>
                     </ProtectedRoute>
-                  } 
+                  }
                 />
-                
+
                 {/* Settings - Admin only */}
-                <Route 
-                  path="/settings" 
+                <Route
+                  path="/settings"
                   element={
                     <AdminRoute>
                       <Layout>
@@ -287,12 +302,12 @@ function App() {
                         </PageErrorBoundary>
                       </Layout>
                     </AdminRoute>
-                  } 
+                  }
                 />
-                
+
                 {/* User Management - Admin only */}
-                <Route 
-                  path="/users" 
+                <Route
+                  path="/users"
                   element={
                     <AdminRoute>
                       <Layout>
@@ -301,12 +316,12 @@ function App() {
                         </PageErrorBoundary>
                       </Layout>
                     </AdminRoute>
-                  } 
+                  }
                 />
-                
+
                 {/* Audit Logs - Admin only */}
-                <Route 
-                  path="/audit" 
+                <Route
+                  path="/audit"
                   element={
                     <AdminRoute>
                       <Layout>
@@ -315,12 +330,12 @@ function App() {
                         </PageErrorBoundary>
                       </Layout>
                     </AdminRoute>
-                  } 
+                  }
                 />
-                
+
                 {/* Development/Testing Routes */}
-                <Route 
-                  path="/auth-test" 
+                <Route
+                  path="/auth-test"
                   element={
                     <ProtectedRoute>
                       <Layout>
@@ -334,12 +349,12 @@ function App() {
                         </PageErrorBoundary>
                       </Layout>
                     </ProtectedRoute>
-                  } 
+                  }
                 />
-                
+
                 {/* Error Test Route - Admin only */}
-                <Route 
-                  path="/error-test" 
+                <Route
+                  path="/error-test"
                   element={
                     <AdminRoute>
                       <Layout>
@@ -350,9 +365,9 @@ function App() {
                               <button onClick={() => { throw new Error('Test error!'); }}>
                                 Throw Test Error
                               </button>
-                              <button onClick={() => { 
-                                const badComponent = null as any; 
-                                return badComponent.nonExistentMethod(); 
+                              <button onClick={() => {
+                                const badComponent = null as any;
+                                return badComponent.nonExistentMethod();
                               }}>
                                 Cause Runtime Error
                               </button>
@@ -361,13 +376,13 @@ function App() {
                         </PageErrorBoundary>
                       </Layout>
                     </AdminRoute>
-                  } 
+                  }
                 />
-                
+
                 {/* Fallback - Redirect to login */}
-                <Route 
-                  path="*" 
-                  element={<Navigate to="/login" replace />} 
+                <Route
+                  path="*"
+                  element={<Navigate to="/login" replace />}
                 />
               </Routes>
             </Router>

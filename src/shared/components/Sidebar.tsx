@@ -15,19 +15,19 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, toggleSidebar }) => {
   const { hasPermission } = usePermissions();
   const { user } = useAuth();
   const { keycloak } = useKeycloak();
-  
+
   React.useEffect(() => {
     if (collapsed) {
       document.body.classList.remove('sidebar-expanded');
     } else {
       document.body.classList.add('sidebar-expanded');
     }
-    
+
     return () => {
       document.body.classList.remove('sidebar-expanded');
     };
   }, [collapsed]);
-  
+
   // Menu items with permission requirements
   const allMenuItems = [
     { icon: 'icon-dashboard', text: 'Panel', path: '/dashboard', permission: 'dashboard:read' },
@@ -35,6 +35,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, toggleSidebar }) => {
     { icon: 'icon-paw', text: 'Hastalar/Hayvanlar', path: '/animals', permission: 'animals:read' },
     { icon: 'icon-lab', text: 'Laboratuvar', path: '/laboratory', permission: 'laboratory:read' },
     { icon: 'icon-billing', text: 'Ödeme & Fatura', path: '/billing', permission: 'billing:read' },
+    { icon: 'icon-message', text: 'SMS', path: '/sms', permission: 'sms:read' },
     { icon: 'icon-box', text: 'Envanter/Stok', path: '/inventory', permission: 'inventory:read' },
     { icon: 'icon-chart', text: 'Raporlar', path: '/reports', permission: 'reports:read' },
     { icon: 'icon-settings', text: 'Ayarlar', path: '/settings', permission: 'settings:read' },
@@ -59,12 +60,12 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, toggleSidebar }) => {
           <span className={`icon ${collapsed ? 'icon-chevron-right' : 'icon-chevron-left'}`}></span>
         </button>
       </div>
-      
+
       <div className="menu-container">
         {menuItems.map((item, index) => (
-          <Link 
-            key={index} 
-            to={item.path} 
+          <Link
+            key={index}
+            to={item.path}
             className={`menu-item ${location.pathname === item.path ? 'active' : ''}`}
           >
             <span className={`icon ${item.icon}`}></span>
@@ -72,15 +73,15 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, toggleSidebar }) => {
           </Link>
         ))}
       </div>
-      
+
       <div className="user-container">
         <div className="user-profile">
           <span className="icon icon-user"></span>
           {!collapsed && (
             <div className="user-info">
               <span className="user-name">
-                {user?.firstName && user?.lastName 
-                  ? `${user.firstName} ${user.lastName}` 
+                {user?.firstName && user?.lastName
+                  ? `${user.firstName} ${user.lastName}`
                   : user?.username || 'Kullanıcı'}
               </span>
               <span className="user-role">
