@@ -1,0 +1,467 @@
+/* Billing Module Styles - Material Design */
+.billing {
+  padding: var(--spacing-1);
+  height: 100%;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.billing-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-2);
+  padding-bottom: var(--spacing-1);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.billing-header h1 {
+  font-size: 20px;
+  color: var(--text-primary);
+  margin: 0;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: 0;
+}
+
+.quick-actions {
+  display: flex;
+  gap: var(--spacing-1);
+}
+
+.action-button {
+  display: flex;
+  align-items: center;
+  background-color: var(--primary-color);
+  color: var(--text-on-primary);
+  border: none;
+  padding: 0 var(--spacing-1);
+  height: 30px;
+  border-radius: var(--border-radius-sm);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  transition: background-color var(--transition-speed) var(--transition-function), 
+              box-shadow var(--transition-speed) var(--transition-function);
+  box-shadow: var(--elevation-1);
+}
+
+.action-button:hover {
+  background-color: var(--primary-dark);
+  box-shadow: var(--elevation-2);
+}
+
+.action-button .icon {
+  margin-right: var(--spacing-1);
+}
+
+/* CSS Icons */
+.icon {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  position: relative;
+}
+
+.icon-plus::before,
+.icon-plus::after {
+  content: '';
+  position: absolute;
+  background-color: currentColor;
+}
+
+.icon-plus::before {
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  transform: translateY(-50%);
+}
+
+.icon-plus::after {
+  top: 0;
+  left: 50%;
+  width: 2px;
+  height: 100%;
+  transform: translateX(-50%);
+}
+
+.icon-hospital::before {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 10px;
+  height: 10px;
+  border: 2px solid currentColor;
+  border-radius: 2px;
+}
+
+.icon-hospital::after {
+  content: '+';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 10px;
+  font-weight: bold;
+  color: currentColor;
+}
+
+.icon-card::before {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 2px;
+  width: 12px;
+  height: 8px;
+  border: 2px solid currentColor;
+  border-radius: 2px;
+}
+
+.icon-card::after {
+  content: '';
+  position: absolute;
+  top: 8px;
+  left: 4px;
+  width: 8px;
+  height: 1px;
+  background-color: currentColor;
+}
+
+.icon-chart::before {
+  content: '';
+  position: absolute;
+  bottom: 2px;
+  left: 2px;
+  width: 3px;
+  height: 8px;
+  background-color: currentColor;
+}
+
+.icon-chart::after {
+  content: '';
+  position: absolute;
+  bottom: 2px;
+  left: 6px;
+  width: 3px;
+  height: 12px;
+  background-color: currentColor;
+  box-shadow: 4px 0 0 currentColor, 8px 0 0 currentColor;
+}
+
+.icon-lab::before {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 4px;
+  width: 8px;
+  height: 12px;
+  border: 2px solid currentColor;
+  border-radius: 0 0 4px 4px;
+  border-top: none;
+}
+
+.icon-lab::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 6px;
+  width: 4px;
+  height: 4px;
+  border: 2px solid currentColor;
+  border-bottom: none;
+  border-radius: 2px 2px 0 0;
+}
+
+/* Tabs */
+.billing-tabs {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: white;
+  border-radius: var(--border-radius);
+  box-shadow: var(--elevation-1);
+  overflow: hidden;
+}
+
+.tab-buttons {
+  display: flex;
+  background: var(--surface-variant);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.tab-button {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-1) var(--spacing-2);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: var(--font-weight-medium);
+  color: var(--text-secondary);
+  transition: all var(--transition-speed) var(--transition-function);
+  position: relative;
+  letter-spacing: 0.1px;
+}
+
+.tab-button:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+  color: var(--text-primary);
+}
+
+.tab-button.active {
+  background: white;
+  color: var(--primary-color);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.tab-button.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--primary-color);
+}
+
+.tab-button .icon {
+  margin-right: var(--spacing-1);
+}
+
+.tab-content {
+  flex: 1;
+  padding: var(--spacing-2);
+  overflow-y: auto;
+}
+
+/* Loading and Error States */
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: var(--spacing-4);
+}
+
+.spinner {
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--surface-variant);
+  border-top: 2px solid var(--primary-color);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.error-message {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: var(--spacing-4);
+  color: var(--error-color);
+  background: var(--error-surface);
+  border-radius: var(--border-radius);
+  margin: var(--spacing-2);
+}
+
+.services-content {
+  text-align: center;
+  padding: var(--spacing-4);
+  color: var(--text-secondary);
+}
+
+.services-content h3 {
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-1);
+}
+
+/* Widget-like containers */
+.billing-widget {
+  background: white;
+  border-radius: var(--border-radius);
+  box-shadow: var(--elevation-1);
+  margin-bottom: var(--spacing-2);
+  overflow: hidden;
+  transition: box-shadow var(--transition-speed) var(--transition-function);
+}
+
+.billing-widget:hover {
+  box-shadow: var(--elevation-2);
+}
+
+.widget-header {
+  padding: var(--spacing-2);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.widget-header h2 {
+  font-size: 16px;
+  color: var(--text-primary);
+  margin: 0;
+  font-weight: var(--font-weight-medium);
+  display: flex;
+  align-items: center;
+}
+
+.widget-header h2 .icon {
+  margin-right: var(--spacing-1);
+  color: var(--primary-color);
+}
+
+.widget-content {
+  padding: var(--spacing-2);
+}
+
+/* Tables */
+.billing-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+}
+
+.billing-table th {
+  background: var(--surface-variant);
+  padding: var(--spacing-1) var(--spacing-2);
+  text-align: left;
+  font-weight: var(--font-weight-medium);
+  color: var(--text-secondary);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.billing-table td {
+  padding: var(--spacing-1) var(--spacing-2);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+  font-size: 14px;
+  color: var(--text-primary);
+}
+
+.billing-table tr:hover {
+  background: var(--surface-hover);
+}
+
+.billing-table tr:last-child td {
+  border-bottom: none;
+}
+
+/* Status badges */
+.status-badge {
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: var(--font-weight-medium);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-badge.draft {
+  background: rgba(0, 0, 0, 0.04);
+  color: var(--text-secondary);
+}
+
+.status-badge.sent {
+  background: rgba(33, 150, 243, 0.1);
+  color: #1976d2;
+}
+
+.status-badge.paid {
+  background: rgba(76, 175, 80, 0.1);
+  color: #388e3c;
+}
+
+.status-badge.overdue {
+  background: rgba(244, 67, 54, 0.1);
+  color: #d32f2f;
+}
+
+.status-badge.cancelled {
+  background: rgba(0, 0, 0, 0.04);
+  color: var(--text-secondary);
+}
+
+/* Form elements */
+.billing-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-label {
+  font-size: 12px;
+  font-weight: var(--font-weight-medium);
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-half);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.form-input,
+.form-select {
+  padding: var(--spacing-1);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: var(--border-radius-sm);
+  font-size: 14px;
+  transition: border-color var(--transition-speed) var(--transition-function);
+}
+
+.form-input:focus,
+.form-select:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(146, 167, 140, 0.2);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .billing {
+    padding: var(--spacing-half);
+  }
+  
+  .billing-header {
+    flex-direction: column;
+    gap: var(--spacing-1);
+    align-items: stretch;
+  }
+  
+  .quick-actions {
+    justify-content: center;
+  }
+  
+  .tab-buttons {
+    flex-direction: column;
+  }
+  
+  .tab-button {
+    justify-content: flex-start;
+    padding-left: var(--spacing-2);
+  }
+  
+  .billing-table {
+    font-size: 12px;
+  }
+  
+  .billing-table th,
+  .billing-table td {
+    padding: var(--spacing-half) var(--spacing-1);
+  }
+} 

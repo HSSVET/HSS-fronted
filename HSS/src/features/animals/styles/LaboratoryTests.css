@@ -1,0 +1,103 @@
+.laboratory-tests-container {
+  padding: 20px;
+}
+
+.test-result {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.test-result:last-child {
+  border-bottom: none;
+}
+
+.test-label {
+  font-weight: 500;
+  color: #333;
+  min-width: 120px;
+}
+
+.test-value {
+  font-weight: 600;
+  margin-right: 16px;
+}
+
+.test-value.normal {
+  color: #4caf50;
+}
+
+.test-value.abnormal {
+  color: #f44336;
+}
+
+.test-value.pending {
+  color: #ff9800;
+}
+
+.test-reference {
+  color: #666;
+  font-size: 0.875rem;
+}
+
+.test-status-chip {
+  font-size: 0.75rem;
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+
+.test-status-chip.normal {
+  background-color: rgba(76, 175, 80, 0.1);
+  color: #4caf50;
+}
+
+.test-status-chip.abnormal {
+  background-color: rgba(244, 67, 54, 0.1);
+  color: #f44336;
+}
+
+.test-status-chip.pending {
+  background-color: rgba(255, 152, 0, 0.1);
+  color: #ff9800;
+}
+
+.accordion-content {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.test-section {
+  margin-bottom: 24px;
+}
+
+.test-section-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1976d2;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #e3f2fd;
+}
+
+.urine-analysis-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.urine-section {
+  background-color: #f5f5f5;
+  padding: 12px;
+  border-radius: 8px;
+}
+
+.urine-section-title {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  font-size: 0.875rem;
+} 

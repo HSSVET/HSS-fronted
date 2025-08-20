@@ -1,0 +1,96 @@
+/* Animal System Styles - Dashboard Design Consistency */
+.animal-system {
+  padding: var(--spacing-1);
+  height: 100%;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--background-color);
+}
+
+.animal-system-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+  min-height: calc(100vh - 40px);
+}
+
+.animal-system-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-2);
+  padding-bottom: var(--spacing-1);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.animal-system-title {
+  font-size: 20px;
+  color: var(--text-primary);
+  margin: 0;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: 0;
+}
+
+.animal-system-subtitle {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin: 0;
+  font-weight: var(--font-weight-regular);
+}
+
+.quick-actions {
+  display: flex;
+  gap: var(--spacing-1);
+}
+
+.action-button {
+  display: flex;
+  align-items: center;
+  background-color: var(--primary-color);
+  color: var(--text-on-primary);
+  border: none;
+  padding: 0 var(--spacing-1);
+  height: 30px;
+  border-radius: var(--border-radius-sm);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  transition: background-color var(--transition-speed) var(--transition-function), 
+              box-shadow var(--transition-speed) var(--transition-function);
+  box-shadow: var(--elevation-1);
+}
+
+.action-button:hover {
+  background-color: var(--primary-dark);
+  box-shadow: var(--elevation-2);
+}
+
+.content-section {
+  flex: 1;
+  background-color: var(--surface-color);
+  border-radius: var(--border-radius-lg);
+  padding: 0;
+  box-shadow: var(--elevation-1);
+  overflow: hidden;
+}
+
+@media (max-width: 1024px) {
+  .animal-system-container {
+    padding: var(--spacing-2);
+  }
+  
+  .animal-system-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-1);
+  }
+  
+  .animal-system-title {
+    font-size: 18px;
+  }
+} 

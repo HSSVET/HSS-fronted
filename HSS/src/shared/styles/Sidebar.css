@@ -1,0 +1,445 @@
+/* Sidebar Styles - Material Design */
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--primary-color);
+  color: var(--text-on-primary);
+  height: 100vh;
+  width: 100%;
+  transition: all var(--transition-speed) var(--transition-function);
+  overflow: hidden;
+}
+
+.sidebar.collapsed {
+  width: 100%;
+}
+
+.sidebar-hover-area {
+  width: auto;
+  height: 100%;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-2);
+  height: 60px; /* Daha ince header */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* Beyaz çizgi */
+}
+
+.logo-container h2 {
+  margin: 0;
+  font-size: 18px; /* Daha küçük yazı */
+  color: var(--text-on-primary);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: 0.15px;
+}
+
+.toggle-button {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  font-size: 20px; /* Daha küçük ikon */
+  padding: var(--spacing-1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  width: 36px; /* Daha küçük buton */
+  height: 36px; /* Daha küçük buton */
+  transition: background-color var(--transition-speed) var(--transition-function);
+}
+
+.toggle-button:hover {
+  background-color: rgba(255, 255, 255, 0.1); /* Beyaz hover efekti */
+  color: var(--text-on-primary);
+}
+
+/* Sidebar CSS Icons */
+.sidebar .icon {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  position: relative;
+  margin-right: var(--spacing-3);
+}
+
+.sidebar.collapsed .icon {
+  margin-right: 0;
+}
+
+.icon-dashboard::before {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border: 2px solid currentColor;
+  border-radius: 2px;
+}
+
+.icon-dashboard::after {
+  content: '';
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  width: 8px;
+  height: 8px;
+  background-color: currentColor;
+}
+
+.icon-calendar::before {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 14px;
+  height: 14px;
+  border: 2px solid currentColor;
+  border-radius: 2px;
+}
+
+.icon-calendar::after {
+  content: '';
+  position: absolute;
+  top: 8px;
+  left: 6px;
+  width: 8px;
+  height: 2px;
+  background-color: currentColor;
+}
+
+.icon-paw::before {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 8px;
+  width: 4px;
+  height: 6px;
+  background-color: currentColor;
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+}
+
+.icon-paw::after {
+  content: '';
+  position: absolute;
+  bottom: 2px;
+  left: 6px;
+  width: 8px;
+  height: 6px;
+  background-color: currentColor;
+  border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;
+}
+
+.icon-box::before {
+  content: '';
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 12px;
+  height: 12px;
+  border: 2px solid currentColor;
+  border-radius: 1px;
+}
+
+.icon-chart::before {
+  content: '';
+  position: absolute;
+  bottom: 2px;
+  left: 2px;
+  width: 4px;
+  height: 8px;
+  background-color: currentColor;
+}
+
+.icon-chart::after {
+  content: '';
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  width: 4px;
+  height: 12px;
+  background-color: currentColor;
+}
+
+.icon-settings::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 12px;
+  height: 12px;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.icon-settings::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 4px;
+  height: 4px;
+  background-color: currentColor;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.icon-chevron-right {
+  border-left: 6px solid currentColor;
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
+  width: 0;
+  height: 0;
+  background: transparent;
+  margin-right: 0;
+}
+
+.icon-chevron-left {
+  border-right: 6px solid currentColor;
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
+  width: 0;
+  height: 0;
+  background: transparent;
+  margin-right: 0;
+}
+
+.icon-user::before {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 6px;
+  width: 8px;
+  height: 8px;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+}
+
+.icon-user::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 3px;
+  width: 14px;
+  height: 8px;
+  border: 2px solid currentColor;
+  border-radius: 8px 8px 0 0;
+  border-bottom: none;
+}
+
+.icon-logout::before {
+  content: '';
+  position: absolute;
+  top: 6px;
+  left: 2px;
+  width: 12px;
+  height: 8px;
+  border: 2px solid currentColor;
+  border-right: none;
+}
+
+.icon-logout::after {
+  content: '';
+  position: absolute;
+  top: 8px;
+  right: 2px;
+  border-left: 6px solid currentColor;
+  border-top: 2px solid transparent;
+  border-bottom: 2px solid transparent;
+  width: 0;
+  height: 0;
+}
+
+.menu-container {
+  flex: 1;
+  padding: var(--spacing-1) 0;
+  overflow-y: auto;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  padding: 0 var(--spacing-2);
+  height: 44px; /* Daha ince menü öğesi */
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  transition: background-color var(--transition-speed) var(--transition-function);
+  white-space: nowrap;
+  position: relative;
+}
+
+.menu-item:hover {
+  background-color: rgba(255, 255, 255, 0.1); /* Beyaz hover efekti */
+  color: var(--text-on-primary);
+}
+
+.menu-item.active {
+  background-color: rgba(255, 255, 255, 0.15); /* Daha belirgin aktif renk */
+  color: var(--text-on-primary);
+}
+
+.menu-item .icon {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.menu-item.active .icon,
+.menu-item:hover .icon {
+  color: var(--text-on-primary);
+}
+
+.menu-item .text {
+  white-space: nowrap;
+  opacity: 1;
+  transition: opacity var(--transition-speed) var(--transition-function);
+  font-weight: var(--font-weight-medium);
+  font-size: 14px;
+  letter-spacing: 0.1px;
+}
+
+.sidebar.collapsed .menu-item .text {
+  opacity: 0;
+}
+
+.user-container {
+  padding: var(--spacing-2);
+  border-top: 1px solid rgba(255, 255, 255, 0.1); /* Beyaz çizgi */
+  margin-top: auto;
+}
+
+.user-profile {
+  display: flex;
+  align-items: center;
+  margin-bottom: var(--spacing-2);
+}
+
+.user-profile .icon {
+  font-size: 18px; /* Daha küçük ikon */
+  margin-right: var(--spacing-2);
+  background-color: rgba(255, 255, 255, 0.15); /* Beyaz arka plan */
+  width: 36px; /* Daha küçük avatar */
+  height: 36px; /* Daha küçük avatar */
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-on-primary); /* Beyaz ikon rengi */
+}
+
+.sidebar.collapsed .user-profile .icon {
+  margin-right: 0;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  opacity: 1;
+  transition: opacity var(--transition-speed) var(--transition-function);
+}
+
+.sidebar.collapsed .user-info {
+  opacity: 0;
+}
+
+.user-name {
+  font-weight: var(--font-weight-medium);
+  font-size: 14px;
+  letter-spacing: 0.1px;
+  color: var(--text-on-primary);
+}
+
+.user-role {
+  font-size: 12px;
+  letter-spacing: 0.4px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.logout {
+  display: flex;
+  align-items: center;
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  padding: var(--spacing-1) 0;
+  transition: color var(--transition-speed) var(--transition-function);
+  background: none;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  font-size: 14px;
+  letter-spacing: 0.1px;
+  font-weight: var(--font-weight-medium);
+}
+
+.logout:hover {
+  color: var(--text-on-primary);
+}
+
+.logout .icon {
+  font-size: 18px; /* Daha küçük ikon */
+  margin-right: var(--spacing-2);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.logout:hover .icon {
+  color: var(--text-on-primary);
+}
+
+.sidebar.collapsed .logout .icon {
+  margin-right: 0;
+}
+
+.sidebar.collapsed .logout .text {
+  opacity: 0;
+}
+
+/* Tooltip for collapsed sidebar */
+.sidebar.collapsed .menu-item,
+.sidebar.collapsed .logout {
+  position: relative;
+}
+
+.sidebar.collapsed .menu-item:hover::after,
+.sidebar.collapsed .logout:hover::after {
+  content: attr(title);
+  position: absolute;
+  left: 65px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--primary-dark);
+  color: var(--text-on-primary);
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  white-space: nowrap;
+  z-index: 1002;
+  box-shadow: var(--elevation-3);
+  opacity: 0;
+  animation: tooltipFadeIn 0.2s ease forwards;
+}
+
+@keyframes tooltipFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-50%) translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0);
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 56px; /* Material Design mobile standard */
+  }
+  
+  .sidebar.collapsed {
+    width: 56px;
+  }
+} 
