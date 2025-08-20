@@ -1,0 +1,60 @@
+{
+  "realm": "veterinary-clinic",
+  "displayName": "Veterinary Clinic HSS",
+  "enabled": true,
+  "sslRequired": "external",
+  "registrationAllowed": false,
+  "rememberMe": true,
+  "verifyEmail": false,
+  "loginWithEmailAllowed": true,
+  "duplicateEmailsAllowed": false,
+  "resetPasswordAllowed": true,
+  "editUsernameAllowed": false,
+  "defaultRoles": ["offline_access", "uma_authorization"],
+  "requiredCredentials": ["password"],
+  "passwordPolicy": "length(8)",
+  "supportedLocales": ["tr", "en"],
+  "defaultLocale": "tr",
+  "internationalizationEnabled": true,
+  "adminEventsEnabled": false,
+  "adminEventsDetailsEnabled": false,
+  "eventsEnabled": false,
+  "roles": {
+    "realm": [
+      {
+        "name": "VETERINER",
+        "description": "Veteriner Hekim"
+      },
+      {
+        "name": "SEKRETER", 
+        "description": "Klinik Sekreteri"
+      },
+      {
+        "name": "TEKNISYEN",
+        "description": "Veteriner Teknisyeni"
+      },
+      {
+        "name": "ADMIN",
+        "description": "Sistem Yöneticisi"
+      }
+    ]
+  },
+  "users": [
+    {
+      "username": "admin",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "HSS",
+      "lastName": "Admin",
+      "email": "admin@veteriner.com",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "admin123",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["ADMIN"]
+    }
+  ]
+} 

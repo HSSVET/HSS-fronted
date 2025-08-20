@@ -1,0 +1,117 @@
+# application.yml
+
+spring:
+  # --- VERİTABANI BAĞLANTISI ---
+  datasource:
+    url: jdbc:postgresql://localhost:5432/vetdb
+    username: postgres
+    password: 123456
+
+  # --- JPA & HIBERNATE ---
+  jpa:
+    hibernate:
+      # Hibernate validation problemlerini atlamak için none kullanıyoruz
+      ddl-auto: none
+    # Geliştirme sırasında SQL sorgularını konsolda görmek için
+    show-sql: false
+
+  # --- FLYWAY VERİTABANI MIGRATION ---
+  flyway:
+    enabled: false
+
+  # --- SECURITY & OAUTH2 ---
+  security:
+    oauth2:
+      client:
+        registration:
+          keycloak:
+            client-id: hss-backend
+            client-secret: hss-backend-secret-2024
+            authorization-grant-type: authorization_code
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+            scope:
+              - openid
+              - profile
+              - email
+        provider:
+          keycloak:
+            authorization-uri: http://localhost:8080/realms/veterinary-clinic/protocol/openid-connect/auth
+            token-uri: http://localhost:8080/realms/veterinary-clinic/protocol/openid-connect/token
+            user-info-uri: http://localhost:8080/realms/veterinary-clinic/protocol/openid-connect/userinfo
+            jwk-set-uri: http://localhost:8080/realms/veterinary-clinic/protocol/openid-connect/certs
+            user-name-attribute: preferred_username
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/realms/veterinary-clinic
+          jwk-set-uri: http://localhost:8080/realms/veterinary-clinic/protocol/openid-connect/certs
+
+# --- HSS UYGULAMASI YAPıLANDıRMASı ---
+hss:
+  keycloak:
+    server-url: http://localhost:8080
+    realm: veterinary-clinic
+    client-id: hss-backend
+    client-secret: hss-backend-secret-2024
+    admin:
+      username: admin
+      password: admin123
+      client-id: admin-cli
+  sync:
+    enabled: true
+    full-sync-interval: 1800000  # 30 dakika
+    removed-check-interval: 3600000  # 1 saat
+    stats-log-interval: 300000  # 5 dakika
+  
+  # --- HATıRLATMA SİSTEMİ YAPıLANDıRMASı ---
+  reminders:
+    enabled: true
+    process-interval: 900000  # 15 dakika
+    cleanup-after-months: 3  # 3 ay sonra eski hatırlatmaları temizle
+    auto-create: true  # Randevu oluşturulduğunda otomatik hatırlatma oluştur
+    
+  # --- SMS YAPıLANDıRMASı ---
+  sms:
+    enabled: false  # Geliştirme aşamasında kapalı
+    api:
+      url: https://api.example.com/sms/send
+      key: your-sms-api-key-here
+    provider: twilio  # twilio, nexmo, veya custom
+    
+  # --- EMAIL YAPıLANDıRMASı ---
+  email:
+    enabled: false  # Geliştirme aşamasında kapalı
+    api:
+      url: https://api.example.com/email/send
+      key: your-email-api-key-here
+    from: noreply@vetclinic.com
+    provider: sendgrid  # sendgrid, mailgun, veya custom
+  
+  # --- MİNİO OBJECT STORAGE YAPıLANDıRMASı ---
+  storage:
+    minio:
+      endpoint: http://localhost:9000
+      access-key: admin
+      secret-key: admin123456
+      buckets:
+        documents: hss-documents
+        images: hss-images
+        medical-records: hss-medical-records
+        reports: hss-reports
+      max-file-size: 10MB
+  
+  # MinIO test modu - problemli servisleri devre dışı bırakır
+  minio:
+    test-mode: true
+    
+# --- SERVER YAPıLANDıRMASı ---
+server:
+  port: 8090
+
+# --- LOGLAMA YAPıLANDıRMASı ---
+logging:
+  level:
+    org.springframework.security: DEBUG
+    org.springframework.web: DEBUG
+    org.springframework.security.oauth2: DEBUG
+    org.springframework.security.oauth2.jwt: DEBUG
+    com.vetverse.hss: DEBUG

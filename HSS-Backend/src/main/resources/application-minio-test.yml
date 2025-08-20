@@ -1,0 +1,45 @@
+# MinIO Test Profile Configuration
+# Sadece MinIO özelliklerini test etmek için minimal konfigürasyon
+
+spring:
+  # --- VERİTABANI BAĞLANTISI ---
+  datasource:
+    url: jdbc:postgresql://localhost:5432/vetdb
+    username: postgres
+    password: 123456
+
+  # --- JPA & HIBERNATE ---
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+    
+  # Flyway'i devre dışı bırak
+  flyway:
+    enabled: false
+
+# --- HSS UYGULAMASI YAPıLANDıRMASı ---
+hss:
+  # --- MİNİO OBJECT STORAGE YAPıLANDıRMASı ---
+  storage:
+    minio:
+      endpoint: http://localhost:9000
+      access-key: admin
+      secret-key: admin123456
+      buckets:
+        documents: hss-documents
+        images: hss-images
+        medical-records: hss-medical-records
+        reports: hss-reports
+      max-file-size: 10MB
+    
+# --- SERVER YAPıLANDıRMASı ---
+server:
+  port: 8090
+
+# --- LOGLAMA YAPıLANDıRMASı ---
+logging:
+  level:
+    com.vetverse.hss: INFO
+    org.springframework.security: WARN
+    org.springframework.web: WARN
