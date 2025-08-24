@@ -12,22 +12,30 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ collapsed, toggleSidebar }) => {
   const location = useLocation();
-  const { hasPermission } = usePermissions();
+  const { hasPermission, userRoles, userPermissions } = usePermissions();
   const { user } = useAuth();
   const { keycloak } = useKeycloak();
-  
+
+  // Debug bilgileri
+  console.log('Sidebar Debug:', {
+    user,
+    userRoles,
+    userPermissions,
+    hasPermission: hasPermission('animals:read')
+  });
+
   React.useEffect(() => {
     if (collapsed) {
       document.body.classList.remove('sidebar-expanded');
     } else {
       document.body.classList.add('sidebar-expanded');
     }
-    
+
     return () => {
       document.body.classList.remove('sidebar-expanded');
     };
   }, [collapsed]);
-  
+
   // Menu items with permission requirements
   const allMenuItems = [
     { icon: 'icon-dashboard', text: 'Panel', path: '/dashboard', permission: 'dashboard:read' },
@@ -59,12 +67,12 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, toggleSidebar }) => {
           <span className={`icon ${collapsed ? 'icon-chevron-right' : 'icon-chevron-left'}`}></span>
         </button>
       </div>
-      
+
       <div className="menu-container">
         {menuItems.map((item, index) => (
-          <Link 
-            key={index} 
-            to={item.path} 
+          <Link
+            key={index}
+            to={item.path}
             className={`menu-item ${location.pathname === item.path ? 'active' : ''}`}
           >
             <span className={`icon ${item.icon}`}></span>
@@ -72,15 +80,15 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, toggleSidebar }) => {
           </Link>
         ))}
       </div>
-      
+
       <div className="user-container">
         <div className="user-profile">
           <span className="icon icon-user"></span>
           {!collapsed && (
             <div className="user-info">
               <span className="user-name">
-                {user?.firstName && user?.lastName 
-                  ? `${user.firstName} ${user.lastName}` 
+                {user?.firstName && user?.lastName
+                  ? `${user.firstName} ${user.lastName}`
                   : user?.username || 'Kullanıcı'}
               </span>
               <span className="user-role">

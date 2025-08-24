@@ -1,7 +1,8 @@
 import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
-import { Clock } from 'lucide-react';
+import { Clock, Calendar } from 'lucide-react';
 import '../styles/AppointmentForm.css';
 import { LegacyAppointment, AppointmentFormData } from '../types/appointment';
+import { googleCalendarService } from '../../../services/googleCalendarService';
 
 interface AppointmentFormProps {
     appointment: LegacyAppointment | null;
@@ -28,6 +29,11 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
         description: ''
     });
 
+    // Google Calendar entegrasyonu için state
+    const [addToGoogleCalendar, setAddToGoogleCalendar] = useState<boolean>(false);
+    const [isGoogleConnected, setIsGoogleConnected] = useState<boolean>(false);
+    const [googleCalendarLoading, setGoogleCalendarLoading] = useState<boolean>(false);
+
     useEffect(() => {
         if (appointment) {
             setFormData({
@@ -44,6 +50,22 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
         }
     }, [appointment]);
 
+    // Google Calendar bağlantı durumunu kontrol et
+    useEffect(() => {
+        const checkGoogleConnection = async () => {
+            try {
+                await googleCalendarService.initialize();
+                const connected = googleCalendarService.isSignedIn();
+                setIsGoogleConnected(connected);
+            } catch (error) {
+                console.error('Google Calendar connection check failed:', error);
+                setIsGoogleConnected(false);
+            }
+        };
+
+        checkGoogleConnection();
+    }, []);
+
     const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
         const { name, value } = e.target;
         setFormData(prev => ({
@@ -52,9 +74,76 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
         }));
     };
 
-    const handleSubmit = (e: FormEvent<HTMLFormElement>): void => {
+    const handleSubmit = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
         e.preventDefault();
-        onSave(formData);
+
+        try {
+            // Önce randevuyu kaydet
+            await onSave(formData);
+
+            // Eğer Google Calendar'a ekleme seçildiyse
+            if (addToGoogleCalendar && isGoogleConnected) {
+                try {
+                    // Randevu verilerini Google Calendar formatına dönüştür
+                    const appointmentForGoogle: LegacyAppointment = {
+                        id: Date.now().toString(), // Geçici ID
+                        date: selectedDate.toISOString().split('T')[0], // YYYY-MM-DD formatı
+                        time: formData.time,
+                        patientName: formData.patientName,
+                        patientId: formData.patientId,
+                        phone: formData.phone,
+                        ownerName: formData.ownerName,
+                        chipNumber: formData.chipNumber,
+                        breed: formData.breed,
+                        petType: formData.petType,
+                        description: formData.description
+                    };
+
+                    // Google Calendar'a ekle
+                    const eventId = await googleCalendarService.addAppointmentToCalendar(appointmentForGoogle);
+                    console.log('Randevu Google Takvim\'e eklendi:', eventId);
+
+                    // Başarı mesajı göster (bu kısım daha sonra toast notification ile geliştirilebilir)
+                    alert('Randevu başarıyla Google Takvim\'e eklendi!');
+                } catch (googleError) {
+                    console.error('Google Calendar error:', googleError);
+                    alert('Randevu kaydedildi ancak Google Takvim\'e eklenirken hata oluştu.');
+                }
+            }
+        } catch (error) {
+            console.error('Form submission error:', error);
+            alert('Randevu kaydedilirken hata oluştu.');
+        }
+    };
+
+    // Google Calendar bağlantı fonksiyonları
+    const handleGoogleCalendarToggle = (e: ChangeEvent<HTMLInputElement>) => {
+        setAddToGoogleCalendar(e.target.checked);
+    };
+
+    const handleGoogleCalendarConnect = async () => {
+        setGoogleCalendarLoading(true);
+        try {
+            const success = await googleCalendarService.signIn();
+            if (success) {
+                setIsGoogleConnected(true);
+                setAddToGoogleCalendar(true);
+            }
+        } catch (error) {
+            console.error('Google Calendar connection failed:', error);
+        } finally {
+            setGoogleCalendarLoading(false);
+        }
+    };
+
+    const handleGoogleCalendarDisconnect = async () => {
+        try {
+            await googleCalendarService.signOut();
+            setIsGoogleConnected(false);
+            setAddToGoogleCalendar(false);
+        } catch (error) {
+            console.error('Google Calendar disconnection failed:', error);
+        }
     };
 
     const formatDate = (date: Date): string => {
@@ -203,6 +292,63 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
                                 className="form-textarea"
                                 rows={4}
                             />
+                        </div>
+                    </div>
+
+                    {/* Google Calendar Entegrasyonu */}
+                    <div className="form-section">
+                        <h3>Google Takvim Entegrasyonu</h3>
+                        <div className="form-group">
+                            {!isGoogleConnected ? (
+                                <div className="google-connect-section">
+                                    <p className="google-info">
+                                        Randevunuzu Google Takvim'e eklemek için Google hesabınızı bağlayın
+                                    </p>
+                                    <button
+                                        type="button"
+                                        onClick={handleGoogleCalendarConnect}
+                                        disabled={googleCalendarLoading}
+                                        className="google-connect-btn"
+                                    >
+                                        {googleCalendarLoading ? (
+                                            'Bağlanıyor...'
+                                        ) : (
+                                            <>
+                                                <Calendar size={16} />
+                                                Google Hesabını Bağla
+                                            </>
+                                        )}
+                                    </button>
+                                </div>
+                            ) : (
+                                <div className="google-connected-section">
+                                    <div className="google-status">
+                                        <span className="google-status-text">
+                                            ✅ Google hesabı bağlı
+                                        </span>
+                                        <button
+                                            type="button"
+                                            onClick={handleGoogleCalendarDisconnect}
+                                            className="google-disconnect-btn"
+                                        >
+                                            Bağlantıyı Kes
+                                        </button>
+                                    </div>
+                                    <div className="google-calendar-option">
+                                        <label className="google-checkbox-label">
+                                            <input
+                                                type="checkbox"
+                                                checked={addToGoogleCalendar}
+                                                onChange={handleGoogleCalendarToggle}
+                                                className="google-checkbox"
+                                            />
+                                            <span className="google-checkbox-text">
+                                                Bu randevuyu Google Takvim'e ekle
+                                            </span>
+                                        </label>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </div>
 

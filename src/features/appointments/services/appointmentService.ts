@@ -1,7 +1,8 @@
 import { apiClient } from '../../../services/api';
 import { API_ENDPOINTS } from '../../../constants';
-import type { Appointment, AppointmentSlot, CreateAppointmentRequest } from '../types/appointment';
+import type { Appointment, AppointmentSlot, CreateAppointmentRequest, LegacyAppointment } from '../types/appointment';
 import type { ApiResponse, PaginatedResponse } from '../../../types/common';
+import { googleCalendarService } from '../../../services/googleCalendarService';
 
 export class AppointmentService {
   // Get all appointments with pagination
@@ -62,6 +63,35 @@ export class AppointmentService {
   // Complete appointment
   static async completeAppointment(id: string, notes?: string): Promise<ApiResponse<Appointment>> {
     return apiClient.patch(`${API_ENDPOINTS.APPOINTMENTS}/${id}/complete`, { notes });
+  }
+
+  // Google Calendar entegrasyonu
+  static async addAppointmentToGoogleCalendar(appointment: LegacyAppointment): Promise<string> {
+    try {
+      return await googleCalendarService.addAppointmentToCalendar(appointment);
+    } catch (error) {
+      console.error('Google Calendar integration failed:', error);
+      throw new Error('Randevu Google Takvim\'e eklenirken hata oluştu');
+    }
+  }
+
+  static async removeAppointmentFromGoogleCalendar(eventId: string): Promise<void> {
+    try {
+      await googleCalendarService.removeEventFromCalendar(eventId);
+    } catch (error) {
+      console.error('Google Calendar event removal failed:', error);
+      throw new Error('Event Google Takvim\'den silinirken hata oluştu');
+    }
+  }
+
+  static async checkGoogleCalendarConnection(): Promise<boolean> {
+    try {
+      await googleCalendarService.initialize();
+      return googleCalendarService.isSignedIn();
+    } catch (error) {
+      console.error('Google Calendar connection check failed:', error);
+      return false;
+    }
   }
 
   // Get appointments by animal

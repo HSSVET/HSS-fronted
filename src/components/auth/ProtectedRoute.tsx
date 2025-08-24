@@ -10,35 +10,35 @@ import AccessDenied from '../common/AccessDenied';
 
 export interface ProtectedRouteProps {
   children: React.ReactNode;
-  
+
   // Role-based access control
   requiredRoles?: string[];
   requiredPermissions?: string[];
   requireAllRoles?: boolean;
   requireAllPermissions?: boolean;
-  
+
   // Page-level settings
   requireAuth?: boolean;
   requireMFA?: boolean;
-  
+
   // Fallback components
   fallback?: React.ReactNode;
   unauthorizedFallback?: React.ReactNode;
   loadingFallback?: React.ReactNode;
-  
+
   // Redirection
   redirectTo?: string;
   preserveRedirectUrl?: boolean;
-  
+
   // Security options
   sessionValidation?: boolean;
   tokenValidation?: boolean;
   auditAccess?: boolean;
-  
+
   // UI options
   showAccessDenied?: boolean;
   showLoading?: boolean;
-  
+
   // Advanced options
   customValidator?: (user: any) => Promise<boolean> | boolean;
   onAccessDenied?: (reason: string) => void;
@@ -63,25 +63,25 @@ interface AccessResult {
 // ============================================================================
 
 const PERMISSION_MAPPINGS = {
-  'animals:read': ['ADMIN', 'VETERINER', 'SEKRETER', 'TEKNISYEN'],
-  'animals:write': ['ADMIN', 'VETERINER', 'SEKRETER'],
-  'animals:delete': ['ADMIN', 'VETERINER'],
-  'appointments:read': ['ADMIN', 'VETERINER', 'SEKRETER'],
-  'appointments:write': ['ADMIN', 'VETERINER', 'SEKRETER'],
-  'appointments:delete': ['ADMIN', 'VETERINER'],
-  'laboratory:read': ['ADMIN', 'VETERINER', 'TEKNISYEN'],
-  'laboratory:write': ['ADMIN', 'VETERINER', 'TEKNISYEN'],
-  'laboratory:delete': ['ADMIN', 'VETERINER'],
-  'billing:read': ['ADMIN', 'VETERINER', 'SEKRETER'],
-  'billing:write': ['ADMIN', 'SEKRETER'],
-  'billing:delete': ['ADMIN'],
-  'reports:read': ['ADMIN', 'VETERINER'],
-  'reports:write': ['ADMIN'],
-  'settings:read': ['ADMIN'],
-  'settings:write': ['ADMIN'],
-  'users:read': ['ADMIN'],
-  'users:write': ['ADMIN'],
-  'audit:read': ['ADMIN'],
+  'animals:read': ['ADMIN', 'ADMİN', 'VETERINER', 'veteriner', 'SEKRETER', 'sekreter', 'TEKNISYEN', 'Teknisyen'],
+  'animals:write': ['ADMIN', 'ADMİN', 'VETERINER', 'veteriner', 'SEKRETER', 'sekreter'],
+  'animals:delete': ['ADMIN', 'ADMİN', 'VETERINER', 'veteriner'],
+  'appointments:read': ['ADMIN', 'ADMİN', 'VETERINER', 'veteriner', 'SEKRETER', 'sekreter'],
+  'appointments:write': ['ADMIN', 'ADMİN', 'VETERINER', 'veteriner', 'SEKRETER', 'sekreter'],
+  'appointments:delete': ['ADMIN', 'ADMİN', 'VETERINER', 'veteriner'],
+  'laboratory:read': ['ADMIN', 'ADMİN', 'VETERINER', 'veteriner', 'TEKNISYEN', 'Teknisyen'],
+  'laboratory:write': ['ADMIN', 'ADMİN', 'VETERINER', 'veteriner', 'TEKNISYEN', 'Teknisyen'],
+  'laboratory:delete': ['ADMIN', 'ADMİN', 'VETERINER', 'veteriner'],
+  'billing:read': ['ADMIN', 'ADMİN', 'VETERINER', 'veteriner', 'SEKRETER', 'sekreter'],
+  'billing:write': ['ADMIN', 'ADMİN', 'SEKRETER', 'sekreter'],
+  'billing:delete': ['ADMIN', 'ADMİN'],
+  'reports:read': ['ADMIN', 'ADMİN', 'VETERINER', 'veteriner'],
+  'reports:write': ['ADMIN', 'ADMİN'],
+  'settings:read': ['ADMIN', 'ADMİN'],
+  'settings:write': ['ADMIN', 'ADMİN'],
+  'users:read': ['ADMIN', 'ADMİN'],
+  'users:write': ['ADMIN', 'ADMİN'],
+  'audit:read': ['ADMIN', 'ADMİN'],
 };
 
 // ============================================================================
@@ -89,10 +89,10 @@ const PERMISSION_MAPPINGS = {
 // ============================================================================
 
 const useAccessControl = (props: ProtectedRouteProps) => {
-  const { 
-    requiredRoles, 
-    requiredPermissions, 
-    requireAllRoles, 
+  const {
+    requiredRoles,
+    requiredPermissions,
+    requireAllRoles,
     requireAllPermissions,
     requireAuth,
     sessionValidation,
@@ -100,10 +100,10 @@ const useAccessControl = (props: ProtectedRouteProps) => {
     onAccessGranted,
     onAccessDenied
   } = props;
-  
+
   const { state } = useAuth();
   const location = useLocation();
-  
+
   const [accessResult, setAccessResult] = useState<AccessResult>({
     level: 'pending',
     reason: 'Checking access...'
@@ -115,9 +115,9 @@ const useAccessControl = (props: ProtectedRouteProps) => {
 
   const validateRoles = useMemo(() => {
     if (!requiredRoles || requiredRoles.length === 0) return true;
-    
+
     const userRoles = state.roles || [];
-    
+
     if (requireAllRoles) {
       // User must have ALL required roles
       return requiredRoles.every(role => userRoles.includes(role));
@@ -133,9 +133,9 @@ const useAccessControl = (props: ProtectedRouteProps) => {
 
   const validatePermissions = useMemo(() => {
     if (!requiredPermissions || requiredPermissions.length === 0) return true;
-    
+
     const userRoles = state.roles || [];
-    
+
     if (requireAllPermissions) {
       // User must have ALL required permissions
       return requiredPermissions.every(permission => {
@@ -256,18 +256,18 @@ const useAccessControl = (props: ProtectedRouteProps) => {
     state.isAuthenticated,
     state.isInitialized,
     state.isLoading,
-    
+
     // User roles
     state.roles,
-    
+
     // Route requirements
     requiredRoles,
     requiredPermissions,
-    
+
     // Validation flags
     validateRoles,
     validatePermissions,
-    
+
     // Location
     location.pathname
   ]);
@@ -308,29 +308,29 @@ const ProtectedRoute = (props: ProtectedRouteProps): React.ReactElement | null =
     if (props.loadingFallback) {
       return <>{props.loadingFallback}</>;
     }
-    
+
     if (props.showLoading !== false) {
       return <LoadingComponent message={accessResult.reason} />;
     }
-    
+
     return null;
   }
 
   // Handle redirection
   if (accessResult.level === 'denied' || accessResult.level === 'expired') {
     if (accessResult.redirect) {
-      const redirectUrl = preserveRedirectUrl 
+      const redirectUrl = preserveRedirectUrl
         ? `${accessResult.redirect}?redirect=${encodeURIComponent(location.pathname + location.search)}`
         : accessResult.redirect;
-      
+
       return <Navigate to={redirectUrl} replace />;
     }
-    
+
     if (redirectTo) {
-      const redirectUrl = preserveRedirectUrl 
+      const redirectUrl = preserveRedirectUrl
         ? `${redirectTo}?redirect=${encodeURIComponent(location.pathname + location.search)}`
         : redirectTo;
-      
+
       return <Navigate to={redirectUrl} replace />;
     }
   }
@@ -340,12 +340,12 @@ const ProtectedRoute = (props: ProtectedRouteProps): React.ReactElement | null =
     if (props.unauthorizedFallback) {
       return <>{props.unauthorizedFallback}</>;
     }
-    
+
     if (props.showAccessDenied !== false) {
       // Determine required roles/permissions from context
       const requiredRoleText = props.requiredRoles?.join(', ') || 'Belirtilmemiş';
       const requiredPermissionText = props.requiredPermissions?.join(', ') || 'Belirtilmemiş';
-      
+
       return (
         <AccessDenied
           message={accessResult.reason}
@@ -354,7 +354,7 @@ const ProtectedRoute = (props: ProtectedRouteProps): React.ReactElement | null =
         />
       );
     }
-    
+
     return null;
   }
 

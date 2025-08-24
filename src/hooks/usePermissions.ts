@@ -2,28 +2,29 @@ import { useMemo } from 'react';
 import { useAuth } from '../context/AuthContext';
 
 // Permission mapping sistemi ProtectedRoute'tan alınmıştır
+// Keycloak'tan gelen rollerle eşleşecek şekilde düzenlendi
 const PERMISSION_MAPPINGS = {
-  'animals:read': ['ADMIN', 'VETERINER', 'SEKRETER', 'TEKNISYEN'],
-  'animals:write': ['ADMIN', 'VETERINER', 'SEKRETER'],
-  'animals:delete': ['ADMIN', 'VETERINER'],
-  'appointments:read': ['ADMIN', 'VETERINER', 'SEKRETER'],
-  'appointments:write': ['ADMIN', 'VETERINER', 'SEKRETER'],
-  'appointments:delete': ['ADMIN', 'VETERINER'],
-  'laboratory:read': ['ADMIN', 'VETERINER', 'TEKNISYEN'],
-  'laboratory:write': ['ADMIN', 'VETERINER', 'TEKNISYEN'],
-  'laboratory:delete': ['ADMIN', 'VETERINER'],
-  'billing:read': ['ADMIN', 'VETERINER', 'SEKRETER'],
-  'billing:write': ['ADMIN', 'SEKRETER'],
-  'billing:delete': ['ADMIN'],
-  'reports:read': ['ADMIN', 'VETERINER'],
-  'reports:write': ['ADMIN'],
-  'settings:read': ['ADMIN'],
-  'settings:write': ['ADMIN'],
-  'users:read': ['ADMIN'],
-  'users:write': ['ADMIN'],
-  'audit:read': ['ADMIN'],
-  'dashboard:read': ['ADMIN', 'VETERINER', 'SEKRETER', 'TEKNISYEN'], // Dashboard herkes erişebilir
-  'inventory:read': ['ADMIN', 'VETERINER', 'SEKRETER'], // Envanter için eklendi
+  'animals:read': ['ADMIN', 'ADMİN', 'VETERINER', 'veteriner', 'SEKRETER', 'sekreter', 'TEKNISYEN', 'Teknisyen'],
+  'animals:write': ['ADMIN', 'ADMİN', 'VETERINER', 'veteriner', 'SEKRETER', 'sekreter'],
+  'animals:delete': ['ADMIN', 'ADMİN', 'VETERINER', 'veteriner'],
+  'appointments:read': ['ADMIN', 'ADMİN', 'VETERINER', 'veteriner', 'SEKRETER', 'sekreter'],
+  'appointments:write': ['ADMIN', 'ADMİN', 'VETERINER', 'veteriner', 'SEKRETER', 'sekreter'],
+  'appointments:delete': ['ADMIN', 'ADMİN', 'VETERINER', 'veteriner'],
+  'laboratory:read': ['ADMIN', 'ADMİN', 'VETERINER', 'veteriner', 'TEKNISYEN', 'Teknisyen'],
+  'laboratory:write': ['ADMIN', 'ADMİN', 'VETERINER', 'veteriner', 'TEKNISYEN', 'Teknisyen'],
+  'laboratory:delete': ['ADMIN', 'ADMİN', 'VETERINER', 'veteriner'],
+  'billing:read': ['ADMIN', 'ADMİN', 'VETERINER', 'veteriner', 'SEKRETER', 'sekreter'],
+  'billing:write': ['ADMIN', 'ADMİN', 'SEKRETER', 'sekreter'],
+  'billing:delete': ['ADMIN', 'ADMİN'],
+  'reports:read': ['ADMIN', 'ADMİN', 'VETERINER', 'veteriner'],
+  'reports:write': ['ADMIN', 'ADMİN'],
+  'settings:read': ['ADMIN', 'ADMİN'],
+  'settings:write': ['ADMIN', 'ADMİN'],
+  'users:read': ['ADMIN', 'ADMİN'],
+  'users:write': ['ADMIN', 'ADMİN'],
+  'audit:read': ['ADMIN', 'ADMİN'],
+  'dashboard:read': ['ADMIN', 'ADMİN', 'VETERINER', 'veteriner', 'SEKRETER', 'sekreter', 'TEKNISYEN', 'Teknisyen'], // Dashboard herkes erişebilir
+  'inventory:read': ['ADMIN', 'ADMİN', 'VETERINER', 'veteriner', 'SEKRETER', 'sekreter'], // Envanter için eklendi
 };
 
 export const usePermissions = () => {
@@ -36,8 +37,8 @@ export const usePermissions = () => {
         return false;
       }
 
-      // ADMIN her şeye erişebilir
-      if (roles.includes('ADMIN')) {
+      // ADMIN her şeye erişebilir (hem İngilizce hem Türkçe)
+      if (roles.includes('ADMIN') || roles.includes('ADMİN')) {
         return true;
       }
 
@@ -58,6 +59,12 @@ export const usePermissions = () => {
       if (!user || !roles || roles.length === 0) {
         return false;
       }
+
+      // ADMIN/ADMİN için özel kontrol
+      if (role === 'ADMİN') {
+        return roles.includes('ADMIN') || roles.includes('ADMİN');
+      }
+
       return roles.includes(role);
     };
   }, [user, roles]);
@@ -90,9 +97,9 @@ export const usePermissions = () => {
     userRoles: roles || [],
     userPermissions: permissions || [],
     isAdmin: hasRole('ADMIN'),
-    isVeterinarian: hasRole('VETERINER'),
-    isSecretary: hasRole('SEKRETER'),
-    isTechnician: hasRole('TEKNISYEN'),
+    isVeterinarian: hasRole('VETERINER') || hasRole('veteriner'),
+    isSecretary: hasRole('SEKRETER') || hasRole('sekreter'),
+    isTechnician: hasRole('TEKNISYEN') || hasRole('Teknisyen'),
   };
 };
 
