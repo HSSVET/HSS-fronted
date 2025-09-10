@@ -147,7 +147,7 @@ const AnimalDetailPage: React.FC = () => {
       case 8: // Alerjiler/Kronik Rahatsızlıklar
         return <Allergies />;
       case 9: // Patoloji Bulguları
-        return <PathologyFindings 
+        return <PathologyFindings
           reportInfo={{
             reportNo: '2025-PAT-0142',
             date: '24.08.2035',
