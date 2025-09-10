@@ -22,7 +22,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, toggleSidebar }) => {
     } else {
       document.body.classList.add('sidebar-expanded');
     }
-    
+
     return () => {
       document.body.classList.remove('sidebar-expanded');
     };
@@ -34,6 +34,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, toggleSidebar }) => {
     { icon: 'icon-calendar', text: 'Randevular', path: '/appointments', permission: 'appointments:read' },
     { icon: 'icon-paw', text: 'Hastalar/Hayvanlar', path: '/animals', permission: 'animals:read' },
     { icon: 'icon-lab', text: 'Laboratuvar', path: '/laboratory', permission: 'laboratory:read' },
+    { icon: 'icon-syringe', text: 'Aşı Yönetimi', path: '/vaccinations', permission: 'vaccinations:read' },
     { icon: 'icon-billing', text: 'Ödeme & Fatura', path: '/billing', permission: 'billing:read' },
     { icon: 'icon-box', text: 'Envanter/Stok', path: '/inventory', permission: 'inventory:read' },
     { icon: 'icon-chart', text: 'Raporlar', path: '/reports', permission: 'reports:read' },
@@ -59,12 +60,12 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, toggleSidebar }) => {
           <span className={`icon ${collapsed ? 'icon-chevron-right' : 'icon-chevron-left'}`}></span>
         </button>
       </div>
-      
+
       <div className="menu-container">
         {menuItems.map((item, index) => (
-          <Link 
-            key={index} 
-            to={item.path} 
+          <Link
+            key={index}
+            to={item.path}
             className={`menu-item ${location.pathname === item.path ? 'active' : ''}`}
           >
             <span className={`icon ${item.icon}`}></span>
@@ -72,7 +73,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, toggleSidebar }) => {
           </Link>
         ))}
       </div>
-      
+
       <div className="user-container">
         <div className="user-profile">
           <span className="icon icon-user"></span>
