@@ -4,7 +4,7 @@ import Keycloak from 'keycloak-js';
 const keycloakConfig = {
   url: 'http://localhost:8080',
   realm: 'veterinary-clinic',
-  clientId: 'hss-frontend'
+  clientId: 'frontend-client'
 };
 
 // Create Keycloak instance

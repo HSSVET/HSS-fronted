@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import webSocketService from '../../../services/websocketService';
 import '../styles/Laboratory.css';
 
 interface Patient {
@@ -187,6 +188,11 @@ const LabDashboard: React.FC = () => {
             const isCritical = Math.random() < 0.3;
             if (isCritical) {
               showSnackbarMessage(`KRİTİK DEĞER: ${test.patient.name} - ${getTestDisplayName(test.testType)}`, 'critical');
+              // WebSocket: Kritik lab sonucu bildirimi
+              webSocketService.sendEmergencyMessage(`KRİTİK LAB SONUCU: ${test.patient.name} - ${getTestDisplayName(test.testType)} - Dr. ${test.vet}`);
+            } else {
+              // WebSocket: Normal lab sonucu bildirimi
+              webSocketService.sendLabResultMessage(`${getTestDisplayName(test.testType)} sonucu hazır: ${test.patient.name} - Dr. ${test.vet}`);
             }
             return { ...test, status: 'completed' as const, isCritical };
           default:
@@ -243,6 +249,11 @@ const LabDashboard: React.FC = () => {
         const isCritical = Math.random() < 0.2;
         if (isCritical) {
           showSnackbarMessage('KRİTİK DEĞER TESPİT EDİLDİ!', 'critical');
+          // WebSocket: Kritik sonuç yüklendi bildirimi
+          webSocketService.sendEmergencyMessage(`KRİTİK SONUÇ YÜKLENDİ: ${test.patient.name} - ${getTestDisplayName(test.testType)} - Dr. ${test.vet}`);
+        } else {
+          // WebSocket: Normal sonuç yüklendi bildirimi
+          webSocketService.sendLabResultMessage(`Sonuç yüklendi: ${test.patient.name} - ${getTestDisplayName(test.testType)} - Dr. ${test.vet}`);
         }
         
         return {

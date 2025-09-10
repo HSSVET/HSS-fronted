@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import Sidebar from './Sidebar';
+import NotificationCenter from '../../components/common/NotificationCenter';
+import ToastManager from '../../components/common/ToastManager';
+import { useNotificationService } from '../../hooks/useNotificationService';
 import '../styles/components/Layout.css';
 
 interface LayoutProps {
@@ -9,6 +12,7 @@ interface LayoutProps {
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
   const [sidebarHovered, setSidebarHovered] = useState(false);
+  const { toasts, removeToast } = useNotificationService();
 
   const toggleSidebar = () => {
     setSidebarCollapsed(!sidebarCollapsed);
@@ -35,8 +39,14 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         <Sidebar collapsed={!isSidebarOpen} toggleSidebar={toggleSidebar} />
       </div>
       <main className="main-content">
+        <div className="main-header">
+          <NotificationCenter />
+        </div>
         {children}
       </main>
+      
+      {/* Toast Bildirimleri */}
+      <ToastManager toasts={toasts} onRemoveToast={removeToast} />
     </div>
   );
 };

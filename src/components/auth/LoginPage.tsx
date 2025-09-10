@@ -231,13 +231,10 @@ const LoginPage: React.FC<LoginPageProps> = ({
       const redirectUrl = new URLSearchParams(location.search).get('redirect') || '/dashboard';
       console.log('🔗 Redirecting to:', redirectUrl);
       
-      // Set success state and redirect after a short delay
-      setLoginStep('success');
-      setTimeout(() => {
-        navigate(redirectUrl, { replace: true });
-      }, 1500);
+      // Immediate redirect without setting success state
+      navigate(redirectUrl, { replace: true });
     }
-  }, [state.isAuthenticated, state.isInitialized, state.isLoading, loginStep, location.search, navigate]);
+  }, [state.isAuthenticated, state.isInitialized, state.isLoading, location.search, navigate]);
 
   useEffect(() => {
     // Only show error if it's not an initialization error
@@ -1056,14 +1053,12 @@ const LoginPage: React.FC<LoginPageProps> = ({
                 }}
               >
                 <CardContent sx={{ p: 4 }}>
-                  {loginStep === 'success' ? renderSuccessState() : (
-                    <>
-                      {renderHeader()}
-                      {error && renderErrorAlert()}
-                      {loginStep === 'initial' && renderLoginOptions()}
-                      {loginStep === 'password' && renderPasswordForm()}
-                    </>
-                  )}
+                  <>
+                    {renderHeader()}
+                    {error && renderErrorAlert()}
+                    {loginStep === 'initial' && renderLoginOptions()}
+                    {loginStep === 'password' && renderPasswordForm()}
+                  </>
                 </CardContent>
               </Card>
             </Slide>

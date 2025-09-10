@@ -170,7 +170,7 @@ function App() {
                 <Route
                   path="/animals"
                   element={
-                    <ProtectedRoute requiredPermissions={['animals:read']}>
+                    <ProtectedRoute>
                       <Layout>
                         <PageErrorBoundary pageName="Animals">
                           <AnimalPage />
@@ -183,7 +183,7 @@ function App() {
                 <Route
                   path="/animals/:id"
                   element={
-                    <ProtectedRoute requiredPermissions={['animals:read']}>
+                    <ProtectedRoute>
                       <Layout>
                         <PageErrorBoundary pageName="Animal Details">
                           <AnimalDetailPage />
@@ -197,7 +197,7 @@ function App() {
                 <Route
                   path="/appointments"
                   element={
-                    <ProtectedRoute requiredPermissions={['appointments:read']}>
+                    <ProtectedRoute>
                       <Layout>
                         <PageErrorBoundary pageName="Appointments">
                           <AppointmentPage />
@@ -211,7 +211,7 @@ function App() {
                 <Route
                   path="/laboratory"
                   element={
-                    <ProtectedRoute requiredPermissions={['laboratory:read']}>
+                    <ProtectedRoute>
                       <Layout>
                         <PageErrorBoundary pageName="Laboratory">
                           <LabDashboard />
@@ -224,7 +224,7 @@ function App() {
                 <Route
                   path="/laboratory/test-types"
                   element={
-                    <ProtectedRoute requiredPermissions={['laboratory:read']}>
+                    <ProtectedRoute>
                       <Layout>
                         <PageErrorBoundary pageName="Lab Test Types">
                           <LabTestTypes />
@@ -238,7 +238,7 @@ function App() {
                 <Route
                   path="/billing"
                   element={
-                    <ProtectedRoute requiredPermissions={['billing:read']}>
+                    <ProtectedRoute>
                       <Layout>
                         <PageErrorBoundary pageName="Billing">
                           <Billing />
