@@ -1,4 +1,7 @@
-import React, { useState } from 'react';
+import * as React from 'react';
+import { useState } from 'react';
+import type { JSX } from 'react';
+import { Box, Button } from '@mui/material';
 import AnimalList from './AnimalList';
 import AddAnimalDialog from './AddAnimalDialog';
 import '../styles/AnimalSystem.css';
