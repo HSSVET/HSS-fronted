@@ -264,7 +264,7 @@
 }
 
 .price-tag {
-  color: #059669;
+  color: #92A78C;
   font-weight: 700;
 }
 
@@ -296,7 +296,7 @@
 
 .btn-quick-order {
   flex: 1;
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  background: linear-gradient(135deg, #B4C7AF 0%, #92A78C 100%);
   color: white;
   border: none;
   padding: 12px 20px;
