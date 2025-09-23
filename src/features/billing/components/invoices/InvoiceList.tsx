@@ -62,7 +62,7 @@ export const InvoiceList: React.FC = () => {
   return (
     <div>
       {/* Filters Widget */}
-      <div className="billing-widget">
+      <div className="billing-widget ui-card panel ui-card--hover">
         <div className="widget-header">
           <h2>
             <span className="icon icon-hospital"></span>
@@ -120,7 +120,7 @@ export const InvoiceList: React.FC = () => {
       </div>
 
       {/* Invoices Table Widget */}
-      <div className="billing-widget">
+      <div className="billing-widget ui-card panel">
         <div className="widget-header">
           <h2>
             <span className="icon icon-hospital"></span>
@@ -134,7 +134,7 @@ export const InvoiceList: React.FC = () => {
               <div>Henüz fatura bulunamadı</div>
             </div>
           ) : (
-            <table className="billing-table">
+            <table className="billing-table table">
               <thead>
                 <tr>
                   <th>Fatura No</th>

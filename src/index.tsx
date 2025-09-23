@@ -2,10 +2,13 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { ReactKeycloakProvider } from '@react-keycloak/web';
 import './shared/styles/index.css';
+import './shared/styles/theme.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import keycloak, { keycloakInitOptions } from './config/keycloak';
 import { apiClient } from './services/api';
+import { OFFLINE_MODE } from './config/offline';
+import keycloakOffline from './config/keycloakOffline';
 
 const container = document.getElementById('root');
 const root = createRoot(container!);
@@ -59,17 +62,22 @@ const onKeycloakTokens = (tokens: any) => {
   }
 };
 
-root.render(
-  <ReactKeycloakProvider
-    authClient={keycloak}
-    initOptions={keycloakInitOptions}
-    onEvent={onKeycloakEvent}
-    onTokens={onKeycloakTokens}
-    LoadingComponent={<div style={{ padding: '20px', textAlign: 'center' }}>HSS Yükleniyor...</div>}
-  >
-    <App />
-  </ReactKeycloakProvider>
-);
+if (OFFLINE_MODE) {
+  // Keycloak tamamen devre dışı: sadece App render edilir
+  root.render(<App />);
+} else {
+  root.render(
+    <ReactKeycloakProvider
+      authClient={keycloak}
+      initOptions={keycloakInitOptions}
+      onEvent={onKeycloakEvent}
+      onTokens={onKeycloakTokens}
+      LoadingComponent={<div style={{ padding: '20px', textAlign: 'center' }}>HSS Yükleniyor...</div>}
+    >
+      <App />
+    </ReactKeycloakProvider>
+  );
+}
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))

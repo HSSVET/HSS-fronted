@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
 import { useKeycloak } from '@react-keycloak/web';
 import { testApi, apiClient } from '../../services/api';
+import { OFFLINE_MODE } from '../../config/offline';
 
 const ApiTestComponent: React.FC = () => {
+  if (OFFLINE_MODE) {
+    return null;
+  }
   const { keycloak, initialized } = useKeycloak();
   const [results, setResults] = useState<Record<string, any>>({});
   const [loading, setLoading] = useState<Record<string, boolean>>({});

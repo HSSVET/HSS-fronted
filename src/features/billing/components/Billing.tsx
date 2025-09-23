@@ -83,7 +83,7 @@ export const Billing: React.FC = () => {
 
   return (
     <div className="billing">
-      <div className="billing-header">
+      <div className="billing-header ui-card panel ui-card--hover">
         <h1>Ödeme ve Faturalandırma</h1>
         <div className="quick-actions">
           <button className="action-button" onClick={handleCreateInvoice}>
@@ -105,7 +105,7 @@ export const Billing: React.FC = () => {
         </div>
       </div>
 
-      <div className="billing-tabs">
+      <div className="billing-tabs ui-card panel">
         <div className="tab-buttons">
           <button
             className={`tab-button ${activeTab === 'invoices' ? 'active' : ''}`}

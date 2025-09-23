@@ -2,12 +2,17 @@
 .sidebar {
   display: flex;
   flex-direction: column;
-  background-color: var(--primary-color);
+  /* Cam etkili, daha modern sidebar arka planı */
+  background: linear-gradient(180deg, rgba(92, 122, 109, 0.96), rgba(92, 122, 109, 0.92));
   color: var(--text-on-primary);
   height: 100vh;
   width: 100%;
   transition: all var(--transition-speed) var(--transition-function);
   overflow: hidden;
+  backdrop-filter: blur(8px) saturate(1.05);
+  -webkit-backdrop-filter: blur(8px) saturate(1.05);
+  box-shadow: 4px 0 18px rgba(40, 70, 90, 0.16);
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .sidebar.collapsed {
@@ -25,7 +30,7 @@
   justify-content: space-between;
   padding: var(--spacing-2);
   height: 60px; /* Daha ince header */
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* Beyaz çizgi */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12); /* Beyaz çizgi */
 }
 
 .logo-container h2 {
@@ -274,12 +279,12 @@
 }
 
 .menu-item:hover {
-  background-color: rgba(255, 255, 255, 0.1); /* Beyaz hover efekti */
+  background-color: rgba(255, 255, 255, 0.12); /* Beyaz hover efekti */
   color: var(--text-on-primary);
 }
 
 .menu-item.active {
-  background-color: rgba(255, 255, 255, 0.15); /* Daha belirgin aktif renk */
+  background-color: rgba(255, 255, 255, 0.18); /* Daha belirgin aktif renk */
   color: var(--text-on-primary);
 }
 
