@@ -2,7 +2,7 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { usePermissions } from '../../hooks/usePermissions';
 import { useAuth } from '../../context/AuthContext';
-import { useKeycloak } from '@react-keycloak/web';
+import { OFFLINE_MODE } from '../../config/offline';
 import '../styles/components/Sidebar.css';
 
 interface SidebarProps {
@@ -13,8 +13,7 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({ collapsed, toggleSidebar }) => {
   const location = useLocation();
   const { hasPermission } = usePermissions();
-  const { user } = useAuth();
-  const { keycloak } = useKeycloak();
+  const { user, logout } = useAuth();
   
   React.useEffect(() => {
     if (collapsed) {
@@ -46,9 +45,8 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, toggleSidebar }) => {
 
   // Handle logout
   const handleLogout = () => {
-    keycloak.logout({
-      redirectUri: window.location.origin + '/login'
-    });
+    // Offline veya online fark etmeksizin AuthContext.logout kullan
+    logout();
   };
 
   return (

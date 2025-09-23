@@ -112,13 +112,13 @@ const AppointmentPage: React.FC = () => {
 
   return (
     <div className="appointment-system">
-      <div className="appointment-system-header">
-        <h1 className="appointment-system-title">🐾 Hayvan Sağlığı Randevu Sistemi</h1>
-        <p className="appointment-system-subtitle">Veteriner Hekim Randevu Yönetim Platformu</p>
+      <div className="appointment-system-header ui-card panel ui-card--hover" style={{textAlign:'left'}}>
+        <h1 className="appointment-system-title ui-section-title">Randevu Sistemi</h1>
+        <p className="appointment-system-subtitle">Veteriner Hekim Randevu Yönetimi</p>
       </div>
 
-      <div className="appointment-system-container">
-        <div className="calendar-section">
+      <div className="appointment-system-container grid gap-3" style={{gridTemplateColumns:'420px 1fr'}}>
+        <div className="calendar-section ui-card panel">
           <Calendar
             selectedDate={selectedDate}
             onDateSelect={handleDateSelect}
@@ -127,21 +127,25 @@ const AppointmentPage: React.FC = () => {
         </div>
 
         <div className="content-section">
-          <AppointmentList
+          <div className="ui-card panel ui-card--hover">
+            <AppointmentList
             appointments={todayAppointments}
             selectedDate={selectedDate}
             onEdit={editAppointment}
             onDelete={deleteAppointment}
             onNewAppointment={handleNewAppointment}
-          />
+            />
+          </div>
 
           {showForm && (
-            <AppointmentForm
-              appointment={editingAppointment}
-              selectedDate={selectedDate}
-              onSave={editingAppointment ? updateAppointment : addAppointment}
-              onCancel={handleCancelForm}
-            />
+            <div className="ui-card panel ui-card--hover">
+              <AppointmentForm
+                appointment={editingAppointment}
+                selectedDate={selectedDate}
+                onSave={editingAppointment ? updateAppointment : addAppointment}
+                onCancel={handleCancelForm}
+              />
+            </div>
           )}
         </div>
       </div>

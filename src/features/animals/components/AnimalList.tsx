@@ -160,7 +160,7 @@ const AnimalList: React.FC<AnimalListProps> = ({ onAddAnimal }) => {
   return (
     <div className="animal-list-container">
       {/* Filter Panel */}
-      <div className="filter-panel">
+      <div className="filter-panel ui-card panel ui-card--hover">
         <h2>Filtreler</h2>
         
         <TextField
@@ -249,7 +249,7 @@ const AnimalList: React.FC<AnimalListProps> = ({ onAddAnimal }) => {
       {/* Main Content */}
       <div className="animal-list-main">
         <div className="animal-list-header">
-          <h2 className="animal-list-title">Hayvan Listesi</h2>
+          <h2 className="animal-list-title ui-section-title">Hayvan Listesi</h2>
           <Button
             variant="outlined"
             onClick={handleSortClick}
@@ -330,7 +330,7 @@ const AnimalList: React.FC<AnimalListProps> = ({ onAddAnimal }) => {
           </Popover>
         </div>
         
-        <Paper className="animal-table">
+        <Paper className="animal-table ui-card panel">
           <div className="animal-table-header">
             <div className="animal-table-cell id">ID</div>
             <div className="animal-table-cell name">Hayvan Adı</div>
@@ -353,7 +353,7 @@ const AnimalList: React.FC<AnimalListProps> = ({ onAddAnimal }) => {
               </div>
               <div className="animal-table-cell owner">{animal.owner}</div>
               <div className="animal-table-cell health">
-                <span className={getHealthChipClass(animal.health)}>
+                <span className={`badge ${getHealthChipClass(animal.health).includes('good') ? 'badge--ok' : getHealthChipClass(animal.health).includes('treatment') ? 'badge--danger' : 'badge--warning'}`}>
                   {animal.health}
                 </span>
               </div>

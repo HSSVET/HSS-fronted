@@ -1,5 +1,6 @@
 // @ts-ignore
 import Keycloak from 'keycloak-js';
+import { OFFLINE_MODE } from '../config/offline';
 
 // Base API URL
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8090/api';
@@ -21,7 +22,7 @@ export class ApiClient {
       'Content-Type': 'application/json',
     };
 
-    if (this.keycloak?.authenticated) {
+    if (!OFFLINE_MODE && this.keycloak?.authenticated) {
       try {
         // Token'ı yenile (gerekirse)
         await this.keycloak.updateToken(30);
@@ -39,7 +40,7 @@ export class ApiClient {
     if (!response.ok) {
       if (response.status === 401) {
         // Token expired or invalid
-        if (this.keycloak) {
+        if (!OFFLINE_MODE && this.keycloak) {
           try {
             await this.keycloak.updateToken(30);
             // Retry the request with new token would be here
@@ -68,6 +69,9 @@ export class ApiClient {
   }
 
   async get<T>(endpoint: string): Promise<T> {
+    if (OFFLINE_MODE) {
+      return Promise.resolve({} as T);
+    }
     const headers = await this.getHeaders();
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       method: 'GET',
@@ -77,6 +81,9 @@ export class ApiClient {
   }
 
   async post<T>(endpoint: string, data?: any): Promise<T> {
+    if (OFFLINE_MODE) {
+      return Promise.resolve({} as T);
+    }
     const headers = await this.getHeaders();
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       method: 'POST',
@@ -87,6 +94,9 @@ export class ApiClient {
   }
 
   async put<T>(endpoint: string, data?: any): Promise<T> {
+    if (OFFLINE_MODE) {
+      return Promise.resolve({} as T);
+    }
     const headers = await this.getHeaders();
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       method: 'PUT',
@@ -97,6 +107,9 @@ export class ApiClient {
   }
 
   async delete<T>(endpoint: string): Promise<T> {
+    if (OFFLINE_MODE) {
+      return Promise.resolve({} as T);
+    }
     const headers = await this.getHeaders();
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       method: 'DELETE',
@@ -106,6 +119,9 @@ export class ApiClient {
   }
 
   async patch<T>(endpoint: string, data?: any): Promise<T> {
+    if (OFFLINE_MODE) {
+      return Promise.resolve({} as T);
+    }
     const headers = await this.getHeaders();
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       method: 'PATCH',

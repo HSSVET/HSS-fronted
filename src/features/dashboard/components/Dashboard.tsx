@@ -27,42 +27,41 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="dashboard">
-      <div className="dashboard-header">
-        <h1>Veteriner Paneli</h1>
-        <div className="quick-actions">
-          <button className="action-button">
-            <span className="icon icon-plus"></span>
-            Yeni Randevu
-          </button>
-          <button className="action-button">
-            <span className="icon icon-plus"></span>
-            Yeni Hasta Kaydı
-          </button>
+      <div className="topbar mb-3">
+        <h1 className="ui-section-title">Veteriner Paneli</h1>
+        <div className="topbar__spacer" />
+        <button className="ui-button" style={{marginRight: 8}}>
+          <span className="icon icon-plus"></span>
+          Yeni Randevu
+        </button>
+        <button className="ui-button">
+          <span className="icon icon-plus"></span>
+          Yeni Hasta Kaydı
+        </button>
+      </div>
+
+      <div className="stats-container grid gap-3" style={{gridTemplateColumns: 'repeat(3, minmax(180px, 1fr))'}}>
+        <div className="ui-card panel ui-card--hover stat-card">
+          <h3 className="muted">Toplam Aktif Hasta</h3>
+          <div className="ui-stat-number">248</div>
+        </div>
+        <div className="ui-card panel ui-card--hover stat-card">
+          <h3 className="muted">Bugünkü Randevular</h3>
+          <div className="ui-stat-number">14</div>
+        </div>
+        <div className="ui-card panel ui-card--hover stat-card">
+          <h3 className="muted">Klinikte Bulunan Hayvanlar</h3>
+          <div className="ui-stat-number">5</div>
         </div>
       </div>
 
-      <div className="stats-container">
-        <div className="stat-card">
-          <h3>Toplam Aktif Hasta</h3>
-          <div className="stat-value">248</div>
-        </div>
-        <div className="stat-card">
-          <h3>Bugünkü Randevular</h3>
-          <div className="stat-value">14</div>
-        </div>
-        <div className="stat-card">
-          <h3>Klinikte Bulunan Hayvanlar</h3>
-          <div className="stat-value">5</div>
-        </div>
-      </div>
-
-      <div className="widgets-container three-column">
-        <div className="widget hospitalized-patients-widget">
-          <div className="widget-header">
-            <h2><span className="icon icon-hospital"></span> Klinikte Yatan Hastalar</h2>
+      <div className="widgets-container three-column grid grid--dashboard gap-3 grid--rows">
+        <div className="widget ui-card panel hospitalized-patients-widget">
+          <div className="widget-header card-header">
+            <h2 className="ui-section-title"><span className="icon icon-hospital"></span> Klinikte Yatan Hastalar</h2>
           </div>
           <div className="widget-content">
-            <table className="hospitalized-patients-table">
+            <table className="hospitalized-patients-table table">
               <thead>
                 <tr>
                   <th>Hasta</th>
@@ -81,7 +80,7 @@ const Dashboard: React.FC = () => {
                     </span>
                   </td>
                   <td>12.06.2023</td>
-                  <td><span className="status-stable">Stabil</span></td>
+                  <td><span className="badge badge--ok">Stabil</span></td>
                 </tr>
                 <tr>
                   <td>
@@ -93,7 +92,7 @@ const Dashboard: React.FC = () => {
                     </span>
                   </td>
                   <td>13.06.2023</td>
-                  <td><span className="status-improving">İyileşiyor</span></td>
+                  <td><span className="badge">İyileşiyor</span></td>
                 </tr>
                 <tr>
                   <td>
@@ -105,7 +104,7 @@ const Dashboard: React.FC = () => {
                     </span>
                   </td>
                   <td>11.06.2023</td>
-                  <td><span className="status-critical">Kritik</span></td>
+                  <td><span className="badge badge--danger">Kritik</span></td>
                 </tr>
                 <tr>
                   <td>
@@ -117,7 +116,7 @@ const Dashboard: React.FC = () => {
                     </span>
                   </td>
                   <td>14.06.2023</td>
-                  <td><span className="status-observation">Gözlem</span></td>
+                  <td><span className="badge">Gözlem</span></td>
                 </tr>
                 <tr>
                   <td>
@@ -129,16 +128,16 @@ const Dashboard: React.FC = () => {
                     </span>
                   </td>
                   <td>10.06.2023</td>
-                  <td><span className="status-recovering">Nekahet</span></td>
+                  <td><span className="badge badge--warning">Nekahet</span></td>
                 </tr>
               </tbody>
             </table>
           </div>
         </div>
 
-        <div className="widget recent-activity-widget">
-          <div className="widget-header">
-            <h2><span className="icon icon-paw"></span> Son Hasta Aktiviteleri</h2>
+        <div className="widget ui-card panel recent-activity-widget">
+          <div className="widget-header card-header">
+            <h2 className="ui-section-title"><span className="icon icon-paw"></span> Son Hasta Aktiviteleri</h2>
           </div>
           <div className="widget-content">
             <ul className="activity-list">
@@ -194,16 +193,16 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
 
-        <div className="widget calendar-wrapper">
+        <div className="widget ui-card panel calendar-wrapper">
           <CalendarWidget />
         </div>
 
-        <div className="widget low-stock-widget">
-          <div className="widget-header">
-            <h2><span className="icon icon-warning"></span> Düşük Stok Uyarıları</h2>
+        <div className="widget ui-card panel low-stock-widget">
+          <div className="widget-header card-header">
+            <h2 className="ui-section-title"><span className="icon icon-warning"></span> Düşük Stok Uyarıları</h2>
           </div>
           <div className="widget-content">
-            <table className="stock-table">
+            <table className="stock-table table">
               <thead>
                 <tr>
                   <th>Ürün</th>
@@ -237,9 +236,9 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
 
-        <div className="widget lab-results-widget clickable-widget" onClick={() => navigate('/laboratory')}>
-          <div className="widget-header">
-            <h2><span className="icon icon-lab"></span> Bekleyen Laboratuvar Sonuçları</h2>
+        <div className="widget ui-card panel lab-results-widget clickable-widget" onClick={() => navigate('/laboratory')}>
+          <div className="widget-header card-header">
+            <h2 className="ui-section-title"><span className="icon icon-lab"></span> Bekleyen Laboratuvar Sonuçları</h2>
           </div>
           <div className="widget-content">
             <ul className="lab-list">
@@ -271,9 +270,9 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
 
-        <div className="widget notifications-widget">
-          <div className="widget-header">
-            <h2><span className="icon icon-bell"></span> Sistem Bildirimleri</h2>
+        <div className="widget ui-card panel notifications-widget">
+          <div className="widget-header card-header">
+            <h2 className="ui-section-title"><span className="icon icon-bell"></span> Sistem Bildirimleri</h2>
           </div>
           <div className="widget-content">
             <ul className="notification-list">

@@ -102,7 +102,7 @@ export const PaymentList: React.FC = () => {
   };
 
   return (
-    <div className="billing-widget">
+    <div className="billing-widget ui-card panel ui-card--hover">
       <div className="widget-header">
         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-1)' }}>
           <span className="widget-icon">💳</span>
@@ -207,7 +207,7 @@ export const PaymentList: React.FC = () => {
           </div>
         ) : (
           <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <table className="table" style={{ width: '100%' }}>
               <thead>
                 <tr style={{ borderBottom: '2px solid var(--border-color)' }}>
                   <th style={{ textAlign: 'left', padding: 'var(--spacing-1)', fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-medium)' }}>

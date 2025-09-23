@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useKeycloak } from '@react-keycloak/web';
+import { OFFLINE_MODE } from '../../config/offline';
 
 interface UserInfo {
   sub?: string;
@@ -13,6 +14,9 @@ interface UserInfo {
 }
 
 const AuthButton: React.FC = () => {
+  if (OFFLINE_MODE) {
+    return null;
+  }
   const { keycloak, initialized } = useKeycloak();
   const [tokenTimeRemaining, setTokenTimeRemaining] = useState<number>(0);
 
