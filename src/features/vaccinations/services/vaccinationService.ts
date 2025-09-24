@@ -1,7 +1,7 @@
 import {
     Vaccine,
     VaccineStock,
-    StockAlert,
+    VaccineStockAlert,
     VaccinationStats,
     VaccinationFilters,
     AnimalVaccinationCard,
@@ -264,7 +264,7 @@ export const mockVaccineStock: VaccineStock[] = [
     }
 ];
 
-export const mockStockAlerts: StockAlert[] = [
+export const mockVaccineStockAlerts: VaccineStockAlert[] = [
     {
         id: '1',
         vaccineId: '1',
@@ -310,7 +310,7 @@ export const mockStockAlerts: StockAlert[] = [
 class VaccinationService {
     private vaccines: Vaccine[] = mockVaccines;
     private vaccineStock: VaccineStock[] = mockVaccineStock;
-    private stockAlerts: StockAlert[] = mockStockAlerts;
+    private stockAlerts: VaccineStockAlert[] = mockVaccineStockAlerts;
 
     // Hayvan türüne göre ırkları getir
     getBreedsByAnimalType(animalType: string): string[] {
@@ -372,7 +372,7 @@ class VaccinationService {
     }
 
     // Stok Uyarıları
-    async getStockAlerts(): Promise<StockAlert[]> {
+    async getVaccineStockAlerts(): Promise<VaccineStockAlert[]> {
         return [...this.stockAlerts];
     }
 

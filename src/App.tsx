@@ -9,6 +9,9 @@ import { AnimalPage, AnimalDetailPage } from './features/animals';
 import { AppointmentPage } from './features/appointments';
 import { LabDashboard, LabTestTypes } from './features/laboratory';
 import { Billing } from './features/billing';
+import { StockSystem } from './features/stock';
+import { VaccinationDashboard } from './features/vaccinations';
+import { ReportsPage, AnimalReports, AppointmentReports, FinancialReports } from './features/reports';
 
 // Auth Components
 import LoginPage from './components/auth/LoginPage';
@@ -207,6 +210,20 @@ function App() {
                   }
                 />
 
+                {/* Vaccinations - Role-based access */}
+                <Route
+                  path="/vaccinations"
+                  element={
+                    <ProtectedRoute requiredPermissions={['vaccinations:read']}>
+                      <Layout>
+                        <PageErrorBoundary pageName="Vaccinations">
+                          <VaccinationDashboard />
+                        </PageErrorBoundary>
+                      </Layout>
+                    </ProtectedRoute>
+                  }
+                />
+
                 {/* Laboratory - Role-based access */}
                 <Route
                   path="/laboratory"
@@ -248,14 +265,14 @@ function App() {
                   }
                 />
 
-                {/* Inventory - Admin/Veterinarian only */}
+                {/* Stock - Admin/Veterinarian only */}
                 <Route
                   path="/inventory"
                   element={
                     <VeterinarianRoute>
                       <Layout>
-                        <PageErrorBoundary pageName="Inventory">
-                          <div>Envanter/Stok Sayfası (Yakında)</div>
+                        <PageErrorBoundary pageName="Stock">
+                          <StockSystem />
                         </PageErrorBoundary>
                       </Layout>
                     </VeterinarianRoute>
@@ -264,17 +281,22 @@ function App() {
 
                 {/* Reports - Admin/Veterinarian only */}
                 <Route
-                  path="/reports"
+                  path="/reports/*"
                   element={
                     <ProtectedRoute requiredPermissions={['reports:read']}>
                       <Layout>
                         <PageErrorBoundary pageName="Reports">
-                          <div>Raporlar Sayfası (Yakında)</div>
+                          <ReportsPage />
                         </PageErrorBoundary>
                       </Layout>
                     </ProtectedRoute>
                   }
-                />
+                >
+                  <Route index element={<Navigate to="animals" replace />} />
+                  <Route path="animals" element={<AnimalReports />} />
+                  <Route path="appointments" element={<AppointmentReports />} />
+                  <Route path="financial" element={<FinancialReports />} />
+                </Route>
 
                 {/* Settings - Admin only */}
                 <Route
@@ -379,3 +401,5 @@ function App() {
 }
 
 export default App;
+
+

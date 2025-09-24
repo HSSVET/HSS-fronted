@@ -50,7 +50,7 @@ export class ApiClient {
         }
         throw new Error('Unauthorized');
       }
-      
+
       if (response.status === 403) {
         throw new Error('Forbidden - Insufficient permissions');
       }

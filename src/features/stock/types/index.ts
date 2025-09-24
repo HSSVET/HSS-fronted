@@ -115,12 +115,12 @@ export interface MovementFilters {
 }
 
 // Chart Data Types
-export interface ChartData {
+export interface StockChartData {
     labels: string[];
-    datasets: ChartDataset[];
+    datasets: StockChartDataset[];
 }
 
-export interface ChartDataset {
+export interface StockChartDataset {
     label: string;
     data: number[];
     backgroundColor?: string[];

@@ -1,14 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { useBilling } from '../../hooks/useBilling';
+import React, { useState } from 'react';
+import { Invoice, Payment } from '../../types';
 
-export const BillingReports: React.FC = () => {
-  const { invoices, payments, fetchInvoices, fetchPayments } = useBilling();
+interface BillingReportsProps {
+  invoices: Invoice[];
+  payments: Payment[];
+}
+
+export const BillingReports: React.FC<BillingReportsProps> = ({ invoices, payments }) => {
   const [reportPeriod, setReportPeriod] = useState('this_month');
-
-  useEffect(() => {
-    fetchInvoices();
-    fetchPayments();
-  }, []);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('tr-TR', {

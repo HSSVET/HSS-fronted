@@ -13,7 +13,7 @@ const root = createRoot(container!);
 // Keycloak event handlers
 const onKeycloakEvent = (event: string, error?: any) => {
   console.log('🔑 Keycloak Event:', event, error);
-  
+
   if (event === 'onReady') {
     console.log('✅ Keycloak ready event');
     console.log('  - Authenticated:', keycloak.authenticated);
@@ -21,7 +21,7 @@ const onKeycloakEvent = (event: string, error?: any) => {
     // API client'a keycloak instance'ını set et
     apiClient.setKeycloak(keycloak);
   }
-  
+
   if (event === 'onAuthSuccess') {
     console.log('✅ Keycloak auth success event');
     console.log('  - Token:', keycloak.token ? 'EXISTS' : 'MISSING');
@@ -29,19 +29,19 @@ const onKeycloakEvent = (event: string, error?: any) => {
     // API client'a keycloak instance'ını set et
     apiClient.setKeycloak(keycloak);
   }
-  
+
   if (event === 'onAuthError') {
     console.error('❌ Keycloak Auth Error:', error);
   }
-  
+
   if (event === 'onAuthRefreshSuccess') {
     console.log('🔄 Keycloak token refresh success');
   }
-  
+
   if (event === 'onAuthRefreshError') {
     console.error('❌ Keycloak token refresh error:', error);
   }
-  
+
   if (event === 'onTokenExpired') {
     console.warn('⚠️ Keycloak token expired');
   }
@@ -52,7 +52,7 @@ const onKeycloakTokens = (tokens: any) => {
   console.log('  - Authenticated:', keycloak.authenticated);
   console.log('  - Token exists:', !!keycloak.token);
   console.log('  - Token parsed exists:', !!keycloak.tokenParsed);
-  
+
   // API client'ı güncel token ile güncelle (sadece authenticated ise)
   if (keycloak.authenticated && keycloak.token) {
     apiClient.setKeycloak(keycloak);

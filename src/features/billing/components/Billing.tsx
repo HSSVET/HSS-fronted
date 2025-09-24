@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useBilling } from '../hooks/useBilling';
+import { BillingProvider, useBilling } from '../hooks/useBilling';
 import { InvoiceList } from './invoices/InvoiceList';
 import { PaymentList } from './payments/PaymentList';
 import { CreateInvoiceModal } from './invoices/CreateInvoiceModal';
@@ -9,33 +9,35 @@ import '../styles/Billing.css';
 
 type TabType = 'invoices' | 'payments' | 'reports' | 'services';
 
-export const Billing: React.FC = () => {
+const BillingContent: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>('invoices');
   const [showCreateInvoice, setShowCreateInvoice] = useState(false);
   const [showCreatePayment, setShowCreatePayment] = useState(false);
-  
-  const { 
-    invoices, 
-    payments, 
-    services,
-    loading, 
-    error, 
-    fetchInvoices, 
-    fetchPayments, 
-    fetchServices 
+
+  const {
+    invoices,
+    payments,
+    loading,
+    error,
+    fetchInvoices,
+    fetchPayments,
+    fetchServices
   } = useBilling();
 
   useEffect(() => {
     fetchServices();
-  }, []);
+  }, [fetchServices]);
 
   useEffect(() => {
     if (activeTab === 'invoices') {
       fetchInvoices();
     } else if (activeTab === 'payments') {
       fetchPayments();
+    } else if (activeTab === 'reports') {
+      fetchInvoices();
+      fetchPayments();
     }
-  }, [activeTab]);
+  }, [activeTab, fetchInvoices, fetchPayments]);
 
   const handleCreateInvoice = () => {
     setShowCreateInvoice(true);
@@ -57,18 +59,18 @@ export const Billing: React.FC = () => {
     if (error) {
       return (
         <div className="error-message">
-          <span>❌ {error}</span>
+          <span>⚠️ {error}</span>
         </div>
       );
     }
 
     switch (activeTab) {
       case 'invoices':
-        return <InvoiceList />;
+        return <InvoiceList invoices={invoices} fetchInvoices={fetchInvoices} />;
       case 'payments':
-        return <PaymentList />;
+        return <PaymentList payments={payments} fetchPayments={fetchPayments} loading={loading} />;
       case 'reports':
-        return <BillingReports />;
+        return <BillingReports invoices={invoices} payments={payments} />;
       case 'services':
         return (
           <div className="services-content">
@@ -137,9 +139,7 @@ export const Billing: React.FC = () => {
           </button>
         </div>
 
-        <div className="tab-content">
-          {renderTabContent()}
-        </div>
+        <div className="tab-content">{renderTabContent()}</div>
       </div>
 
       {showCreateInvoice && (
@@ -163,4 +163,10 @@ export const Billing: React.FC = () => {
       )}
     </div>
   );
-}; 
+};
+
+export const Billing: React.FC = () => (
+  <BillingProvider>
+    <BillingContent />
+  </BillingProvider>
+);

@@ -1,54 +1,71 @@
-import { useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import { Invoice, Payment, Service, InvoiceFilters, PaymentFilters } from '../types';
 import { billingService } from '../services/billingService';
 
-export const useBilling = () => {
+interface BillingContextValue {
+  invoices: Invoice[];
+  payments: Payment[];
+  services: Service[];
+  loading: boolean;
+  error: string | null;
+  fetchInvoices: (filters?: InvoiceFilters) => Promise<void>;
+  fetchPayments: (filters?: PaymentFilters) => Promise<void>;
+  fetchServices: () => Promise<void>;
+  createInvoice: (invoiceData: Omit<Invoice, 'id' | 'invoiceNumber' | 'createdAt' | 'updatedAt'>) => Promise<Invoice>;
+  updateInvoice: (id: number, updates: Partial<Invoice>) => Promise<Invoice>;
+  createPayment: (paymentData: Omit<Payment, 'id' | 'createdAt'>) => Promise<Payment>;
+  createService: (serviceData: Omit<Service, 'id'>) => Promise<Service>;
+}
+
+const BillingContext = createContext<BillingContextValue | undefined>(undefined);
+
+const useProvideBilling = (): BillingContextValue => {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [payments, setPayments] = useState<Payment[]>([]);
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchInvoices = async (filters?: InvoiceFilters) => {
+  const fetchInvoices = useCallback(async (filters?: InvoiceFilters) => {
     setLoading(true);
     setError(null);
     try {
       const data = await billingService.getInvoices(filters);
       setInvoices(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Faturalar yüklenirken hata oluştu');
+      setError(err instanceof Error ? err.message : 'Faturalar yuklenirken hata olustu');
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const fetchPayments = async (filters?: PaymentFilters) => {
+  const fetchPayments = useCallback(async (filters?: PaymentFilters) => {
     setLoading(true);
     setError(null);
     try {
       const data = await billingService.getPayments(filters);
       setPayments(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Ödemeler yüklenirken hata oluştu');
+      setError(err instanceof Error ? err.message : 'Odemeler yuklenirken hata olustu');
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const fetchServices = async () => {
+  const fetchServices = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
       const data = await billingService.getServices();
       setServices(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Hizmetler yüklenirken hata oluştu');
+      setError(err instanceof Error ? err.message : 'Hizmetler yuklenirken hata olustu');
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const createInvoice = async (invoiceData: Omit<Invoice, 'id' | 'invoiceNumber' | 'createdAt' | 'updatedAt'>) => {
+  const createInvoice = useCallback(async (invoiceData: Omit<Invoice, 'id' | 'invoiceNumber' | 'createdAt' | 'updatedAt'>) => {
     setLoading(true);
     setError(null);
     try {
@@ -56,50 +73,47 @@ export const useBilling = () => {
       setInvoices(prev => [newInvoice, ...prev]);
       return newInvoice;
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Fatura oluşturulurken hata oluştu');
+      setError(err instanceof Error ? err.message : 'Fatura olusturulurken hata olustu');
       throw err;
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const updateInvoice = async (id: number, updates: Partial<Invoice>) => {
+  const updateInvoice = useCallback(async (id: number, updates: Partial<Invoice>) => {
     setLoading(true);
     setError(null);
     try {
       const updatedInvoice = await billingService.updateInvoice(id, updates);
-      setInvoices(prev => prev.map(inv => inv.id === id ? updatedInvoice : inv));
+      setInvoices(prev => prev.map(inv => (inv.id === id ? updatedInvoice : inv)));
       return updatedInvoice;
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Fatura güncellenirken hata oluştu');
+      setError(err instanceof Error ? err.message : 'Fatura guncellenirken hata olustu');
       throw err;
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const createPayment = async (paymentData: Omit<Payment, 'id' | 'createdAt'>) => {
+  const createPayment = useCallback(async (paymentData: Omit<Payment, 'id' | 'createdAt'>) => {
     setLoading(true);
     setError(null);
     try {
       const newPayment = await billingService.createPayment(paymentData);
       setPayments(prev => [newPayment, ...prev]);
-      // Update invoice status in local state
-      setInvoices(prev => prev.map(inv => 
-        inv.id === paymentData.invoiceId 
-          ? { ...inv, status: 'paid' as const }
-          : inv
+      setInvoices(prev => prev.map(inv =>
+        inv.id === paymentData.invoiceId ? { ...inv, status: 'paid' } : inv
       ));
       return newPayment;
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Ödeme kaydedilirken hata oluştu');
+      setError(err instanceof Error ? err.message : 'Odeme kaydedilirken hata olustu');
       throw err;
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const createService = async (serviceData: Omit<Service, 'id'>) => {
+  const createService = useCallback(async (serviceData: Omit<Service, 'id'>) => {
     setLoading(true);
     setError(null);
     try {
@@ -107,22 +121,19 @@ export const useBilling = () => {
       setServices(prev => [newService, ...prev]);
       return newService;
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Hizmet oluşturulurken hata oluştu');
+      setError(err instanceof Error ? err.message : 'Hizmet olusturulurken hata olustu');
       throw err;
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   return {
-    // State
     invoices,
     payments,
     services,
     loading,
     error,
-    
-    // Actions
     fetchInvoices,
     fetchPayments,
     fetchServices,
@@ -131,6 +142,19 @@ export const useBilling = () => {
     createPayment,
     createService,
   };
+};
+
+export const BillingProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const value = useProvideBilling();
+  return <BillingContext.Provider value={value}>{children}</BillingContext.Provider>;
+};
+
+export const useBilling = (): BillingContextValue => {
+  const context = useContext(BillingContext);
+  if (!context) {
+    throw new Error('useBilling must be used within a BillingProvider');
+  }
+  return context;
 };
 
 export const useInvoice = (id: number) => {
@@ -146,7 +170,7 @@ export const useInvoice = (id: number) => {
         const data = await billingService.getInvoiceById(id);
         setInvoice(data);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Fatura yüklenirken hata oluştu');
+        setError(err instanceof Error ? err.message : 'Fatura yuklenirken hata olustu');
       } finally {
         setLoading(false);
       }
@@ -158,4 +182,4 @@ export const useInvoice = (id: number) => {
   }, [id]);
 
   return { invoice, loading, error };
-}; 
+};

@@ -6,14 +6,16 @@ export interface ReportData {
   changeType?: 'increase' | 'decrease';
 }
 
-export interface ChartData {
+export interface ReportsChartData {
   labels: string[];
-  datasets: {
-    label: string;
-    data: number[];
-    backgroundColor?: string[];
-    borderColor?: string;
-  }[];
+  datasets: ReportsChartDataset[];
+}
+
+export interface ReportsChartDataset {
+  label: string;
+  data: number[];
+  backgroundColor?: string[];
+  borderColor?: string;
 }
 
 export interface ReportFilter {

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { vaccinationService } from '../services/vaccinationService';
-import { VaccinationStats, StockAlert } from '../types/vaccination';
+import { VaccinationStats, VaccineStockAlert } from '../types/vaccination';
 import VaccineStockInfo from './VaccineStockInfo';
 import VaccineApplicationGuide from './VaccineApplicationGuide';
 import VaccineHistory from './VaccineHistory';
@@ -11,7 +11,7 @@ import '../styles/Vaccination.css';
 const VaccinationDashboard: React.FC = () => {
     const [activeTab, setActiveTab] = useState<'stock' | 'guide' | 'history' | 'card' | 'notifications'>('stock');
     const [stats, setStats] = useState<VaccinationStats | null>(null);
-    const [stockAlerts, setStockAlerts] = useState<StockAlert[]>([]);
+    const [stockAlerts, setVaccineStockAlerts] = useState<VaccineStockAlert[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -20,11 +20,11 @@ const VaccinationDashboard: React.FC = () => {
                 setLoading(true);
                 const [statsData, alertsData] = await Promise.all([
                     vaccinationService.getVaccinationStats(),
-                    vaccinationService.getStockAlerts()
+                    vaccinationService.getVaccineStockAlerts()
                 ]);
 
                 setStats(statsData);
-                setStockAlerts(alertsData);
+                setVaccineStockAlerts(alertsData);
             } catch (error) {
                 console.error('Veri yüklenirken hata:', error);
             } finally {

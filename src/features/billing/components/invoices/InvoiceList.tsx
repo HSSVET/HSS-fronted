@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
-import { useBilling } from '../../hooks/useBilling';
-import { InvoiceFilters } from '../../types';
+import { Invoice, InvoiceFilters } from '../../types';
 
-export const InvoiceList: React.FC = () => {
-  const { invoices, fetchInvoices } = useBilling();
+interface InvoiceListProps {
+  invoices: Invoice[];
+  fetchInvoices: (filters?: InvoiceFilters) => Promise<void>;
+}
+
+export const InvoiceList: React.FC<InvoiceListProps> = ({ invoices, fetchInvoices }) => {
   const [filters, setFilters] = useState<InvoiceFilters>({});
   const [searchTerm, setSearchTerm] = useState('');
 

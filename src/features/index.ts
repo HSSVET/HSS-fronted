@@ -6,4 +6,5 @@ export * from './billing';
 export * from './laboratory';
 export * from './reports';
 export * from './settings';
-export * from './inventory'; 
+export * from './stock';
+export * from './vaccinations';
