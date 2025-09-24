@@ -56,7 +56,7 @@ const Dashboard: React.FC = () => {
       </div>
 
       <div className="widgets-container three-column grid grid--dashboard gap-3 grid--rows">
-        <div className="widget ui-card panel hospitalized-patients-widget">
+        <div className="widget ui-card panel hospitalized-patients-widget clickable-widget">
           <div className="widget-header card-header">
             <h2 className="ui-section-title"><span className="icon icon-hospital"></span> Klinikte Yatan Hastalar</h2>
           </div>
@@ -135,7 +135,7 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
 
-        <div className="widget ui-card panel recent-activity-widget">
+        <div className="widget ui-card panel recent-activity-widget clickable-widget">
           <div className="widget-header card-header">
             <h2 className="ui-section-title"><span className="icon icon-paw"></span> Son Hasta Aktiviteleri</h2>
           </div>
@@ -193,11 +193,11 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
 
-        <div className="widget ui-card panel calendar-wrapper">
+        <div className="widget ui-card panel calendar-wrapper clickable-widget">
           <CalendarWidget />
         </div>
 
-        <div className="widget ui-card panel low-stock-widget">
+        <div className="widget ui-card panel low-stock-widget clickable-widget">
           <div className="widget-header card-header">
             <h2 className="ui-section-title"><span className="icon icon-warning"></span> Düşük Stok Uyarıları</h2>
           </div>
@@ -270,7 +270,7 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
 
-        <div className="widget ui-card panel notifications-widget">
+        <div className="widget ui-card panel notifications-widget clickable-widget">
           <div className="widget-header card-header">
             <h2 className="ui-section-title"><span className="icon icon-bell"></span> Sistem Bildirimleri</h2>
           </div>
