@@ -400,10 +400,10 @@ const AuthProviderOnline: React.FC<AuthProviderProps> = ({ children }) => {
   const createAuthUser = useCallback((keycloakUser: any): AuthUser => {
     // Get roles from Keycloak
     const roles = keycloakUser.realm_access?.roles || [];
-    
+
     // Map roles to permissions
     const permissions: string[] = [];
-    
+
     // Add permissions based on roles
     if (roles.includes('ADMIN')) {
       permissions.push(
@@ -436,7 +436,7 @@ const AuthProviderOnline: React.FC<AuthProviderProps> = ({ children }) => {
         'laboratory:read', 'laboratory:write'
       );
     }
-    
+
     // Determine primary role (highest in hierarchy)
     let primaryRole: 'admin' | 'veterinarian' | 'assistant' = 'assistant';
     if (roles.includes('ADMIN')) primaryRole = 'admin';
@@ -505,26 +505,26 @@ const AuthProviderOnline: React.FC<AuthProviderProps> = ({ children }) => {
       console.log('🎯 AuthContext login called with:', redirectUrl);
       console.log('🔐 Keycloak instance:', keycloak);
       console.log('🌐 Current location:', window.location.href);
-      
+
       dispatch({ type: 'AUTH_LOGIN_START' });
       addAuditLog('login', { redirectUrl });
-      
+
       // Store the intended redirect URL in localStorage for after login
       if (redirectUrl && redirectUrl !== window.location.origin) {
         localStorage.setItem('auth_redirect_url', redirectUrl);
         console.log('💾 Stored redirect URL in localStorage:', redirectUrl);
       }
-      
+
       const loginOptions = { redirectUri: window.location.origin };
       console.log('🚀 Calling keycloak.login with options:', loginOptions);
-      
+
       // Always redirect to the application origin, not the target path
       try {
         await keycloak.login(loginOptions);
         console.log('✅ Keycloak login call completed');
       } catch (keycloakError) {
         console.warn('⚠️ Keycloak.login failed, trying manual redirect:', keycloakError);
-        
+
         // Manual redirect as fallback
         const loginUrl = `${keycloak.authServerUrl}/realms/${keycloak.realm}/protocol/openid-connect/auth?client_id=${keycloak.clientId}&redirect_uri=${encodeURIComponent(window.location.origin)}&response_type=code&scope=openid`;
         console.log('🔗 Manual redirect URL:', loginUrl);
@@ -545,7 +545,7 @@ const AuthProviderOnline: React.FC<AuthProviderProps> = ({ children }) => {
         return;
       }
       addAuditLog('logout', { sessionId: state.session?.sessionId });
-      
+
       // Cleanup token manager
       if (tokenManager) {
         tokenManager.cleanup();
@@ -554,7 +554,7 @@ const AuthProviderOnline: React.FC<AuthProviderProps> = ({ children }) => {
       // Clear API client - setKeycloak method removed
       
       dispatch({ type: 'AUTH_LOGOUT' });
-      
+
       await keycloak.logout({ redirectUri: window.location.origin });
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Logout failed';
@@ -568,7 +568,7 @@ const AuthProviderOnline: React.FC<AuthProviderProps> = ({ children }) => {
         return true;
       }
       if (!tokenManager) return false;
-      
+
       const success = await tokenManager.refreshToken();
       if (success) {
         const timeRemaining = tokenManager.getTokenTimeRemaining();
@@ -632,7 +632,7 @@ const AuthProviderOnline: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       if (OFFLINE_MODE) return true;
       if (!keycloak.authenticated) return false;
-      
+
       const valid = await keycloak.updateToken(5);
       return valid;
     } catch (error) {
@@ -712,12 +712,12 @@ const AuthProviderOnline: React.FC<AuthProviderProps> = ({ children }) => {
       tokenParsedExists: !!keycloak.tokenParsed,
       isInitialized: state.isInitialized
     });
-    
+
     if (!initialized) {
       console.log('⏳ AuthContext: Waiting for keycloak initialization...');
       return;
     }
-    
+
     if (state.isInitialized) {
       console.log('✅ AuthContext: Already initialized, skipping...');
       return;
@@ -729,12 +729,12 @@ const AuthProviderOnline: React.FC<AuthProviderProps> = ({ children }) => {
         console.log('🔐 Keycloak authenticated:', keycloak.authenticated);
         console.log('🔐 Keycloak token:', keycloak.token ? 'EXISTS' : 'MISSING');
         console.log('🔐 Keycloak tokenParsed:', keycloak.tokenParsed);
-        
+
         dispatch({ type: 'AUTH_INITIALIZE_START' });
 
         if (keycloak.authenticated && keycloak.tokenParsed) {
           console.log('✅ User is authenticated, creating auth user');
-          
+
           // Create user and session
           const user = createAuthUser(keycloak.tokenParsed);
           const session = createAuthSession(keycloak.tokenParsed);
@@ -756,15 +756,15 @@ const AuthProviderOnline: React.FC<AuthProviderProps> = ({ children }) => {
           }
 
           console.log('✅ Dispatching AUTH_INITIALIZE_SUCCESS');
-          dispatch({ 
-            type: 'AUTH_INITIALIZE_SUCCESS', 
-            payload: { user, session } 
+          dispatch({
+            type: 'AUTH_INITIALIZE_SUCCESS',
+            payload: { user, session }
           });
 
-          addAuditLog('login', { 
-            method: 'sso', 
+          addAuditLog('login', {
+            method: 'sso',
             sessionId: session.sessionId,
-            userAgent: navigator.userAgent 
+            userAgent: navigator.userAgent
           });
 
           // Handle post-login redirect
@@ -778,9 +778,9 @@ const AuthProviderOnline: React.FC<AuthProviderProps> = ({ children }) => {
           }
         } else {
           console.log('❌ User is not authenticated');
-          dispatch({ 
-            type: 'AUTH_INITIALIZE_FAILURE', 
-            payload: { error: 'Not authenticated' } 
+          dispatch({
+            type: 'AUTH_INITIALIZE_FAILURE',
+            payload: { error: 'Not authenticated' }
           });
         }
       } catch (error) {
@@ -838,7 +838,7 @@ const AuthProviderOnline: React.FC<AuthProviderProps> = ({ children }) => {
 
   const contextValue: AuthContextType = {
     state,
-    
+
     // Direct access to state properties
     user: state.user,
     roles: state.roles,
@@ -846,12 +846,12 @@ const AuthProviderOnline: React.FC<AuthProviderProps> = ({ children }) => {
     isAuthenticated: state.isAuthenticated,
     isLoading: state.isLoading,
     error: state.error,
-    
+
     // Auth Actions
     login,
     logout,
     refreshToken,
-    
+
     // User Actions
     updateUser: async (userData: Partial<AuthUser>) => {
       dispatch({ type: 'AUTH_UPDATE_USER', payload: { user: userData } });
@@ -859,13 +859,13 @@ const AuthProviderOnline: React.FC<AuthProviderProps> = ({ children }) => {
     updatePreferences: async (preferences: UserPreferences) => {
       dispatch({ type: 'AUTH_UPDATE_USER', payload: { user: { preferences } } });
     },
-    
+
     // Permission & Role Checks
     hasPermission,
     hasRole,
     hasAnyRole,
     hasAllRoles,
-    
+
     // Session Management
     validateSession,
     extendSession: async () => {
@@ -879,7 +879,7 @@ const AuthProviderOnline: React.FC<AuthProviderProps> = ({ children }) => {
       // Would be implemented with backend API
       console.log('Terminating session:', sessionId);
     },
-    
+
     // Security
     changePassword: async (currentPassword: string, newPassword: string) => {
       // Would be implemented with Keycloak API
@@ -893,17 +893,17 @@ const AuthProviderOnline: React.FC<AuthProviderProps> = ({ children }) => {
       // Would be implemented with Keycloak API
       console.log('Disabling MFA');
     },
-    
+
     // Audit
     addAuditLog,
     clearAuditLog: () => dispatch({ type: 'AUTH_CLEAR_AUDIT_LOG' }),
-    
+
     // UI Actions
     showLoginModal,
     hideLoginModal,
     showMfaModal,
     hideMfaModal,
-    
+
     // Utils
     isTokenExpiringSoon,
     getTokenTimeRemaining,

@@ -83,6 +83,7 @@ const PERMISSION_MAPPINGS = {
   'users:write': ['ADMIN'],
   'audit:read': ['ADMIN'],
   'sms:read': ['ADMIN', 'VETERINER', 'SEKRETER'],
+  'vaccinations:read': ['ADMIN', 'VETERINER', 'SEKRETER'],
 };
 
 // ============================================================================

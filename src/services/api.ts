@@ -43,27 +43,27 @@ export class ApiClient {
     this.tokenManager = TokenManager.getInstance();
     this.useCache = useCache;
     this.setupDefaultInterceptors();
-    
+
     // Cleanup expired cache entries every 5 minutes
     setInterval(() => {
       apiCache.cleanup();
     }, 5 * 60 * 1000);
   }
-  
+
   /**
    * Enable or disable caching
    */
   setCacheEnabled(enabled: boolean): void {
     this.useCache = enabled;
   }
-  
+
   /**
    * Clear cache for specific endpoint
    */
   clearCache(endpoint: string): void {
     apiCache.clearPattern(endpoint);
   }
-  
+
   /**
    * Clear all cache
    */
@@ -238,7 +238,7 @@ export class ApiClient {
     // Token yoksa veya geçersizse test token al
     const token = this.tokenManager.getAccessToken();
     const isTokenValid = this.tokenManager.isTokenValid();
-    
+
     if (!token || !isTokenValid) {
       // Eğer zaten token alınıyorsa, o promise'i bekle
       if (this.tokenFetchPromise) {
@@ -250,19 +250,19 @@ export class ApiClient {
         }
         return;
       }
-      
+
       // Yeni token alımı başlat
       this.tokenFetchPromise = (async () => {
         try {
           console.log('🔑 Token bulunamadı veya geçersiz, test token alınıyor...');
           const response = await fetch(`${API_BASE_URL}/api/public/test-token`);
-          
+
           if (!response.ok) {
             const errorText = await response.text();
             console.error('❌ Test token alınamadı:', response.status, errorText);
             throw new Error(`Test token alınamadı: ${response.status} ${response.statusText}`);
           }
-          
+
           const data = await response.json();
           if (data.token) {
             const tokenData = {
@@ -287,9 +287,9 @@ export class ApiClient {
           }
         }
       })();
-      
+
       await this.tokenFetchPromise;
-      
+
       // Token alındıktan sonra tekrar kontrol et
       const finalToken = this.tokenManager.getAccessToken();
       if (!finalToken) {
@@ -522,7 +522,7 @@ export class ApiClient {
         status: 0,
       });
     }
-    
+
     // Check cache first
     if (useCache && this.useCache) {
       const cachedData = apiCache.get<T>(endpoint);
@@ -535,10 +535,10 @@ export class ApiClient {
         };
       }
     }
-    
+
     try {
       console.log('API GET çağrısı:', `${API_BASE_URL}${endpoint}`);
-      
+
       // Token'ın geçerli olduğundan emin ol
       if (!this.tokenManager.isTokenValid()) {
         try {
@@ -547,7 +547,7 @@ export class ApiClient {
           console.warn('⚠️ Token alınamadı, istek token olmadan gönderiliyor:', tokenError);
         }
       }
-      
+
       const headers = await this.getHeaders();
 
       const response = await this.executeWithRetry(
@@ -565,12 +565,12 @@ export class ApiClient {
 
       // handleResponse'ı çağır - 401 için özel işlem yapılacak
       const apiResponse = await this.handleResponse<T>(response);
-      
+
       // Cache successful responses
       if (useCache && this.useCache && apiResponse.success && apiResponse.data) {
         apiCache.set(endpoint, apiResponse.data);
       }
-      
+
       // handleResponse her zaman ApiResponse döndürmeli (throw etmemeli)
       // Eğer 401 ve refresh token yoksa, success: false olan bir ApiResponse döndürmeli
       return apiResponse;

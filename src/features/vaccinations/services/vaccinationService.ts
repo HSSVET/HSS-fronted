@@ -3,7 +3,7 @@ import { API_ENDPOINTS } from '../../../constants';
 import {
     Vaccine,
     VaccineStock,
-    StockAlert,
+    VaccineStockAlert,
     VaccinationStats,
     VaccinationFilters,
     AnimalVaccinationCard,
@@ -16,15 +16,15 @@ export class VaccinationService {
     // Vaccines
     static async getVaccines(filters?: VaccinationFilters): Promise<ApiResponse<Vaccine[]>> {
         const params = new URLSearchParams();
-        
+
         if (filters?.animalType) {
             params.append('animalType', filters.animalType);
         }
-        
+
         if (filters?.manufacturer) {
             params.append('manufacturer', filters.manufacturer);
         }
-        
+
         if (filters?.search) {
             params.append('search', filters.search);
         }
@@ -51,7 +51,7 @@ export class VaccinationService {
     // Vaccination records
     static async getVaccinationRecords(animalId?: string): Promise<ApiResponse<VaccinationRecord[]>> {
         const params = new URLSearchParams();
-        
+
         if (animalId) {
             params.append('animalId', animalId);
         }
@@ -90,7 +90,7 @@ export class VaccinationService {
         return apiClient.get(`${API_ENDPOINTS.VACCINATIONS}/statistics`);
     }
 
-    static async getStockAlerts(): Promise<ApiResponse<StockAlert[]>> {
+    static async getStockAlerts(): Promise<ApiResponse<VaccineStockAlert[]>> {
         return apiClient.get(`${API_ENDPOINTS.VACCINES}/stock/alerts`);
     }
 

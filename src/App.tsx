@@ -41,6 +41,12 @@ const Billing = lazy(() => import('./features/billing').then(module => ({ defaul
 const DocumentPage = lazy(() => import('./features/documents').then(module => ({ default: module.DocumentPage })));
 const RemindersPage = lazy(() => import('./features/reminders').then(module => ({ default: module.RemindersPage })));
 const SmsPage = lazy(() => import('./features/sms').then(module => ({ default: module.SmsPage })));
+const StockSystem = lazy(() => import('./features/stock').then(module => ({ default: module.StockSystem })));
+const VaccinationDashboard = lazy(() => import('./features/vaccinations').then(module => ({ default: module.VaccinationDashboard })));
+const ReportsPage = lazy(() => import('./features/reports').then(module => ({ default: module.ReportsPage })));
+const AnimalReports = lazy(() => import('./features/reports').then(module => ({ default: module.AnimalReports })));
+const AppointmentReports = lazy(() => import('./features/reports').then(module => ({ default: module.AppointmentReports })));
+const FinancialReports = lazy(() => import('./features/reports').then(module => ({ default: module.FinancialReports })));
 /* eslint-enable import/first */
 
 // ============================================================================
@@ -252,6 +258,22 @@ function App() {
                     }
                   />
 
+                  {/* Vaccinations - Protected & Role Based */}
+                  <Route
+                    path="/vaccinations"
+                    element={
+                      <ProtectedRoute requiredPermissions={['vaccinations:read']}>
+                        <Layout>
+                          <PageErrorBoundary pageName="Vaccinations">
+                            <Suspense fallback={<SuspenseFallback />}>
+                              <VaccinationDashboard />
+                            </Suspense>
+                          </PageErrorBoundary>
+                        </Layout>
+                      </ProtectedRoute>
+                    }
+                  />
+
                   {/* Laboratory - Protected & Role Based */}
                   <Route
                     path="/laboratory"
@@ -299,7 +321,7 @@ function App() {
                     }
                   />
 
-                  {/* SMS - Protected & Role Based (NEW) */}
+                  {/* SMS - Protected & Role Based */}
                   <Route
                     path="/sms"
                     element={
@@ -315,7 +337,7 @@ function App() {
                     }
                   />
 
-                  {/* Reminders - Admin/Veterinarian only (NEW) */}
+                  {/* Reminders - Admin/Veterinarian only */}
                   <Route
                     path="/reminders"
                     element={
@@ -331,14 +353,16 @@ function App() {
                     }
                   />
 
-                  {/* Inventory - Admin/Veterinarian only (NEW - Placeholder) */}
+                  {/* Inventory/Stock - Admin/Veterinarian only */}
                   <Route
                     path="/inventory"
                     element={
                       <VeterinarianRoute>
                         <Layout>
                           <PageErrorBoundary pageName="Inventory">
-                            <div>Envanter/Stok Sayfası (Yakında)</div>
+                            <Suspense fallback={<SuspenseFallback />}>
+                              <StockSystem />
+                            </Suspense>
                           </PageErrorBoundary>
                         </Layout>
                       </VeterinarianRoute>
@@ -347,17 +371,24 @@ function App() {
 
                   {/* Reports - Protected & Role Based */}
                   <Route
-                    path="/reports"
+                    path="/reports/*"
                     element={
                       <ProtectedRoute requiredPermissions={['reports:read']}>
                         <Layout>
                           <PageErrorBoundary pageName="Reports">
-                            <div>Raporlar Sayfası (Yakında)</div>
+                            <Suspense fallback={<SuspenseFallback />}>
+                              <ReportsPage />
+                            </Suspense>
                           </PageErrorBoundary>
                         </Layout>
                       </ProtectedRoute>
                     }
-                  />
+                  >
+                    <Route index element={<Navigate to="animals" replace />} />
+                    <Route path="animals" element={<AnimalReports />} />
+                    <Route path="appointments" element={<AppointmentReports />} />
+                    <Route path="financial" element={<FinancialReports />} />
+                  </Route>
 
                   {/* Documents - Protected */}
                   <Route
@@ -468,15 +499,17 @@ function App() {
                     path="*"
                     element={<Navigate to="/login" replace />}
                   />
-                </Routes>
-              </Router>
+                </Routes >
+              </Router >
               <Toast />
-            </AppProvider>
-          </AuthProvider>
-        </ErrorProvider>
-      </GlobalErrorBoundary>
-    </ThemeProvider>
+            </AppProvider >
+          </AuthProvider >
+        </ErrorProvider >
+      </GlobalErrorBoundary >
+    </ThemeProvider >
   );
 }
 
 export default App;
+
+

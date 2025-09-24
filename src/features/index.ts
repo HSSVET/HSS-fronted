@@ -8,4 +8,5 @@ export * from './reports';
 export * from './settings';
 export * from './inventory';
 export * from './sms';
-export * from './sms';
+export * from './stock';
+export * from './vaccinations';

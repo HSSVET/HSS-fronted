@@ -118,7 +118,7 @@ export interface VaccinationStats {
     expiringStock?: number;
 }
 
-export interface StockAlert {
+export interface VaccineStockAlert {
     id: string;
     vaccineId: string;
     vaccineName: string;

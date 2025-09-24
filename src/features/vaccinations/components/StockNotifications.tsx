@@ -1,17 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { vaccinationService } from '../services/vaccinationService';
-import { StockAlert } from '../types/vaccination';
+import { VaccineStockAlert } from '../types/vaccination';
 
 const StockNotifications: React.FC = () => {
-    const [alerts, setAlerts] = useState<StockAlert[]>([]);
+    const [alerts, setAlerts] = useState<VaccineStockAlert[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchAlerts = async () => {
             try {
+<<<<<<< HEAD
             setLoading(true);
             const response = await vaccinationService.getStockAlerts();
             setAlerts(response.data);
+=======
+                setLoading(true);
+                const alertData = await vaccinationService.getVaccineStockAlerts();
+                setAlerts(alertData);
+>>>>>>> 7dd163e (Envanter sayfası ve aşı sayfası için router bağlantıları yapıldı.)
             } catch (error) {
                 console.error('Stok uyarıları yüklenirken hata:', error);
             } finally {

@@ -1,15 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { useBilling } from '../../hooks/useBilling';
 import { Payment, PaymentFilters } from '../../types';
 
-export const PaymentList: React.FC = () => {
-  const { payments, fetchPayments, loading } = useBilling();
+interface PaymentListProps {
+  payments: Payment[];
+  fetchPayments: (filters?: PaymentFilters) => Promise<void>;
+  loading: boolean;
+}
+
+export const PaymentList: React.FC<PaymentListProps> = ({ payments, fetchPayments, loading }) => {
   const [filters, setFilters] = useState<PaymentFilters>({});
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     fetchPayments(filters);
-  }, [filters]);
+  }, [filters, fetchPayments]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();

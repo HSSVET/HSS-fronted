@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { vaccinationService } from '../services/vaccinationService';
-import { VaccinationStats, StockAlert } from '../types/vaccination';
+import { VaccinationStats, VaccineStockAlert } from '../types/vaccination';
 import VaccineStockInfo from './VaccineStockInfo';
 import VaccineApplicationGuide from './VaccineApplicationGuide';
 import VaccineHistory from './VaccineHistory';
@@ -12,7 +12,7 @@ import '../styles/Vaccination.css';
 const VaccinationDashboard: React.FC = () => {
     const [activeTab, setActiveTab] = useState<'stock' | 'guide' | 'history' | 'card' | 'notifications' | 'reminders'>('stock');
     const [stats, setStats] = useState<VaccinationStats | null>(null);
-    const [stockAlerts, setStockAlerts] = useState<StockAlert[]>([]);
+    const [stockAlerts, setVaccineStockAlerts] = useState<VaccineStockAlert[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -21,11 +21,16 @@ const VaccinationDashboard: React.FC = () => {
                 setLoading(true);
                 const [statsData, alertsData] = await Promise.all([
                     vaccinationService.getVaccinationStats(),
-                    vaccinationService.getStockAlerts()
+                    vaccinationService.getVaccineStockAlerts()
                 ]);
 
+<<<<<<< HEAD
                 setStats(statsData.data);
                 setStockAlerts(alertsData.data);
+=======
+                setStats(statsData);
+                setVaccineStockAlerts(alertsData);
+>>>>>>> 7dd163e (Envanter sayfası ve aşı sayfası için router bağlantıları yapıldı.)
             } catch (error) {
                 console.error('Veri yüklenirken hata:', error);
             } finally {

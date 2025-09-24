@@ -26,6 +26,7 @@ const PERMISSION_MAPPINGS = {
   'users:write': ['ADMIN'],
   'audit:read': ['ADMIN'],
   'dashboard:read': ['ADMIN', 'VETERINER', 'SEKRETER', 'TEKNISYEN'], // Dashboard herkes erişebilir
+  'vaccinations:read': ['ADMIN', 'VETERINER', 'SEKRETER'],
   'inventory:read': ['ADMIN', 'VETERINER', 'SEKRETER'], // Envanter için eklendi
   'sms:read': ['ADMIN', 'VETERINER', 'SEKRETER'],
 };
