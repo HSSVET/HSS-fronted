@@ -11,6 +11,7 @@ export interface ApiResponse<T> {
   data: T;
   message?: string;
   error?: string;
+  status?: number;
 }
 
 export interface PaginatedResponse<T> {
@@ -19,6 +20,19 @@ export interface PaginatedResponse<T> {
   page: number;
   limit: number;
   totalPages: number;
+}
+
+// Raw Spring Data page payload
+export interface SpringPage<T> {
+  content: T[];
+  totalElements: number;
+  totalPages: number;
+  size: number;
+  number: number;
+  first?: boolean;
+  last?: boolean;
+  numberOfElements?: number;
+  empty?: boolean;
 }
 
 // Status types

@@ -23,8 +23,8 @@ const VaccinationDashboard: React.FC = () => {
                     vaccinationService.getStockAlerts()
                 ]);
 
-                setStats(statsData);
-                setStockAlerts(alertsData);
+                setStats(statsData.data);
+                setStockAlerts(alertsData.data);
             } catch (error) {
                 console.error('Veri yüklenirken hata:', error);
             } finally {

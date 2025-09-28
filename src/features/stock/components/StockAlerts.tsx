@@ -15,8 +15,8 @@ const StockAlerts: React.FC = () => {
     const loadAlerts = async () => {
         try {
             setLoading(true);
-            const alertData = await stockService.getAlerts();
-            setAlerts(alertData);
+            const response = await stockService.getAlerts();
+            setAlerts(response.data);
         } catch (error) {
             console.error('Error loading alerts:', error);
         } finally {

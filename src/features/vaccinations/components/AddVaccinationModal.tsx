@@ -28,8 +28,8 @@ const AddVaccinationModal: React.FC<AddVaccinationModalProps> = ({
 
     const loadVaccines = async () => {
         try {
-            const vaccinesData = await vaccinationService.getVaccines();
-            setVaccines(vaccinesData);
+            const response = await vaccinationService.getVaccines();
+            setVaccines(response.data);
         } catch (error) {
             console.error('Aşılar yüklenirken hata:', error);
         }

@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  Paper, 
-  TextField, 
+import { AnimalService, type AnimalRecord } from '../services/animalService';
+import {
+  Paper,
+  TextField,
   SelectChangeEvent,
   Typography,
   IconButton,
@@ -11,7 +12,7 @@ import {
   Divider,
   Checkbox
 } from '@mui/material';
-import { 
+import {
   Search as SearchIcon,
   Sort as SortIcon,
   Edit as EditIcon,
@@ -27,22 +28,42 @@ interface AnimalListProps {
 
 type FilterFields = 'species' | 'breed' | 'health';
 
-const initialAnimals: AnimalListItem[] = [
-  { id: '1', name: 'Pamuk', species: 'Kedi', breed: 'Tekir', health: 'İyi', lastCheckup: '2024-03-15', owner: 'Ayşe', nextVaccine: '2024-05-20' },
-  { id: '2', name: 'Karabaş', species: 'Köpek', breed: 'Golden', health: 'Kontrol Gerekli', lastCheckup: '2024-02-20', owner: 'Mehmet', nextVaccine: '2024-04-15' },
-  { id: '3', name: 'Boncuk', species: 'Kuş', breed: 'Muhabbet', health: 'İyi', lastCheckup: '2024-03-10', owner: 'Zeynep', nextVaccine: '2024-06-01' },
-  { id: '4', name: 'Max', species: 'Köpek', breed: 'Labrador', health: 'Tedavi Altında', lastCheckup: '2024-03-01', owner: 'Ali', nextVaccine: '2024-05-10' },
-  { id: '5', name: 'Minnoş', species: 'Kedi', breed: 'Van', health: 'İyi', lastCheckup: '2024-03-18', owner: 'Elif', nextVaccine: '2024-06-18' },
-  { id: '6', name: 'Karabaş', species: 'Köpek', breed: 'Kangal', health: 'Kontrol Gerekli', lastCheckup: '2024-02-25', owner: 'Murat', nextVaccine: '2024-05-25' },
-  { id: '7', name: 'Sütlaç', species: 'İnek', breed: 'Holstein', health: 'İyi', lastCheckup: '2024-03-05', owner: 'Fatma', nextVaccine: '2024-06-05' },
-  { id: '8', name: 'Zilli', species: 'Kedi', breed: 'Scottish', health: 'Tedavi Altında', lastCheckup: '2024-03-12', owner: 'Can', nextVaccine: '2024-06-12' },
-  { id: '9', name: 'Paşa', species: 'Köpek', breed: 'Pug', health: 'İyi', lastCheckup: '2024-03-20', owner: 'Derya', nextVaccine: '2024-06-20' },
-  { id: '10', name: 'Kırıntı', species: 'Kedi', breed: 'Tekir', health: 'İyi', lastCheckup: '2024-03-20', owner: 'Begüm', nextVaccine: '2024-06-20' },
-];
+type NullableDate = Date | null;
+
+const parseDate = (value?: string | null): NullableDate => {
+  if (!value) {
+    return null;
+  }
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? null : date;
+};
+
+const formatDateValue = (value?: string | null) => {
+  const date = parseDate(value);
+  return date ? date.toISOString() : new Date().toISOString();
+};
+
+const formatDisplayDate = (value: string) => {
+  const date = parseDate(value);
+  return date ? date.toLocaleDateString('tr-TR') : '—';
+};
+
+const mapToAnimalListItem = (animal: AnimalRecord): AnimalListItem => ({
+  id: animal.id ? animal.id.toString() : '0',
+  name: animal.name || 'İsimsiz',
+  species: (animal.species?.name as AnimalListItem['species']) || 'Diğer',
+  breed: animal.breed?.name || 'Bilinmiyor',
+  health: 'İyi',
+  lastCheckup: formatDateValue(animal.birthDate),
+  owner: animal.owner?.fullName || animal.owner?.name || 'Bilinmiyor',
+  nextVaccine: formatDateValue(animal.birthDate),
+});
 
 const AnimalList: React.FC<AnimalListProps> = ({ onAddAnimal }) => {
   const navigate = useNavigate();
-  const [animals] = useState<AnimalListItem[]>(initialAnimals);
+  const [animals, setAnimals] = useState<AnimalListItem[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortAnchorEl, setSortAnchorEl] = useState<null | HTMLElement>(null);
   const [sortBy, setSortBy] = useState<string>('name');
@@ -50,9 +71,38 @@ const AnimalList: React.FC<AnimalListProps> = ({ onAddAnimal }) => {
     species: [] as string[],
     breed: [] as string[],
     health: [] as string[],
-    startDate: '2024-01-01',
-    endDate: '2024-12-31'
+    startDate: '',
+    endDate: ''
   });
+
+  useEffect(() => {
+    const fetchAnimals = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        console.log('🐶 Animals API çağrısı yapılıyor...');
+        const response = await AnimalService.getAnimals(0, 20);
+        console.log('🐶 Animals API response:', response);
+
+        if (response.success && response.data) {
+          const formattedAnimals = response.data.items.map(mapToAnimalListItem);
+          setAnimals(formattedAnimals);
+          console.log('🐶 Formatted animals:', formattedAnimals);
+        } else {
+          setError(response.error || 'Hayvan listesi alınamadı.');
+          setAnimals([]);
+        }
+      } catch (err) {
+        console.error('🐶 Animals API error:', err);
+        setError('Hayvan listesi alınırken bir hata oluştu.');
+        setAnimals([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAnimals();
+  }, []);
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
@@ -90,46 +140,55 @@ const AnimalList: React.FC<AnimalListProps> = ({ onAddAnimal }) => {
     });
   };
 
-  const sortAnimals = (animals: AnimalListItem[]) => {
-    return [...animals].sort((a, b) => {
+  const sortAnimals = (list: AnimalListItem[]) => {
+    return [...list].sort((a, b) => {
       switch (sortBy) {
         case 'name':
           return a.name.localeCompare(b.name);
         case 'name-desc':
           return b.name.localeCompare(a.name);
         case 'nextVaccine':
-          return new Date(a.nextVaccine).getTime() - new Date(b.nextVaccine).getTime();
+          return (parseDate(a.nextVaccine)?.getTime() || 0) - (parseDate(b.nextVaccine)?.getTime() || 0);
         case 'nextVaccine-desc':
-          return new Date(b.nextVaccine).getTime() - new Date(a.nextVaccine).getTime();
+          return (parseDate(b.nextVaccine)?.getTime() || 0) - (parseDate(a.nextVaccine)?.getTime() || 0);
         case 'health':
           return a.health.localeCompare(b.health);
         case 'health-desc':
           return b.health.localeCompare(a.health);
         case 'lastCheckup':
-          return new Date(b.lastCheckup).getTime() - new Date(a.lastCheckup).getTime();
+          return (parseDate(b.lastCheckup)?.getTime() || 0) - (parseDate(a.lastCheckup)?.getTime() || 0);
         case 'lastCheckup-desc':
-          return new Date(a.lastCheckup).getTime() - new Date(b.lastCheckup).getTime();
+          return (parseDate(a.lastCheckup)?.getTime() || 0) - (parseDate(b.lastCheckup)?.getTime() || 0);
         default:
           return 0;
       }
     });
   };
 
-  const filterAnimals = (animals: AnimalListItem[]) => {
-    return animals.filter(animal => {
+  const filterAnimals = (list: AnimalListItem[]) => {
+    const startDate = filters.startDate ? parseDate(filters.startDate) : null;
+    const endDate = filters.endDate ? parseDate(filters.endDate) : null;
+
+    return list.filter(animal => {
       const matchesSearch = (
         animal.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         animal.species.toLowerCase().includes(searchTerm.toLowerCase()) ||
         animal.health.toLowerCase().includes(searchTerm.toLowerCase()) ||
         animal.owner.toLowerCase().includes(searchTerm.toLowerCase())
       );
+
       const matchesSpecies = filters.species.length === 0 || filters.species.includes(animal.species);
       const matchesBreed = filters.breed.length === 0 || (animal.breed && filters.breed.includes(animal.breed));
       const matchesHealth = filters.health.length === 0 || filters.health.includes(animal.health);
-      const checkupDate = new Date(animal.lastCheckup);
-      const startDate = new Date(filters.startDate);
-      const endDate = new Date(filters.endDate);
-      const matchesDateRange = checkupDate >= startDate && checkupDate <= endDate;
+
+      const checkupDate = parseDate(animal.lastCheckup);
+      const matchesDateRange = !checkupDate || (!startDate && !endDate)
+        ? true
+        : (
+            (!startDate || (checkupDate && checkupDate >= startDate)) &&
+            (!endDate || (checkupDate && checkupDate <= endDate))
+          );
+
       return matchesSearch && matchesSpecies && matchesBreed && matchesHealth && matchesDateRange;
     });
   };
@@ -137,7 +196,7 @@ const AnimalList: React.FC<AnimalListProps> = ({ onAddAnimal }) => {
   const filteredAndSortedAnimals = sortAnimals(filterAnimals(animals));
 
   const uniqueSpecies = Array.from(new Set(animals.map(a => a.species)));
-  const uniqueBreeds = Array.from(new Set(animals.map(a => a.breed).filter(breed => breed !== undefined))) as string[];
+  const uniqueBreeds = Array.from(new Set(animals.map(a => a.breed).filter(Boolean))) as string[];
   const uniqueHealth = Array.from(new Set(animals.map(a => a.health)));
 
   const getHealthChipClass = (health: string) => {
@@ -157,12 +216,32 @@ const AnimalList: React.FC<AnimalListProps> = ({ onAddAnimal }) => {
     navigate(`/animals/${animalId}`);
   };
 
+  if (loading) {
+    return (
+      <div className="animal-list-container">
+        <div className="ui-card panel" style={{ padding: '20px', textAlign: 'center' }}>
+          <Typography>Animals API'dan veriler yükleniyor...</Typography>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="animal-list-container">
+        <div className="ui-card panel" style={{ padding: '20px', textAlign: 'center' }}>
+          <Typography color="error">{error}</Typography>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="animal-list-container">
       {/* Filter Panel */}
       <div className="filter-panel ui-card panel ui-card--hover">
         <h2>Filtreler</h2>
-        
+
         <TextField
           placeholder="Hayvan adı, sahibi..."
           variant="outlined"
@@ -245,7 +324,7 @@ const AnimalList: React.FC<AnimalListProps> = ({ onAddAnimal }) => {
           </div>
         </div>
       </div>
-      
+
       {/* Main Content */}
       <div className="animal-list-main">
         <div className="animal-list-header">
@@ -329,7 +408,7 @@ const AnimalList: React.FC<AnimalListProps> = ({ onAddAnimal }) => {
             </div>
           </Popover>
         </div>
-        
+
         <Paper className="animal-table ui-card panel">
           <div className="animal-table-header">
             <div className="animal-table-cell id">ID</div>
@@ -357,10 +436,10 @@ const AnimalList: React.FC<AnimalListProps> = ({ onAddAnimal }) => {
                   {animal.health}
                 </span>
               </div>
-              <div className="animal-table-cell date">{animal.lastCheckup}</div>
+              <div className="animal-table-cell date">{formatDisplayDate(animal.lastCheckup)}</div>
               <div className="animal-table-cell date">
                 <span className="vaccine-chip">
-                  {animal.nextVaccine}
+                  {formatDisplayDate(animal.nextVaccine)}
                 </span>
               </div>
               <div className="animal-table-cell actions" onClick={(e) => e.stopPropagation()}>

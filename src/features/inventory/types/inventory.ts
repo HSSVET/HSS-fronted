@@ -51,6 +51,7 @@ export interface InventoryFilter {
   status?: 'in_stock' | 'low_stock' | 'out_of_stock';
   supplier?: string;
   searchTerm?: string;
+  search?: string;
 }
 
 export interface InventoryStats {

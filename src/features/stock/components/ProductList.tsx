@@ -22,8 +22,8 @@ const ProductList: React.FC<ProductListProps> = ({ onStatsUpdate }) => {
     const loadProducts = async () => {
         try {
             setLoading(true);
-            const productData = await stockService.getProducts(filters);
-            setProducts(productData);
+            const response = await stockService.getProducts(filters);
+            setProducts(response.data);
         } catch (error) {
             console.error('Error loading products:', error);
         } finally {

@@ -14,9 +14,9 @@ const VaccineApplicationGuide: React.FC = () => {
         const fetchVaccines = async () => {
             try {
                 setLoading(true);
-                const vaccineData = await vaccinationService.getVaccines();
-                setVaccines(vaccineData);
-                setFilteredVaccines(vaccineData);
+                const response = await vaccinationService.getVaccines();
+                setVaccines(response.data);
+                setFilteredVaccines(response.data);
             } catch (error) {
                 console.error('Aşı verileri yüklenirken hata:', error);
             } finally {

@@ -15,8 +15,8 @@ const StockSettings: React.FC = () => {
     const loadSettings = async () => {
         try {
             setLoading(true);
-            const settingsData = await stockService.getSettings();
-            setSettings(settingsData);
+            const response = await stockService.getSettings();
+            setSettings(response.data);
         } catch (error) {
             console.error('Error loading settings:', error);
         } finally {
