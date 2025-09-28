@@ -13,8 +13,8 @@ export const useBilling = () => {
     setLoading(true);
     setError(null);
     try {
-      const data = await billingService.getInvoices(filters);
-      setInvoices(data);
+      const response = await billingService.getInvoices(filters);
+      setInvoices(response.data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Faturalar yüklenirken hata oluştu');
     } finally {
@@ -26,8 +26,8 @@ export const useBilling = () => {
     setLoading(true);
     setError(null);
     try {
-      const data = await billingService.getPayments(filters);
-      setPayments(data);
+      const response = await billingService.getPayments(filters);
+      setPayments(response.data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Ödemeler yüklenirken hata oluştu');
     } finally {
@@ -39,8 +39,8 @@ export const useBilling = () => {
     setLoading(true);
     setError(null);
     try {
-      const data = await billingService.getServices();
-      setServices(data);
+      const response = await billingService.getServices();
+      setServices(response.data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Hizmetler yüklenirken hata oluştu');
     } finally {
@@ -52,9 +52,9 @@ export const useBilling = () => {
     setLoading(true);
     setError(null);
     try {
-      const newInvoice = await billingService.createInvoice(invoiceData);
-      setInvoices(prev => [newInvoice, ...prev]);
-      return newInvoice;
+      const response = await billingService.createInvoice(invoiceData);
+      setInvoices(prev => [response.data, ...prev]);
+      return response.data;
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Fatura oluşturulurken hata oluştu');
       throw err;
@@ -67,9 +67,9 @@ export const useBilling = () => {
     setLoading(true);
     setError(null);
     try {
-      const updatedInvoice = await billingService.updateInvoice(id, updates);
-      setInvoices(prev => prev.map(inv => inv.id === id ? updatedInvoice : inv));
-      return updatedInvoice;
+      const response = await billingService.updateInvoice(id, updates);
+      setInvoices(prev => prev.map(inv => inv.id === id ? response.data : inv));
+      return response.data;
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Fatura güncellenirken hata oluştu');
       throw err;
@@ -82,15 +82,15 @@ export const useBilling = () => {
     setLoading(true);
     setError(null);
     try {
-      const newPayment = await billingService.createPayment(paymentData);
-      setPayments(prev => [newPayment, ...prev]);
+      const response = await billingService.createPayment(paymentData);
+      setPayments(prev => [response.data, ...prev]);
       // Update invoice status in local state
       setInvoices(prev => prev.map(inv => 
         inv.id === paymentData.invoiceId 
           ? { ...inv, status: 'paid' as const }
           : inv
       ));
-      return newPayment;
+      return response.data;
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Ödeme kaydedilirken hata oluştu');
       throw err;
@@ -103,9 +103,9 @@ export const useBilling = () => {
     setLoading(true);
     setError(null);
     try {
-      const newService = await billingService.createService(serviceData);
-      setServices(prev => [newService, ...prev]);
-      return newService;
+      const response = await billingService.createService(serviceData);
+      setServices(prev => [response.data, ...prev]);
+      return response.data;
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Hizmet oluşturulurken hata oluştu');
       throw err;
@@ -143,8 +143,8 @@ export const useInvoice = (id: number) => {
       setLoading(true);
       setError(null);
       try {
-        const data = await billingService.getInvoiceById(id);
-        setInvoice(data);
+        const response = await billingService.getInvoiceById(id);
+        setInvoice(response.data);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Fatura yüklenirken hata oluştu');
       } finally {

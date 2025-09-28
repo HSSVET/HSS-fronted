@@ -15,8 +15,8 @@ const StockMovements: React.FC = () => {
     const loadMovements = async () => {
         try {
             setLoading(true);
-            const movementData = await stockService.getMovements();
-            setMovements(movementData);
+            const response = await stockService.getMovements();
+            setMovements(response.data);
         } catch (error) {
             console.error('Error loading movements:', error);
         } finally {

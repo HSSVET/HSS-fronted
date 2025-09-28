@@ -1,9 +1,27 @@
 import React, { createContext, useContext, useReducer, useEffect, useCallback, useMemo } from 'react';
-import { useKeycloak } from '@react-keycloak/web';
-import { TokenManager } from '../services/tokenManager';
-import { apiClient } from '../services/api';
 import { OFFLINE_MODE } from '../config/offline';
 import { User } from '../types/common';
+
+// Mock data for offline mode
+const mockUser = {
+  id: 'mock-user',
+  sub: 'mock-user',
+  username: 'demo_user',
+  email: 'demo@vetklinik.com',
+  firstName: 'Demo',
+  lastName: 'User',
+  roles: ['ADMIN', 'VETERINER'],
+  permissions: [
+    'dashboard:read', 'animals:read', 'animals:write', 'appointments:read', 'appointments:write',
+    'laboratory:read', 'laboratory:write', 'billing:read', 'billing:write', 'inventory:read',
+    'inventory:write', 'reports:read', 'settings:read', 'settings:write', 'vaccinations:read',
+    'vaccinations:write'
+  ],
+  lastLogin: new Date(),
+  sessionId: 'mock-session',
+  department: 'Veterinary',
+  title: 'Demo Veteriner'
+};
 
 // ============================================================================
 // Types & Interfaces
@@ -353,6 +371,10 @@ export interface AuthProviderProps {
 }
 
 const AuthProviderOnline: React.FC<AuthProviderProps> = ({ children }) => {
+  // Disabled for offline-only mode
+  console.warn('AuthProviderOnline is disabled - using offline mode only');
+  return <AuthProviderOffline>{children}</AuthProviderOffline>;
+  /*
   const [state, dispatch] = useReducer(authReducer, initialState);
   const { keycloak, initialized } = useKeycloak();
   const tokenManager = useMemo(() => {
@@ -529,8 +551,7 @@ const AuthProviderOnline: React.FC<AuthProviderProps> = ({ children }) => {
         tokenManager.cleanup();
       }
       
-      // Clear API client
-      apiClient.setKeycloak(null);
+      // Clear API client - setKeycloak method removed
       
       dispatch({ type: 'AUTH_LOGOUT' });
       
@@ -894,6 +915,7 @@ const AuthProviderOnline: React.FC<AuthProviderProps> = ({ children }) => {
       {children}
     </AuthContext.Provider>
   );
+  */
 };
 
 const AuthProviderOffline: React.FC<AuthProviderProps> = ({ children }) => {
@@ -958,10 +980,14 @@ const AuthProviderOffline: React.FC<AuthProviderProps> = ({ children }) => {
     updatePreferences: async (preferences: UserPreferences) => {
       dispatch({ type: 'AUTH_UPDATE_USER', payload: { user: { preferences } } });
     },
-    hasPermission: () => true,
-    hasRole: () => true,
-    hasAnyRole: () => true,
-    hasAllRoles: () => true,
+    hasPermission: (permission: string) => {
+      const result = state.permissions.includes(permission);
+      console.log(`🔑 Permission check: ${permission} = ${result}`);
+      return result;
+    },
+    hasRole: (role: string) => state.roles.includes(role),
+    hasAnyRole: (roles: string[]) => roles.some(role => state.roles.includes(role)),
+    hasAllRoles: (roles: string[]) => roles.every(role => state.roles.includes(role)),
     validateSession: async () => true,
     extendSession: async () => {},
     getSessions: async () => [],
@@ -988,11 +1014,9 @@ const AuthProviderOffline: React.FC<AuthProviderProps> = ({ children }) => {
 };
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  return OFFLINE_MODE ? (
-    <AuthProviderOffline>{children}</AuthProviderOffline>
-  ) : (
-    <AuthProviderOnline>{children}</AuthProviderOnline>
-  );
+  // Always use offline auth (no Keycloak) but allow API calls
+  console.log('🔐 Using AuthProviderOffline (mock auth, real API calls)');
+  return <AuthProviderOffline>{children}</AuthProviderOffline>;
 };
 
 // ============================================================================

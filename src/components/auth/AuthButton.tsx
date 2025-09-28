@@ -14,9 +14,7 @@ interface UserInfo {
 }
 
 const AuthButton: React.FC = () => {
-  if (OFFLINE_MODE) {
-    return null;
-  }
+  // Always call hooks at the top level, before any conditional returns
   const { keycloak, initialized } = useKeycloak();
   const [tokenTimeRemaining, setTokenTimeRemaining] = useState<number>(0);
 
@@ -39,7 +37,7 @@ const AuthButton: React.FC = () => {
     const updateTokenTime = () => {
       setTokenTimeRemaining(getTokenTimeRemaining());
     };
-    
+
     updateTokenTime();
     // Reduce frequency to prevent excessive re-renders
     const interval = setInterval(updateTokenTime, 5000);
@@ -48,6 +46,10 @@ const AuthButton: React.FC = () => {
       clearInterval(interval);
     };
   }, [initialized, keycloak.authenticated, keycloak.tokenParsed, getTokenTimeRemaining]);
+
+  if (OFFLINE_MODE) {
+    return null;
+  }
 
   if (!initialized) {
     return <div>Yükleniyor...</div>;

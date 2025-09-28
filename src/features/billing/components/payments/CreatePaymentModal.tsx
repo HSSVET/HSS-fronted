@@ -47,10 +47,10 @@ export const CreatePaymentModal: React.FC<CreatePaymentModalProps> = ({
   useEffect(() => {
     const loadPosTerminals = async () => {
       try {
-        const terminals = await billingService.getPOSTerminals();
-        setPosTerminals(terminals);
-        if (terminals.length > 0) {
-          setSelectedPosTerminal(terminals[0].id);
+        const response = await billingService.getPOSTerminals();
+        setPosTerminals(response.data);
+        if (response.data.length > 0) {
+          setSelectedPosTerminal(response.data[0].id);
         }
       } catch (error) {
         console.error('POS terminalleri yüklenemedi:', error);
@@ -82,19 +82,19 @@ export const CreatePaymentModal: React.FC<CreatePaymentModalProps> = ({
     
     setProcessingCard(true);
     try {
-      const result = await billingService.processCardPayment(
+      const response = await billingService.processCardPayment(
         amount, 
         selectedPosTerminal, 
         cardType
       );
       
-      if (result.success) {
+      if (response.data.success) {
         return {
-          authorizationCode: result.authorizationCode,
-          batchNumber: result.batchNumber
+          authorizationCode: response.data.authorizationCode,
+          batchNumber: response.data.batchNumber
         };
       } else {
-        alert(`POS İşlem Hatası: ${result.errorMessage}`);
+        alert(`POS İşlem Hatası: ${response.data.errorMessage}`);
         return null;
       }
     } catch (error) {

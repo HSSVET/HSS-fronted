@@ -37,8 +37,8 @@ const StockSystem: React.FC = () => {
     const loadStockStats = async () => {
         try {
             setLoading(true);
-            const statsData = await stockService.getStats();
-            setStats(statsData);
+            const response = await stockService.getStats();
+            setStats(response.data);
         } catch (error) {
             console.error('Error loading stock stats:', error);
         } finally {

@@ -74,7 +74,7 @@ body {
   position: fixed;
   height: 100vh;
   z-index: 10;
-  transition: width var(--transition-speed) var(--transition-function);
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   width: 60px; /* Daha ince sidebar */
   box-shadow: var(--elevation-1);
 }
@@ -97,7 +97,7 @@ body {
 .main-content {
   flex: 1;
   margin-left: 60px; /* Daha ince sidebar */
-  transition: margin-left var(--transition-speed) var(--transition-function);
+  transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   min-height: 100vh;
   max-height: 100vh;
   overflow-y: auto;

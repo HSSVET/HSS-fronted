@@ -15,11 +15,15 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   };
 
   const handleSidebarMouseEnter = () => {
-    setSidebarHovered(true);
+    if (sidebarCollapsed) {
+      setSidebarHovered(true);
+    }
   };
 
   const handleSidebarMouseLeave = () => {
-    setSidebarHovered(false);
+    if (sidebarCollapsed) {
+      setSidebarHovered(false);
+    }
   };
 
   // Sidebar görünümünü belirle: hover olduğunda açık, değilse ve collapsed ise kapalı

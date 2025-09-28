@@ -44,9 +44,9 @@ const VaccineStockInfo: React.FC = () => {
         const fetchVaccines = async () => {
             try {
                 setLoading(true);
-                const vaccineData = await vaccinationService.getVaccineWithStock();
-                setVaccines(vaccineData);
-                setFilteredVaccines(vaccineData);
+                const response = await vaccinationService.getVaccineWithStock();
+                setVaccines(response.data);
+                setFilteredVaccines(response.data);
             } catch (error) {
                 console.error('Aşı verileri yüklenirken hata:', error);
             } finally {
@@ -233,9 +233,9 @@ const VaccineStockInfo: React.FC = () => {
             await vaccinationService.addVaccineWithStock(vaccineData, stockData);
 
             // Listeyi yenile
-            const updatedVaccines = await vaccinationService.getVaccineWithStock();
-            setVaccines(updatedVaccines);
-            setFilteredVaccines(updatedVaccines);
+            const response = await vaccinationService.getVaccineWithStock();
+            setVaccines(response.data);
+            setFilteredVaccines(response.data);
 
             // Modalı kapat ve formu sıfırla
             setShowAddModal(false);

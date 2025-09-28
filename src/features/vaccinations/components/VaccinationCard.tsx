@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { AnimalVaccinationCard, VaccinationRecord } from '../types/vaccination';
-import { Animal } from '../../animals/types/animal';
 import { vaccinationService } from '../services/vaccinationService';
+import { AnimalService, type AnimalRecord } from '../../animals/services/animalService';
 import AddVaccinationModal from './AddVaccinationModal';
 import '../styles/Vaccination.css';
 
 const VaccinationCard: React.FC = () => {
-    const [animals, setAnimals] = useState<Animal[]>([]);
+    const [animals, setAnimals] = useState<AnimalRecord[]>([]);
     const [selectedAnimalId, setSelectedAnimalId] = useState<string>('');
     const [vaccinationCard, setVaccinationCard] = useState<AnimalVaccinationCard | null>(null);
     const [loading, setLoading] = useState(false);
@@ -25,8 +25,12 @@ const VaccinationCard: React.FC = () => {
     const loadAnimals = async () => {
         try {
             setLoading(true);
-            const animalsData = await vaccinationService.getAllAnimals();
-            setAnimals(animalsData);
+            const response = await AnimalService.getAllAnimals();
+            if (response.success && response.data) {
+                setAnimals(response.data);
+            } else {
+                setAnimals([]);
+            }
         } catch (error) {
             console.error('Hayvanlar yüklenirken hata:', error);
         } finally {
@@ -37,8 +41,8 @@ const VaccinationCard: React.FC = () => {
     const loadVaccinationCard = async (animalId: string) => {
         try {
             setLoading(true);
-            const cardData = await vaccinationService.getAnimalVaccinationCard(animalId);
-            setVaccinationCard(cardData);
+            const response = await vaccinationService.getAnimalVaccinationCard(animalId);
+            setVaccinationCard(response.data);
         } catch (error) {
             console.error('Aşı karnesi yüklenirken hata:', error);
         } finally {
@@ -120,7 +124,7 @@ const VaccinationCard: React.FC = () => {
                         <option value="">-- Hayvan Seçiniz --</option>
                         {animals.map((animal) => (
                             <option key={animal.id} value={animal.id}>
-                                {animal.name} - {animal.species} ({animal.owner?.name || 'Bilinmiyor'})
+                                {animal.name} - {animal.species?.name || 'Tür Bilinmiyor'} ({animal.owner?.name || 'Bilinmiyor'})
                             </option>
                         ))}
                     </select>

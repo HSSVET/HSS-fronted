@@ -9,9 +9,9 @@ const StockNotifications: React.FC = () => {
     useEffect(() => {
         const fetchAlerts = async () => {
             try {
-                setLoading(true);
-                const alertData = await vaccinationService.getStockAlerts();
-                setAlerts(alertData);
+            setLoading(true);
+            const response = await vaccinationService.getStockAlerts();
+            setAlerts(response.data);
             } catch (error) {
                 console.error('Stok uyarıları yüklenirken hata:', error);
             } finally {
