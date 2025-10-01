@@ -17,7 +17,6 @@ import PrintIcon from '@mui/icons-material/Print';
 import DownloadIcon from '@mui/icons-material/Download';
 import AddIcon from '@mui/icons-material/Add';
 import '../../styles/LaboratoryTests.css';
-
 interface TestResult {
   value: string | number;
   referenceRange?: string;

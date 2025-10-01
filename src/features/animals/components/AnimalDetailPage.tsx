@@ -147,7 +147,7 @@ const AnimalDetailPage: React.FC = () => {
       case 8: // Alerjiler/Kronik Rahatsızlıklar
         return <Allergies />;
       case 9: // Patoloji Bulguları
-        return <PathologyFindings 
+        return <PathologyFindings
           reportInfo={{
             reportNo: '2025-PAT-0142',
             date: '24.08.2035',
@@ -170,7 +170,7 @@ const AnimalDetailPage: React.FC = () => {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <div className="animal-detail-page">
-        <Container maxWidth="xl" sx={{ py: 2, bgcolor: 'background.default', minHeight: '100vh' }}>
+        <Container maxWidth="xl" sx={{ py: 2, minHeight: '100vh' }}>
           <Box sx={{ mb: 2 }}>
             <Button
               startIcon={<ArrowBack />}
@@ -185,19 +185,19 @@ const AnimalDetailPage: React.FC = () => {
               Hayvan Listesine Dön
             </Button>
           </Box>
-          <ProfileHeader animalData={animalData} />
+          <Box className="ui-card panel ui-card--hover" sx={{ mb: 3 }}>
+            <ProfileHeader animalData={animalData} />
+          </Box>
           <Box sx={{ display: 'flex', gap: 3, flexDirection: { xs: 'column', md: 'row' } }}>
-            <Box sx={{ width: { xs: '100%', md: '25%', lg: '20%' } }}>
+            <Box className="ui-card panel" sx={{ width: { xs: '100%', md: '25%', lg: '20%' } }}>
               <SidebarMenu
                 items={menuItems}
                 selectedIndex={selectedTab}
                 onItemSelect={handleTabChange}
               />
             </Box>
-            <Box sx={{ flex: 1 }}>
-              <Paper elevation={3} sx={{ p: 3, minHeight: 400, bgcolor: 'background.paper' }}>
-                {renderContent()}
-              </Paper>
+            <Box className="ui-card panel ui-card--hover" sx={{ flex: 1, p: 3, minHeight: 400 }}>
+              {renderContent()}
             </Box>
           </Box>
         </Container>

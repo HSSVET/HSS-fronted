@@ -1,8 +1,27 @@
 import React, { createContext, useContext, useReducer, useEffect, useCallback, useMemo } from 'react';
-import { useKeycloak } from '@react-keycloak/web';
-import { TokenManager } from '../services/tokenManager';
-import { apiClient } from '../services/api';
+import { OFFLINE_MODE } from '../config/offline';
 import { User } from '../types/common';
+
+// Mock data for offline mode
+const mockUser = {
+  id: 'mock-user',
+  sub: 'mock-user',
+  username: 'demo_user',
+  email: 'demo@vetklinik.com',
+  firstName: 'Demo',
+  lastName: 'User',
+  roles: ['ADMIN', 'VETERINER'],
+  permissions: [
+    'dashboard:read', 'animals:read', 'animals:write', 'appointments:read', 'appointments:write',
+    'laboratory:read', 'laboratory:write', 'billing:read', 'billing:write', 'inventory:read',
+    'inventory:write', 'reports:read', 'settings:read', 'settings:write', 'vaccinations:read',
+    'vaccinations:write'
+  ],
+  lastLogin: new Date(),
+  sessionId: 'mock-session',
+  department: 'Veterinary',
+  title: 'Demo Veteriner'
+};
 
 // ============================================================================
 // Types & Interfaces
@@ -351,7 +370,11 @@ export interface AuthProviderProps {
   children: React.ReactNode;
 }
 
-export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+const AuthProviderOnline: React.FC<AuthProviderProps> = ({ children }) => {
+  // Disabled for offline-only mode
+  console.warn('AuthProviderOnline is disabled - using offline mode only');
+  return <AuthProviderOffline>{children}</AuthProviderOffline>;
+  /*
   const [state, dispatch] = useReducer(authReducer, initialState);
   const { keycloak, initialized } = useKeycloak();
   const tokenManager = useMemo(() => {
@@ -474,6 +497,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const login = useCallback(async (redirectUrl?: string) => {
     try {
+      if (OFFLINE_MODE) {
+        dispatch({ type: 'AUTH_LOGIN_START' });
+        dispatch({ type: 'AUTH_LOGIN_SUCCESS', payload: { user: state.user as AuthUser, session: state.session as AuthSession } });
+        return;
+      }
       console.log('🎯 AuthContext login called with:', redirectUrl);
       console.log('🔐 Keycloak instance:', keycloak);
       console.log('🌐 Current location:', window.location.href);
@@ -508,10 +536,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       dispatch({ type: 'AUTH_LOGIN_FAILURE', payload: { error: errorMessage } });
       addAuditLog('error', { action: 'login', error: errorMessage });
     }
-  }, [keycloak, addAuditLog]);
+  }, [keycloak, addAuditLog, state.user, state.session]);
 
   const logout = useCallback(async () => {
     try {
+      if (OFFLINE_MODE) {
+        dispatch({ type: 'AUTH_LOGOUT' });
+        return;
+      }
       addAuditLog('logout', { sessionId: state.session?.sessionId });
       
       // Cleanup token manager
@@ -519,8 +551,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         tokenManager.cleanup();
       }
       
-      // Clear API client
-      apiClient.setKeycloak(null);
+      // Clear API client - setKeycloak method removed
       
       dispatch({ type: 'AUTH_LOGOUT' });
       
@@ -533,6 +564,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const refreshToken = useCallback(async (): Promise<boolean> => {
     try {
+      if (OFFLINE_MODE) {
+        return true;
+      }
       if (!tokenManager) return false;
       
       const success = await tokenManager.refreshToken();
@@ -596,6 +630,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const validateSession = useCallback(async (): Promise<boolean> => {
     try {
+      if (OFFLINE_MODE) return true;
       if (!keycloak.authenticated) return false;
       
       const valid = await keycloak.updateToken(5);
@@ -630,6 +665,46 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // ============================================================================
 
   useEffect(() => {
+    if (OFFLINE_MODE) {
+      dispatch({ type: 'AUTH_INITIALIZE_START' });
+      const mockUser: AuthUser = {
+        id: 'offline-user',
+        sub: 'offline-user',
+        username: 'offline',
+        email: 'offline@example.com',
+        name: 'Offline Kullanıcı',
+        firstName: 'Offline',
+        lastName: 'User',
+        roles: ['ADMIN'],
+        permissions: [
+          'animals:read','animals:write','animals:delete',
+          'appointments:read','appointments:write','appointments:delete',
+          'laboratory:read','laboratory:write','laboratory:delete',
+          'billing:read','billing:write','billing:delete',
+          'reports:read','reports:write',
+          'settings:read','settings:write',
+          'users:read','users:write','audit:read'
+        ],
+        lastLogin: new Date(),
+        sessionId: 'offline-session',
+        role: 'admin',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      } as AuthUser;
+
+      const mockSession: AuthSession = {
+        sessionId: 'offline-session',
+        isActive: true,
+        createdAt: new Date(),
+        lastActivity: new Date(),
+        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
+        device: 'offline-device',
+        ip: '127.0.0.1',
+        userAgent: 'offline'
+      };
+      dispatch({ type: 'AUTH_INITIALIZE_SUCCESS', payload: { user: mockUser, session: mockSession } });
+      return;
+    }
     console.log('🔄 AuthContext: useEffect called with:', {
       initialized,
       authenticated: keycloak.authenticated,
@@ -724,6 +799,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // ============================================================================
 
   useEffect(() => {
+    if (OFFLINE_MODE) return;
     if (!keycloak.authenticated || !tokenManager) return;
 
     const updateTokenTime = () => {
@@ -839,6 +915,108 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       {children}
     </AuthContext.Provider>
   );
+  */
+};
+
+const AuthProviderOffline: React.FC<AuthProviderProps> = ({ children }) => {
+  const [state, dispatch] = useReducer(authReducer, initialState);
+
+  useEffect(() => {
+    // Offline mod: doğrudan mock kullanıcı ile initialize
+    const mockUser: AuthUser = {
+      id: 'offline-user',
+      sub: 'offline-user',
+      username: 'offline',
+      email: 'offline@example.com',
+      name: 'Offline Kullanıcı',
+      firstName: 'Offline',
+      lastName: 'User',
+      roles: ['ADMIN'],
+      permissions: [
+        'animals:read','animals:write','animals:delete',
+        'appointments:read','appointments:write','appointments:delete',
+        'laboratory:read','laboratory:write','laboratory:delete',
+        'billing:read','billing:write','billing:delete',
+        'reports:read','reports:write',
+        'settings:read','settings:write',
+        'users:read','users:write','audit:read'
+      ],
+      lastLogin: new Date(),
+      sessionId: 'offline-session',
+      role: 'admin',
+      createdAt: new Date(),
+      updatedAt: new Date()
+    } as AuthUser;
+
+    const mockSession: AuthSession = {
+      sessionId: 'offline-session',
+      isActive: true,
+      createdAt: new Date(),
+      lastActivity: new Date(),
+      expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
+      device: 'offline-device',
+      ip: '127.0.0.1',
+      userAgent: 'offline'
+    };
+
+    dispatch({ type: 'AUTH_INITIALIZE_START' });
+    dispatch({ type: 'AUTH_INITIALIZE_SUCCESS', payload: { user: mockUser, session: mockSession } });
+  }, []);
+
+  const contextValue: AuthContextType = {
+    state,
+    user: state.user,
+    roles: state.roles,
+    permissions: state.permissions,
+    isAuthenticated: true,
+    isLoading: false,
+    error: null,
+    login: async () => {},
+    logout: async () => { dispatch({ type: 'AUTH_LOGOUT' }); },
+    refreshToken: async () => true,
+    updateUser: async (userData: Partial<AuthUser>) => {
+      dispatch({ type: 'AUTH_UPDATE_USER', payload: { user: userData } });
+    },
+    updatePreferences: async (preferences: UserPreferences) => {
+      dispatch({ type: 'AUTH_UPDATE_USER', payload: { user: { preferences } } });
+    },
+    hasPermission: (permission: string) => {
+      const result = state.permissions.includes(permission);
+      console.log(`🔑 Permission check: ${permission} = ${result}`);
+      return result;
+    },
+    hasRole: (role: string) => state.roles.includes(role),
+    hasAnyRole: (roles: string[]) => roles.some(role => state.roles.includes(role)),
+    hasAllRoles: (roles: string[]) => roles.every(role => state.roles.includes(role)),
+    validateSession: async () => true,
+    extendSession: async () => {},
+    getSessions: async () => [],
+    terminateSession: async () => {},
+    changePassword: async () => {},
+    enableMFA: async () => {},
+    disableMFA: async () => {},
+    addAuditLog: () => {},
+    clearAuditLog: () => {},
+    showLoginModal: () => {},
+    hideLoginModal: () => {},
+    showMfaModal: () => {},
+    hideMfaModal: () => {},
+    isTokenExpiringSoon: () => false,
+    getTokenTimeRemaining: () => 9999,
+    formatTokenTime: () => '99:59'
+  };
+
+  return (
+    <AuthContext.Provider value={contextValue}>
+      {children}
+    </AuthContext.Provider>
+  );
+};
+
+export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+  // Always use offline auth (no Keycloak) but allow API calls
+  console.log('🔐 Using AuthProviderOffline (mock auth, real API calls)');
+  return <AuthProviderOffline>{children}</AuthProviderOffline>;
 };
 
 // ============================================================================

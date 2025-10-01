@@ -1,9 +1,71 @@
 // API endpoints
 export const API_ENDPOINTS = {
+  // Animal endpoints
   ANIMALS: '/api/animals',
+  ANIMALS_PAGED: '/api/animals/paged',
+  ANIMALS_BASIC: '/api/animals/basic',
+  ANIMALS_SEARCH_NAME: '/api/animals/search/name',
+  ANIMALS_SEARCH_OWNER: '/api/animals/search/owner',
+  ANIMALS_SEARCH_MICROCHIP: '/api/animals/search/microchip',
+  ANIMALS_WITH_ALLERGIES: '/api/animals/with-allergies',
+  ANIMALS_WITH_CHRONIC_DISEASES: '/api/animals/with-chronic-diseases',
+  ANIMALS_BIRTHDAY_TODAY: '/api/animals/birthday-today',
+  ANIMALS_BIRTHDAY_THIS_MONTH: '/api/animals/birthday-this-month',
+  
+  // Appointment endpoints
   APPOINTMENTS: '/api/appointments',
-  LABORATORY: '/api/laboratory',
+  APPOINTMENTS_PAGED: '/api/appointments/paged',
+  APPOINTMENTS_BASIC: '/api/appointments/basic',
+  APPOINTMENTS_CALENDAR: '/api/appointments/calendar',
+  APPOINTMENTS_TODAY: '/api/appointments/today',
+  APPOINTMENTS_UPCOMING: '/api/appointments/upcoming',
+  APPOINTMENTS_DATE_RANGE: '/api/appointments/date-range',
+  APPOINTMENTS_SEARCH_SUBJECT: '/api/appointments/search/subject',
+  APPOINTMENTS_SEARCH_ANIMAL: '/api/appointments/search/animal',
+  APPOINTMENTS_SEARCH_OWNER: '/api/appointments/search/owner',
+
+  // Veterinarian endpoints
+  VETERINARIANS: '/api/veterinarians',
+  VETERINARIANS_BASIC: '/api/veterinarians/basic',
+  
+  // Owner endpoints
+  OWNERS: '/api/owners',
+  
+  // Species and Breed endpoints
+  SPECIES: '/api/species',
+  BREEDS: '/api/breeds',
+  
+  // Medical records endpoints
+  CLINICAL_EXAMINATIONS: '/api/clinical-examinations',
+  DISEASE_HISTORY: '/api/disease-history',
+  LAB_RESULTS: '/api/lab-results',
+  LAB_TESTS: '/api/lab-tests',
+  PATHOLOGY_FINDINGS: '/api/pathology-findings',
+  RADIOLOGICAL_IMAGING: '/api/radiological-imaging',
+  
+  // Medication and Vaccine endpoints
+  MEDICATIONS: '/api/medications',
+  VACCINES: '/api/vaccines',
+  VACCINATIONS: '/api/vaccinations',
+  
+  // Invoice endpoints
+  INVOICES: '/api/invoices',
+  
+  // Document endpoints
+  DOCUMENTS: '/api/documents',
+  
+  // File endpoints
+  FILES: '/api/files',
+  
+  // Communication and Reminder endpoints
+  COMMUNICATIONS: '/api/communications',
+  REMINDERS: '/api/reminders',
+  
+  // User management endpoints
   USERS: '/api/users',
+  
+  // Test endpoints
+  TEST: '/api/test',
 } as const;
 
 // Application routes

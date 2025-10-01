@@ -208,16 +208,9 @@
 }
 
 .stat-card {
-  background-color: var(--surface-color);
-  border-radius: var(--border-radius-sm);
-  padding: var(--spacing-1);
-  box-shadow: var(--elevation-1);
+  /* Tema kartı (ui-card) görünümü korunsun */
+  border-radius: 20px;
   text-align: center;
-  transition: box-shadow var(--transition-speed) var(--transition-function);
-}
-
-.stat-card:hover {
-  box-shadow: var(--elevation-2);
 }
 
 .stat-card h3 {
@@ -253,24 +246,18 @@
 }
 
 .widget {
-  background-color: var(--surface-color);
-  border-radius: var(--border-radius-sm);
-  box-shadow: var(--elevation-1);
+  /* ui-card panel ile görünüm veriliyor; burada sadece layout */
+  border-radius: 20px;
   overflow: hidden;
   height: 100%;
   display: flex;
   flex-direction: column;
-  transition: box-shadow var(--transition-speed) var(--transition-function);
-}
-
-.widget:hover {
-  box-shadow: var(--elevation-2);
 }
 
 .widget-header {
   padding: var(--spacing-1);
-  background-color: var(--surface-color);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+  background: transparent;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
 }
 
 .widget-header h2 {
