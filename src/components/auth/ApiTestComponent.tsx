@@ -1,18 +1,19 @@
 import React, { useState } from 'react';
 import { useKeycloak } from '@react-keycloak/web';
 import { testApi, apiClient } from '../../services/api';
+import { OFFLINE_MODE } from '../../config/offline';
 
 const ApiTestComponent: React.FC = () => {
+  // Always call hooks at the top level, before any conditional returns
   const { keycloak, initialized } = useKeycloak();
   const [results, setResults] = useState<Record<string, any>>({});
   const [loading, setLoading] = useState<Record<string, boolean>>({});
 
-  // Set keycloak instance in API client
-  React.useEffect(() => {
-    if (initialized && keycloak) {
-      apiClient.setKeycloak(keycloak);
-    }
-  }, [initialized, keycloak]);
+  // Keycloak is now disabled - no need to set it in API client
+
+  if (OFFLINE_MODE) {
+    return null;
+  }
 
   const testEndpoint = async (name: string, apiCall: () => Promise<any>) => {
     setLoading(prev => ({ ...prev, [name]: true }));

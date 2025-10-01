@@ -10,26 +10,13 @@ import { AppointmentPage } from './features/appointments';
 import { LabDashboard, LabTestTypes } from './features/laboratory';
 import { Billing } from './features/billing';
 
-// Auth Components
-import LoginPage from './components/auth/LoginPage';
-import ProtectedRoute, { 
-  RoleBasedRoute, 
-  PermissionBasedRoute, 
-  AdminRoute, 
-  VeterinarianRoute 
-} from './components/auth/ProtectedRoute';
-import AccessDenied from './components/common/AccessDenied';
-
 // Error Boundaries
-import { 
-  GlobalErrorBoundary, 
-  PageErrorBoundary, 
-  ComponentErrorBoundary 
+import {
+  GlobalErrorBoundary,
+  PageErrorBoundary,
+  ComponentErrorBoundary
 } from './components/common/ErrorBoundary';
 
-// Test Components
-import AuthButton from './components/auth/AuthButton';
-import ApiTestComponent from './components/auth/ApiTestComponent';
 
 import './shared/styles/App.css';
 
@@ -111,6 +98,8 @@ const theme = createTheme({
 // ============================================================================
 
 function App() {
+  console.log('🏠 App starting without authentication');
+  
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -118,258 +107,166 @@ function App() {
         <AuthProvider>
           <AppProvider>
             <Router>
-              <Routes>
-                {/* Public Routes */}
-                <Route 
-                  path="/login" 
-                  element={
-                    <PageErrorBoundary pageName="Login">
-                      <LoginPage />
+            <Routes>
+              {/* Main Dashboard Route */}
+              <Route
+                path="/"
+                element={
+                  <Layout>
+                    <PageErrorBoundary pageName="Dashboard">
+                      <Dashboard />
                     </PageErrorBoundary>
-                  } 
-                />
-                
-                {/* Access Denied Route */}
-                <Route 
-                  path="/access-denied" 
-                  element={
-                    <PageErrorBoundary pageName="Access Denied">
-                      <AccessDenied />
+                  </Layout>
+                }
+              />
+
+              <Route
+                path="/dashboard"
+                element={
+                  <Layout>
+                    <PageErrorBoundary pageName="Dashboard">
+                      <Dashboard />
                     </PageErrorBoundary>
-                  } 
-                />
-                
-                {/* Protected Routes */}
-                <Route 
-                  path="/" 
-                  element={
-                    <ProtectedRoute>
-                      <Layout>
-                        <PageErrorBoundary pageName="Dashboard">
-                          <Dashboard />
-                        </PageErrorBoundary>
-                      </Layout>
-                    </ProtectedRoute>
-                  } 
-                />
-                
-                <Route 
-                  path="/dashboard" 
-                  element={
-                    <ProtectedRoute>
-                      <Layout>
-                        <PageErrorBoundary pageName="Dashboard">
-                          <Dashboard />
-                        </PageErrorBoundary>
-                      </Layout>
-                    </ProtectedRoute>
-                  } 
-                />
-                
-                {/* Animals - Role-based access */}
-                <Route 
-                  path="/animals" 
-                  element={
-                    <ProtectedRoute requiredPermissions={['animals:read']}>
-                      <Layout>
-                        <PageErrorBoundary pageName="Animals">
-                          <AnimalPage />
-                        </PageErrorBoundary>
-                      </Layout>
-                    </ProtectedRoute>
-                  } 
-                />
-                
-                <Route 
-                  path="/animals/:id" 
-                  element={
-                    <ProtectedRoute requiredPermissions={['animals:read']}>
-                      <Layout>
-                        <PageErrorBoundary pageName="Animal Details">
-                          <AnimalDetailPage />
-                        </PageErrorBoundary>
-                      </Layout>
-                    </ProtectedRoute>
-                  } 
-                />
-                
-                {/* Appointments - Role-based access */}
-                <Route 
-                  path="/appointments" 
-                  element={
-                    <ProtectedRoute requiredPermissions={['appointments:read']}>
-                      <Layout>
-                        <PageErrorBoundary pageName="Appointments">
-                          <AppointmentPage />
-                        </PageErrorBoundary>
-                      </Layout>
-                    </ProtectedRoute>
-                  } 
-                />
-                
-                {/* Laboratory - Role-based access */}
-                <Route 
-                  path="/laboratory" 
-                  element={
-                    <ProtectedRoute requiredPermissions={['laboratory:read']}>
-                      <Layout>
-                        <PageErrorBoundary pageName="Laboratory">
-                          <LabDashboard />
-                        </PageErrorBoundary>
-                      </Layout>
-                    </ProtectedRoute>
-                  } 
-                />
-                
-                <Route 
-                  path="/laboratory/test-types" 
-                  element={
-                    <ProtectedRoute requiredPermissions={['laboratory:read']}>
-                      <Layout>
-                        <PageErrorBoundary pageName="Lab Test Types">
-                          <LabTestTypes />
-                        </PageErrorBoundary>
-                      </Layout>
-                    </ProtectedRoute>
-                  } 
-                />
-                
-                {/* Billing - Role-based access */}
-                <Route 
-                  path="/billing" 
-                  element={
-                    <ProtectedRoute requiredPermissions={['billing:read']}>
-                      <Layout>
-                        <PageErrorBoundary pageName="Billing">
-                          <Billing />
-                        </PageErrorBoundary>
-                      </Layout>
-                    </ProtectedRoute>
-                  } 
-                />
-                
-                {/* Inventory - Admin/Veterinarian only */}
-                <Route 
-                  path="/inventory" 
-                  element={
-                    <VeterinarianRoute>
-                      <Layout>
-                        <PageErrorBoundary pageName="Inventory">
-                          <div>Envanter/Stok Sayfası (Yakında)</div>
-                        </PageErrorBoundary>
-                      </Layout>
-                    </VeterinarianRoute>
-                  } 
-                />
-                
-                {/* Reports - Admin/Veterinarian only */}
-                <Route 
-                  path="/reports" 
-                  element={
-                    <ProtectedRoute requiredPermissions={['reports:read']}>
-                      <Layout>
-                        <PageErrorBoundary pageName="Reports">
-                          <div>Raporlar Sayfası (Yakında)</div>
-                        </PageErrorBoundary>
-                      </Layout>
-                    </ProtectedRoute>
-                  } 
-                />
-                
-                {/* Settings - Admin only */}
-                <Route 
-                  path="/settings" 
-                  element={
-                    <AdminRoute>
-                      <Layout>
-                        <PageErrorBoundary pageName="Settings">
-                          <div>Ayarlar Sayfası (Yakında)</div>
-                        </PageErrorBoundary>
-                      </Layout>
-                    </AdminRoute>
-                  } 
-                />
-                
-                {/* User Management - Admin only */}
-                <Route 
-                  path="/users" 
-                  element={
-                    <AdminRoute>
-                      <Layout>
-                        <PageErrorBoundary pageName="User Management">
-                          <div>Kullanıcı Yönetimi (Yakında)</div>
-                        </PageErrorBoundary>
-                      </Layout>
-                    </AdminRoute>
-                  } 
-                />
-                
-                {/* Audit Logs - Admin only */}
-                <Route 
-                  path="/audit" 
-                  element={
-                    <AdminRoute>
-                      <Layout>
-                        <PageErrorBoundary pageName="Audit Logs">
-                          <div>Denetim Günlükleri (Yakında)</div>
-                        </PageErrorBoundary>
-                      </Layout>
-                    </AdminRoute>
-                  } 
-                />
-                
-                {/* Development/Testing Routes */}
-                <Route 
-                  path="/auth-test" 
-                  element={
-                    <ProtectedRoute>
-                      <Layout>
-                        <PageErrorBoundary pageName="Auth Test">
-                          <ComponentErrorBoundary componentName="AuthTest">
-                            <div>
-                              <AuthButton />
-                              <ApiTestComponent />
-                            </div>
-                          </ComponentErrorBoundary>
-                        </PageErrorBoundary>
-                      </Layout>
-                    </ProtectedRoute>
-                  } 
-                />
-                
-                {/* Error Test Route - Admin only */}
-                <Route 
-                  path="/error-test" 
-                  element={
-                    <AdminRoute>
-                      <Layout>
-                        <PageErrorBoundary pageName="Error Test">
-                          <ComponentErrorBoundary componentName="ErrorTest">
-                            <div>
-                              <h2>Error Testing</h2>
-                              <button onClick={() => { throw new Error('Test error!'); }}>
-                                Throw Test Error
-                              </button>
-                              <button onClick={() => { 
-                                const badComponent = null as any; 
-                                return badComponent.nonExistentMethod(); 
-                              }}>
-                                Cause Runtime Error
-                              </button>
-                            </div>
-                          </ComponentErrorBoundary>
-                        </PageErrorBoundary>
-                      </Layout>
-                    </AdminRoute>
-                  } 
-                />
-                
-                {/* Fallback - Redirect to login */}
-                <Route 
-                  path="*" 
-                  element={<Navigate to="/login" replace />} 
-                />
-              </Routes>
+                  </Layout>
+                }
+              />
+
+              {/* Animals */}
+              <Route
+                path="/animals"
+                element={
+                  <Layout>
+                    <PageErrorBoundary pageName="Animals">
+                      <AnimalPage />
+                    </PageErrorBoundary>
+                  </Layout>
+                }
+              />
+
+              <Route
+                path="/animals/:id"
+                element={
+                  <Layout>
+                    <PageErrorBoundary pageName="Animal Details">
+                      <AnimalDetailPage />
+                    </PageErrorBoundary>
+                  </Layout>
+                }
+              />
+
+              {/* Appointments */}
+              <Route
+                path="/appointments"
+                element={
+                  <Layout>
+                    <PageErrorBoundary pageName="Appointments">
+                      <AppointmentPage />
+                    </PageErrorBoundary>
+                  </Layout>
+                }
+              />
+
+              {/* Laboratory */}
+              <Route
+                path="/laboratory"
+                element={
+                  <Layout>
+                    <PageErrorBoundary pageName="Laboratory">
+                      <LabDashboard />
+                    </PageErrorBoundary>
+                  </Layout>
+                }
+              />
+
+              <Route
+                path="/laboratory/test-types"
+                element={
+                  <Layout>
+                    <PageErrorBoundary pageName="Lab Test Types">
+                      <LabTestTypes />
+                    </PageErrorBoundary>
+                  </Layout>
+                }
+              />
+
+              {/* Billing */}
+              <Route
+                path="/billing"
+                element={
+                  <Layout>
+                    <PageErrorBoundary pageName="Billing">
+                      <Billing />
+                    </PageErrorBoundary>
+                  </Layout>
+                }
+              />
+
+              {/* Inventory */}
+              <Route
+                path="/inventory"
+                element={
+                  <Layout>
+                    <PageErrorBoundary pageName="Inventory">
+                      <div>Envanter/Stok Sayfası (Yakında)</div>
+                    </PageErrorBoundary>
+                  </Layout>
+                }
+              />
+
+              {/* Reports */}
+              <Route
+                path="/reports"
+                element={
+                  <Layout>
+                    <PageErrorBoundary pageName="Reports">
+                      <div>Raporlar Sayfası (Yakında)</div>
+                    </PageErrorBoundary>
+                  </Layout>
+                }
+              />
+
+              {/* Settings */}
+              <Route
+                path="/settings"
+                element={
+                  <Layout>
+                    <PageErrorBoundary pageName="Settings">
+                      <div>Ayarlar Sayfası (Yakında)</div>
+                    </PageErrorBoundary>
+                  </Layout>
+                }
+              />
+
+              {/* User Management */}
+              <Route
+                path="/users"
+                element={
+                  <Layout>
+                    <PageErrorBoundary pageName="User Management">
+                      <div>Kullanıcı Yönetimi (Yakında)</div>
+                    </PageErrorBoundary>
+                  </Layout>
+                }
+              />
+
+              {/* Audit Logs */}
+              <Route
+                path="/audit"
+                element={
+                  <Layout>
+                    <PageErrorBoundary pageName="Audit Logs">
+                      <div>Denetim Günlükleri (Yakında)</div>
+                    </PageErrorBoundary>
+                  </Layout>
+                }
+              />
+
+              {/* Fallback - Redirect to dashboard */}
+              <Route
+                path="*"
+                element={<Navigate to="/" replace />}
+              />
+            </Routes>
             </Router>
           </AppProvider>
         </AuthProvider>

@@ -84,6 +84,21 @@
     box-shadow: var(--shadow-medium);
 }
 
+.appointments-loading {
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: var(--text-secondary);
+    background: var(--bg-primary);
+    border-radius: var(--border-radius-sm);
+}
+
+.appointments-loading--error {
+    color: var(--danger-color, #d9534f);
+}
+
 .appointments-grid {
     display: grid;
     gap: var(--spacing-2);

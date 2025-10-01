@@ -116,3 +116,53 @@
   color: #666;
   padding: 4px 0;
 } 
+
+/* Calendar overall height - extend white box to cover more of the blue area */
+.calendar-widget {
+  min-height: 720px; /* beyaz kutuyu aşağı uzat */
+  display: flex;
+  flex-direction: column;
+}
+
+.calendar-widget .widget-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 600px; /* içerik alanını da uzat */
+}
+
+/* Gün detay bloğu daha uzun kalsın */
+.day-details-inline {
+  margin-top: 12px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Randevu listesi beyaz alanı doldursun */
+.compact-appointments {
+  flex: 1;
+}
+
+.no-appointments.error {
+  color: var(--danger-color, #d9534f);
+}
+
+.no-appointments.error p {
+  color: inherit;
+}
+
+.react-calendar__tile.has-appointment {
+  position: relative;
+}
+
+.react-calendar__tile.has-appointment::after {
+  content: '';
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--primary-color, #4f46e5);
+  bottom: 6px;
+  right: 6px;
+}

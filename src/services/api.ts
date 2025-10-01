@@ -1,82 +1,105 @@
-// @ts-ignore
-import Keycloak from 'keycloak-js';
+import { OFFLINE_MODE } from '../config/offline';
+import type { ApiResponse } from '../types/common';
 
 // Base API URL
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8090/api';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8090';
+console.log('API Base URL:', API_BASE_URL);
+console.log('OFFLINE_MODE:', OFFLINE_MODE);
 
-// API client with Keycloak token support
+// API client without authentication
 export class ApiClient {
-  private keycloak: any | null = null;
-
-  constructor(keycloak?: any) {
-    this.keycloak = keycloak || null;
-  }
-
-  setKeycloak(keycloak: any) {
-    this.keycloak = keycloak;
-  }
 
   private async getHeaders(): Promise<HeadersInit> {
-    const headers: HeadersInit = {
+    return {
       'Content-Type': 'application/json',
     };
-
-    if (this.keycloak?.authenticated) {
-      try {
-        // Token'ı yenile (gerekirse)
-        await this.keycloak.updateToken(30);
-        headers['Authorization'] = `Bearer ${this.keycloak.token}`;
-      } catch (error) {
-        console.error('Failed to update token for API call:', error);
-        throw new Error('Authentication required');
-      }
-    }
-
-    return headers;
   }
 
-  private async handleResponse<T>(response: Response): Promise<T> {
+  private async handleResponse<T>(response: Response): Promise<ApiResponse<T>> {
     if (!response.ok) {
       if (response.status === 401) {
-        // Token expired or invalid
-        if (this.keycloak) {
-          try {
-            await this.keycloak.updateToken(30);
-            // Retry the request with new token would be here
-          } catch (error) {
-            this.keycloak.login();
-            throw new Error('Authentication required');
-          }
-        }
-        throw new Error('Unauthorized');
+        console.warn('401 Unauthorized - Backend authentication gerekebilir');
+        throw new Error('Unauthorized - Backend authentication required');
       }
-      
+
       if (response.status === 403) {
+        console.warn('403 Forbidden - İzin yok');
         throw new Error('Forbidden - Insufficient permissions');
       }
 
-      const errorText = await response.text();
-      throw new Error(`HTTP ${response.status}: ${errorText}`);
+      const contentType = response.headers.get('content-type');
+      let errorPayload: any = null;
+
+      if (contentType && contentType.includes('application/json')) {
+        try {
+          errorPayload = await response.json();
+        } catch (err) {
+          console.error('JSON parse error for error response:', err);
+        }
+      } else {
+        errorPayload = await response.text();
+      }
+
+      const errorMessage = typeof errorPayload === 'string'
+        ? errorPayload
+        : errorPayload?.message || errorPayload?.error || response.statusText;
+
+      console.error(`HTTP ${response.status}: ${errorMessage}`);
+      const error = new Error(`HTTP ${response.status}: ${errorMessage}`);
+      (error as any).status = response.status;
+      (error as any).payload = errorPayload;
+      throw error;
     }
 
     const contentType = response.headers.get('content-type');
-    if (contentType && contentType.includes('application/json')) {
-      return response.json();
-    } else {
-      return response.text() as any;
+    let parsedBody: any = null;
+
+    if (response.status !== 204) {
+      if (contentType && contentType.includes('application/json')) {
+        parsedBody = await response.json();
+      } else if (contentType && contentType.includes('text/')) {
+        parsedBody = await response.text();
+      } else {
+        parsedBody = await response.blob();
+      }
     }
+
+    return {
+      success: true,
+      data: parsedBody as T,
+      status: response.status,
+    };
   }
 
-  async get<T>(endpoint: string): Promise<T> {
+  async get<T>(endpoint: string): Promise<ApiResponse<T>> {
+    if (OFFLINE_MODE) {
+      console.log('API GET çağrısı OFFLINE_MODE nedeniyle atlandı:', endpoint);
+      return Promise.resolve({
+        success: false,
+        data: {} as T,
+        error: 'OFFLINE_MODE enabled',
+        status: 0,
+      });
+    }
+    console.log('API GET çağrısı:', `${API_BASE_URL}${endpoint}`);
     const headers = await this.getHeaders();
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       method: 'GET',
       headers,
     });
+    console.log('API GET response:', response.status, response.statusText);
     return this.handleResponse<T>(response);
   }
 
-  async post<T>(endpoint: string, data?: any): Promise<T> {
+  async post<T>(endpoint: string, data?: any): Promise<ApiResponse<T>> {
+    if (OFFLINE_MODE) {
+      return Promise.resolve({
+        success: false,
+        data: {} as T,
+        error: 'OFFLINE_MODE enabled',
+        status: 0,
+      });
+    }
     const headers = await this.getHeaders();
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       method: 'POST',
@@ -86,7 +109,15 @@ export class ApiClient {
     return this.handleResponse<T>(response);
   }
 
-  async put<T>(endpoint: string, data?: any): Promise<T> {
+  async put<T>(endpoint: string, data?: any): Promise<ApiResponse<T>> {
+    if (OFFLINE_MODE) {
+      return Promise.resolve({
+        success: false,
+        data: {} as T,
+        error: 'OFFLINE_MODE enabled',
+        status: 0,
+      });
+    }
     const headers = await this.getHeaders();
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       method: 'PUT',
@@ -96,7 +127,15 @@ export class ApiClient {
     return this.handleResponse<T>(response);
   }
 
-  async delete<T>(endpoint: string): Promise<T> {
+  async delete<T>(endpoint: string): Promise<ApiResponse<T>> {
+    if (OFFLINE_MODE) {
+      return Promise.resolve({
+        success: false,
+        data: {} as T,
+        error: 'OFFLINE_MODE enabled',
+        status: 0,
+      });
+    }
     const headers = await this.getHeaders();
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       method: 'DELETE',
@@ -105,7 +144,15 @@ export class ApiClient {
     return this.handleResponse<T>(response);
   }
 
-  async patch<T>(endpoint: string, data?: any): Promise<T> {
+  async patch<T>(endpoint: string, data?: any): Promise<ApiResponse<T>> {
+    if (OFFLINE_MODE) {
+      return Promise.resolve({
+        success: false,
+        data: {} as T,
+        error: 'OFFLINE_MODE enabled',
+        status: 0,
+      });
+    }
     const headers = await this.getHeaders();
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       method: 'PATCH',

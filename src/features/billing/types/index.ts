@@ -156,6 +156,8 @@ export interface InvoiceFilters {
   status?: Invoice['status'];
   dateFrom?: Date;
   dateTo?: Date;
+  startDate?: Date;
+  endDate?: Date;
   patientId?: number;
   search?: string;
 }
@@ -164,7 +166,9 @@ export interface PaymentFilters {
   paymentMethod?: Payment['paymentMethod'];
   dateFrom?: Date;
   dateTo?: Date;
+  startDate?: Date;
+  endDate?: Date;
   search?: string;
   status?: Payment['status'];
   posTerminalId?: string;
-} 
+}

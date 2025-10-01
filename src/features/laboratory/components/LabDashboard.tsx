@@ -312,7 +312,7 @@ const LabDashboard: React.FC = () => {
   return (
     <div className="lab-dashboard">
       {/* Top Bar */}
-      <header className="lab-top-bar">
+      <header className="lab-top-bar ui-card panel ui-card--hover">
         <div className="clinic-selector">
           <select>
             <option value="1">VetKlinik İstanbul</option>
@@ -363,7 +363,7 @@ const LabDashboard: React.FC = () => {
 
       <main className="lab-main-grid">
         {/* Quick Order Panel */}
-        <aside className="quick-order-panel">
+        <aside className="quick-order-panel ui-card panel ui-card--hover">
           <h2>Hızlı Test Siparişi</h2>
           
           <div className="stat-toggle">
@@ -446,7 +446,7 @@ const LabDashboard: React.FC = () => {
         </aside>
 
         {/* Test Queue */}
-        <section className="test-queue">
+        <section className="test-queue ui-card panel">
           <div className="queue-header">
             <h2>Test Kuyruğu</h2>
             <div className="queue-stats">
@@ -534,7 +534,7 @@ const LabDashboard: React.FC = () => {
         </section>
 
         {/* Result Viewer */}
-        <aside className="result-viewer">
+        <aside className="result-viewer ui-card panel">
           <h2>Sonuç Görünümü</h2>
           
           {!selectedTest ? (

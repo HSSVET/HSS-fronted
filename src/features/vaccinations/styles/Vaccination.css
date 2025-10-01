@@ -1,0 +1,1621 @@
+/* Aşı Yönetim Sistemi CSS */
+
+.vaccination-container {
+    padding: 20px;
+    background-color: #f8f9fa;
+    min-height: auto;
+}
+
+.vaccination-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.vaccination-title {
+    font-size: 24px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin: 0;
+}
+
+.add-vaccine-btn {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background-color 0.2s;
+}
+
+.add-vaccine-btn:hover {
+    background-color: #218838;
+}
+
+.add-vaccine-btn .icon {
+    font-size: 16px;
+}
+
+/* Tab Sistemi */
+.vaccination-tabs {
+    display: flex;
+    background: white;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.tab-button {
+    flex: 1;
+    padding: 15px 20px;
+    background: white;
+    border: none;
+    border-bottom: 3px solid transparent;
+    font-size: 14px;
+    font-weight: 500;
+    color: #6c757d;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.tab-button:hover {
+    background-color: #f8f9fa;
+    color: #495057;
+}
+
+.tab-button.active {
+    color: #007bff;
+    border-bottom-color: #007bff;
+    background-color: #ffffff;
+}
+
+.tab-content {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Filtreleme ve Arama */
+.filters-section {
+    padding: 20px;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.search-input {
+    flex: 1;
+    min-width: 250px;
+    padding: 10px 15px;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.filter-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #495057;
+    white-space: nowrap;
+}
+
+.filter-select {
+    padding: 8px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    font-size: 14px;
+    background: white;
+    min-width: 120px;
+}
+
+.filter-select:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+/* Aşı Tablosu */
+.vaccine-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.vaccine-table th {
+    background-color: #f8f9fa;
+    padding: 15px 12px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 14px;
+    color: #495057;
+    border-bottom: 2px solid #e9ecef;
+}
+
+.vaccine-table td {
+    padding: 15px 12px;
+    border-bottom: 1px solid #e9ecef;
+    font-size: 14px;
+    color: #495057;
+}
+
+.vaccine-table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+/* Stok Durumu */
+.stock-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.stock-status.available {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.stock-status.low {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.stock-status.critical {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.stock-alert-badge {
+    background-color: #dc3545;
+    color: white;
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 11px;
+    font-weight: 600;
+    margin-left: 5px;
+}
+
+/* İşlem Butonları */
+.action-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.action-btn {
+    padding: 6px 10px;
+    border: none;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.action-btn.view {
+    background-color: #17a2b8;
+    color: white;
+}
+
+.action-btn.view:hover {
+    background-color: #138496;
+}
+
+.action-btn.edit {
+    background-color: #007bff;
+    color: white;
+}
+
+.action-btn.edit:hover {
+    background-color: #0056b3;
+}
+
+/* Stok Bildirimleri */
+.stock-alerts {
+    padding: 20px;
+}
+
+.alert-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-left: 4px solid #dc3545;
+    background-color: #f8d7da;
+    border-radius: 0 6px 6px 0;
+}
+
+.alert-content {
+    flex: 1;
+}
+
+.alert-message {
+    font-size: 14px;
+    color: #721c24;
+    margin: 0 0 5px 0;
+}
+
+.alert-date {
+    font-size: 12px;
+    color: #856404;
+}
+
+.alert-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.alert-btn {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.alert-btn.order {
+    background-color: #007bff;
+    color: white;
+}
+
+.alert-btn.order:hover {
+    background-color: #0056b3;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .vaccination-header {
+        flex-direction: column;
+        gap: 15px;
+        align-items: stretch;
+    }
+
+    .vaccination-tabs {
+        flex-direction: column;
+    }
+
+    .filters-section {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .filter-group {
+        justify-content: space-between;
+    }
+
+    .vaccine-table {
+        font-size: 12px;
+    }
+
+    .vaccine-table th,
+    .vaccine-table td {
+        padding: 10px 8px;
+    }
+}
+
+/* Loading ve Empty States */
+.loading-state {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+    color: #6c757d;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 40px;
+    color: #6c757d;
+}
+
+.empty-state h3 {
+    margin-bottom: 10px;
+    color: #495057;
+}
+
+/* Animasyonlar */
+.fade-in {
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Notification Badge */
+.notification-badge {
+    position: relative;
+}
+
+.notification-badge::after {
+    content: attr(data-count);
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background-color: #dc3545;
+    color: white;
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 11px;
+    font-weight: 600;
+    min-width: 18px;
+    text-align: center;
+}
+
+/* Aşı Yönetimi Ana Stiller - Mevcut Tema ile Uyumlu */
+.vaccination-dashboard,
+.vaccination-container {
+    background-color: var(--bg-primary);
+    min-height: auto;
+    padding: var(--spacing-1);
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.vaccination-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-2);
+    padding-bottom: var(--spacing-1);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.vaccination-title {
+    font-size: 20px;
+    color: var(--text-primary);
+    margin: 0;
+    font-weight: var(--font-weight-medium);
+    letter-spacing: 0;
+}
+
+/* Stats Overview */
+.stats-overview {
+    margin-bottom: var(--spacing-2);
+}
+
+.stats-overview>div {
+    background: var(--bg-card);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-soft);
+    transition: box-shadow var(--transition-speed) var(--transition-function);
+}
+
+.stats-overview>div:hover {
+    box-shadow: var(--shadow-medium);
+}
+
+/* Tab Navigation */
+.tabs-container,
+.vaccination-tabs {
+    background: var(--bg-card);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-soft);
+    margin-bottom: var(--spacing-2);
+    width: 100%;
+}
+
+.tabs-nav,
+.vaccination-tabs {
+    display: flex;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.tab-button {
+    flex: 1;
+    padding: var(--spacing-1) var(--spacing-2);
+    background: none;
+    border: none;
+    font-size: 14px;
+    font-weight: var(--font-weight-medium);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all var(--transition-speed) var(--transition-function);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.tab-button:hover {
+    background: var(--bg-card);
+    color: var(--text-primary);
+}
+
+.tab-button.active {
+    background: var(--bg-card);
+    color: var(--primary-color);
+    font-weight: var(--font-weight-medium);
+}
+
+.tab-button.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--primary-color);
+}
+
+.tab-content,
+.fade-in {
+    padding: 0;
+    background: var(--bg-card);
+    overflow: visible;
+    width: 100%;
+    min-height: fit-content;
+}
+
+/* Filtreleme Bölümü */
+.filters-section {
+    display: flex;
+    gap: var(--spacing-1);
+    align-items: center;
+    padding: var(--spacing-2);
+    background: var(--bg-secondary);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+    flex-wrap: wrap;
+}
+
+.search-input {
+    flex: 1;
+    min-width: 250px;
+    padding: 8px var(--spacing-1);
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: var(--border-radius-sm);
+    font-size: 14px;
+    background: var(--bg-card);
+    color: var(--text-primary);
+    transition: border-color var(--transition-speed);
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(var(--beige-dark-rgb), 0.1);
+}
+
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.filter-label {
+    font-size: 13px;
+    font-weight: var(--font-weight-medium);
+    color: var(--text-primary);
+    white-space: nowrap;
+}
+
+.filter-select {
+    padding: 6px var(--spacing-1);
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: var(--border-radius-sm);
+    font-size: 13px;
+    background: var(--bg-card);
+    color: var(--text-primary);
+    min-width: 120px;
+    transition: border-color var(--transition-speed);
+}
+
+.filter-select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+/* Yeni Aşı Ekle Butonu */
+.add-vaccine-btn {
+    background: var(--primary-color);
+    color: var(--text-on-primary);
+    border: none;
+    padding: 0 var(--spacing-1);
+    height: 30px;
+    border-radius: var(--border-radius-sm);
+    font-size: 12px;
+    font-weight: var(--font-weight-medium);
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all var(--transition-speed) var(--transition-function);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: var(--shadow-soft);
+}
+
+.add-vaccine-btn:hover {
+    background: var(--primary-hover);
+    box-shadow: var(--shadow-medium);
+    transform: translateY(-1px);
+}
+
+/* Tablo Stiller */
+.vaccine-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    background: var(--bg-card);
+    table-layout: auto;
+}
+
+.vaccine-table th {
+    background: var(--bg-secondary);
+    padding: var(--spacing-1) var(--spacing-2);
+    text-align: left;
+    font-weight: var(--font-weight-medium);
+    color: var(--text-primary);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.vaccine-table td {
+    padding: var(--spacing-1) var(--spacing-2);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+    vertical-align: top;
+    color: var(--text-primary);
+}
+
+.vaccine-table tr:hover {
+    background: var(--bg-soft);
+}
+
+.vaccine-table tr:last-child td {
+    border-bottom: none;
+}
+
+/* Stok Durumu */
+.stock-status {
+    display: flex;
+    align-items: center;
+    font-size: 12px;
+    font-weight: var(--font-weight-medium);
+    padding: 4px 8px;
+    border-radius: var(--border-radius-sm);
+    width: fit-content;
+}
+
+.stock-status.available {
+    color: var(--status-healthy);
+    background: rgba(76, 175, 80, 0.1);
+}
+
+.stock-status.low {
+    color: var(--warning-color);
+    background: rgba(255, 152, 0, 0.1);
+}
+
+.stock-status.critical {
+    color: var(--error-color);
+    background: rgba(244, 67, 54, 0.1);
+}
+
+/* Aksiyon Butonları */
+.action-buttons {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.action-btn {
+    padding: 4px 8px;
+    border: none;
+    border-radius: var(--border-radius-sm);
+    font-size: 11px;
+    cursor: pointer;
+    transition: all var(--transition-speed);
+    font-weight: var(--font-weight-medium);
+}
+
+.action-btn.view {
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+}
+
+.action-btn.edit {
+    background: rgba(255, 152, 0, 0.1);
+    color: var(--warning-color);
+}
+
+.action-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-soft);
+}
+
+/* Loading ve Empty State */
+.loading-state,
+.empty-state {
+    text-align: center;
+    padding: 60px var(--spacing-2);
+    color: var(--text-secondary);
+    background: var(--bg-card);
+    border-radius: var(--border-radius);
+    margin: var(--spacing-2);
+}
+
+.empty-state h3 {
+    margin: 0 0 var(--spacing-1) 0;
+    color: var(--text-primary);
+    font-weight: var(--font-weight-medium);
+}
+
+/* Modal Stiller */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: var(--spacing-2);
+}
+
+.modal-content {
+    background: var(--bg-card);
+    border-radius: var(--border-radius);
+    width: 100%;
+    max-width: 800px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: var(--shadow-strong);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-2);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+    background: var(--bg-secondary);
+}
+
+.modal-header h3 {
+    margin: 0;
+    color: var(--primary-color);
+    font-size: 18px;
+    font-weight: var(--font-weight-medium);
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 20px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: var(--border-radius-sm);
+    transition: all var(--transition-speed);
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-close:hover {
+    background: rgba(0, 0, 0, 0.04);
+    color: var(--text-primary);
+}
+
+/* Form Stiller */
+.vaccine-form {
+    padding: var(--spacing-2);
+}
+
+.form-section {
+    margin-bottom: var(--spacing-2);
+}
+
+.form-section h4 {
+    margin: 0 0 var(--spacing-2) 0;
+    color: var(--primary-color);
+    font-size: 16px;
+    font-weight: var(--font-weight-medium);
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-2);
+    margin-bottom: var(--spacing-1);
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    font-size: 13px;
+    font-weight: var(--font-weight-medium);
+    color: var(--text-primary);
+    margin-bottom: 6px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    padding: 8px var(--spacing-1);
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: var(--border-radius-sm);
+    font-size: 14px;
+    background: var(--bg-card);
+    color: var(--text-primary);
+    transition: all var(--transition-speed);
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(var(--beige-dark-rgb), 0.1);
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 80px;
+    font-family: inherit;
+}
+
+/* Irk Seçimi */
+.breeds-selection {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: var(--spacing-1);
+    padding: var(--spacing-2);
+    background: var(--bg-secondary);
+    border-radius: var(--border-radius-sm);
+    border: 1px solid rgba(0, 0, 0, 0.04);
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.breed-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--text-primary);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: var(--border-radius-sm);
+    transition: all var(--transition-speed);
+}
+
+.breed-checkbox:hover {
+    background: var(--bg-card);
+}
+
+.breed-checkbox input[type="checkbox"] {
+    margin: 0;
+    cursor: pointer;
+    accent-color: var(--primary-color);
+}
+
+/* Form Actions */
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--spacing-1);
+    padding-top: var(--spacing-2);
+    border-top: 1px solid rgba(0, 0, 0, 0.04);
+    margin-top: var(--spacing-2);
+}
+
+.form-actions button {
+    padding: 0 var(--spacing-2);
+    height: 36px;
+    border: none;
+    border-radius: var(--border-radius-sm);
+    font-size: 14px;
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+    transition: all var(--transition-speed);
+    min-width: 120px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.form-actions button[type="button"] {
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+    border: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.form-actions button[type="button"]:hover {
+    background: var(--bg-soft);
+    color: var(--text-primary);
+}
+
+.form-actions button[type="submit"] {
+    background: var(--primary-color);
+    color: var(--text-on-primary);
+    box-shadow: var(--shadow-soft);
+}
+
+.form-actions button[type="submit"]:hover {
+    background: var(--primary-hover);
+    box-shadow: var(--shadow-medium);
+}
+
+.form-actions button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Notification Cards */
+.notification-card {
+    background: var(--bg-card);
+    border-radius: var(--border-radius);
+    padding: var(--spacing-2);
+    margin-bottom: var(--spacing-1);
+    border-left: 4px solid var(--status-healthy);
+    box-shadow: var(--shadow-soft);
+    transition: all var(--transition-speed);
+}
+
+.notification-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-medium);
+}
+
+.notification-card.warning {
+    border-left-color: var(--warning-color);
+}
+
+.notification-card.danger {
+    border-left-color: var(--error-color);
+}
+
+.notification-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-1);
+}
+
+.notification-title {
+    font-weight: var(--font-weight-medium);
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.notification-date {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.notification-message {
+    color: var(--text-secondary);
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* Stats Cards */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--spacing-2);
+    margin-bottom: var(--spacing-2);
+}
+
+.stat-card {
+    background: var(--bg-card);
+    padding: var(--spacing-2);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-soft);
+    text-align: center;
+    transition: all var(--transition-speed);
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-medium);
+}
+
+.stat-number {
+    font-size: 28px;
+    font-weight: var(--font-weight-bold);
+    color: var(--primary-color);
+    margin: 0;
+}
+
+.stat-label {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin: 4px 0 0 0;
+}
+
+/* Guide Table Specific */
+.guide-info {
+    background: rgba(var(--beige-dark-rgb), 0.05);
+    border: 1px solid rgba(var(--beige-dark-rgb), 0.2);
+    border-radius: var(--border-radius-sm);
+    padding: var(--spacing-2);
+    margin-bottom: var(--spacing-2);
+    font-size: 14px;
+    color: var(--text-primary);
+}
+
+/* Vaccine History Specific */
+.history-timeline {
+    position: relative;
+    padding-left: 30px;
+}
+
+.history-timeline::before {
+    content: '';
+    position: absolute;
+    left: 15px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--bg-secondary);
+}
+
+.history-item {
+    position: relative;
+    background: var(--bg-card);
+    border-radius: var(--border-radius);
+    padding: var(--spacing-2);
+    margin-bottom: var(--spacing-1);
+    box-shadow: var(--shadow-soft);
+    transition: all var(--transition-speed);
+}
+
+.history-item:hover {
+    box-shadow: var(--shadow-medium);
+}
+
+.history-item::before {
+    content: '';
+    position: absolute;
+    left: -22px;
+    top: 20px;
+    width: 10px;
+    height: 10px;
+    background: var(--primary-color);
+    border-radius: 50%;
+    border: 3px solid var(--bg-card);
+    box-shadow: 0 0 0 2px var(--bg-secondary);
+}
+
+.history-date {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+}
+
+.history-vaccine {
+    font-weight: var(--font-weight-medium);
+    color: var(--text-primary);
+    margin-bottom: 2px;
+}
+
+.history-details {
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+/* =============================================================================
+   AŞI KARNESİ STİLLERİ
+   ============================================================================= */
+
+/* Ana Container */
+.vaccination-card-container {
+    padding: var(--spacing-2);
+    background: var(--bg-primary);
+    min-height: auto;
+    width: 100%;
+}
+
+/* Header - Hayvan Seçimi ve Aksiyon Butonları */
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--bg-card);
+    padding: var(--spacing-2);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-soft);
+    margin-bottom: var(--spacing-2);
+    flex-wrap: wrap;
+    gap: var(--spacing-1);
+}
+
+.animal-selection {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-1);
+    flex: 1;
+    min-width: 250px;
+}
+
+.animal-selection label {
+    font-size: 14px;
+    font-weight: var(--font-weight-medium);
+    color: var(--text-primary);
+    white-space: nowrap;
+}
+
+.animal-select {
+    flex: 1;
+    max-width: 400px;
+    padding: 8px var(--spacing-1);
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: var(--border-radius-sm);
+    font-size: 14px;
+    background: var(--bg-card);
+    color: var(--text-primary);
+    transition: border-color var(--transition-speed);
+}
+
+.animal-select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(var(--beige-dark-rgb), 0.1);
+}
+
+/* Aksiyon Butonları */
+.card-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.card-actions .action-btn {
+    padding: 6px var(--spacing-1);
+    height: 32px;
+    border: none;
+    border-radius: var(--border-radius-sm);
+    font-size: 12px;
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+    transition: all var(--transition-speed);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    min-width: 80px;
+    justify-content: center;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.card-actions .add-vaccination {
+    background: var(--primary-color);
+    color: var(--text-on-primary);
+}
+
+.card-actions .print-card {
+    background: rgba(33, 150, 243, 0.1);
+    color: #2196f3;
+    border: 1px solid rgba(33, 150, 243, 0.2);
+}
+
+.card-actions .export-pdf {
+    background: rgba(76, 175, 80, 0.1);
+    color: #4caf50;
+    border: 1px solid rgba(76, 175, 80, 0.2);
+}
+
+.card-actions .action-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-medium);
+}
+
+/* Aşı Karnesi İçerik */
+.vaccination-card-content {
+    background: var(--bg-card);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-soft);
+    overflow: hidden;
+    margin-bottom: var(--spacing-2);
+}
+
+/* Karne Header */
+.card-header-print {
+    background: linear-gradient(135deg, var(--primary-color) 0%, rgba(var(--beige-dark-rgb), 0.8) 100%);
+    color: var(--text-on-primary);
+    padding: var(--spacing-2);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 3px solid var(--primary-color);
+}
+
+.clinic-info h2 {
+    margin: 0 0 8px 0;
+    font-size: 20px;
+    font-weight: var(--font-weight-bold);
+}
+
+.clinic-info p {
+    margin: 2px 0;
+    font-size: 13px;
+    opacity: 0.9;
+}
+
+.card-title {
+    text-align: right;
+}
+
+.card-title h1 {
+    margin: 0 0 4px 0;
+    font-size: 24px;
+    font-weight: var(--font-weight-bold);
+    letter-spacing: 1px;
+}
+
+.card-title p {
+    margin: 0;
+    font-size: 12px;
+    opacity: 0.8;
+}
+
+/* Bilgi Bölümleri */
+.animal-info-section,
+.owner-info-section,
+.vaccination-history-section,
+.upcoming-vaccinations-section {
+    padding: var(--spacing-2);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.animal-info-section:last-child,
+.owner-info-section:last-child,
+.vaccination-history-section:last-child,
+.upcoming-vaccinations-section:last-child {
+    border-bottom: none;
+}
+
+.animal-info-section h3,
+.owner-info-section h3,
+.vaccination-history-section h3,
+.upcoming-vaccinations-section h3 {
+    margin: 0 0 var(--spacing-2) 0;
+    color: var(--primary-color);
+    font-size: 16px;
+    font-weight: var(--font-weight-medium);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid rgba(var(--beige-dark-rgb), 0.1);
+}
+
+/* Bilgi Grid */
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--spacing-1);
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px var(--spacing-1);
+    background: var(--bg-secondary);
+    border-radius: var(--border-radius-sm);
+    border-left: 3px solid var(--primary-color);
+}
+
+.info-row .label {
+    font-size: 13px;
+    font-weight: var(--font-weight-medium);
+    color: var(--text-secondary);
+}
+
+.info-row .value {
+    font-size: 13px;
+    font-weight: var(--font-weight-medium);
+    color: var(--text-primary);
+    text-align: right;
+}
+
+/* Aşı Geçmişi Tablosu */
+.vaccination-table-wrapper {
+    overflow-x: auto;
+    margin-top: var(--spacing-1);
+}
+
+.vaccination-history-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    background: var(--bg-card);
+}
+
+.vaccination-history-table th {
+    background: var(--bg-secondary);
+    padding: var(--spacing-1) 8px;
+    text-align: left;
+    font-weight: var(--font-weight-medium);
+    color: var(--text-primary);
+    border-bottom: 2px solid rgba(0, 0, 0, 0.04);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.vaccination-history-table td {
+    padding: var(--spacing-1) 8px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+    vertical-align: top;
+    color: var(--text-primary);
+}
+
+.vaccination-history-table tr:hover {
+    background: var(--bg-soft);
+}
+
+.vaccination-history-table .vaccine-name {
+    font-weight: var(--font-weight-medium);
+    color: var(--primary-color);
+}
+
+/* Durum Badge */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 6px;
+    border-radius: 12px;
+    font-size: 10px;
+    font-weight: var(--font-weight-medium);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.status-badge.completed {
+    background: rgba(76, 175, 80, 0.1);
+    color: #4caf50;
+}
+
+.status-badge.current {
+    background: rgba(76, 175, 80, 0.1);
+    color: #4caf50;
+}
+
+.status-badge.due-soon {
+    background: rgba(255, 152, 0, 0.1);
+    color: #ff9800;
+}
+
+.status-badge.overdue {
+    background: rgba(244, 67, 54, 0.1);
+    color: #f44336;
+}
+
+/* Yaklaşan Aşılar */
+.upcoming-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--spacing-1);
+    margin-top: var(--spacing-1);
+}
+
+.upcoming-item {
+    padding: var(--spacing-1);
+    background: var(--bg-secondary);
+    border-radius: var(--border-radius-sm);
+    border-left: 4px solid;
+    transition: all var(--transition-speed);
+}
+
+.upcoming-item.high {
+    border-left-color: #f44336;
+}
+
+.upcoming-item.medium {
+    border-left-color: #ff9800;
+}
+
+.upcoming-item.low {
+    border-left-color: #4caf50;
+}
+
+.upcoming-item:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-medium);
+}
+
+.upcoming-vaccine {
+    font-weight: var(--font-weight-medium);
+    color: var(--text-primary);
+    margin-bottom: 4px;
+}
+
+.upcoming-date {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+}
+
+.upcoming-priority {
+    font-size: 11px;
+    font-weight: var(--font-weight-medium);
+    text-transform: uppercase;
+}
+
+/* Karne Footer */
+.card-footer {
+    padding: var(--spacing-2);
+    background: var(--bg-secondary);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: var(--spacing-2);
+}
+
+.signature-section {
+    display: flex;
+    gap: 60px;
+    align-items: flex-end;
+}
+
+.signature-box,
+.stamp-box {
+    text-align: center;
+    min-width: 120px;
+}
+
+.signature-box p,
+.stamp-box p {
+    margin: 0 0 4px 0;
+    font-size: 12px;
+    color: var(--text-secondary);
+    font-weight: var(--font-weight-medium);
+}
+
+.signature-line {
+    width: 120px;
+    height: 2px;
+    background: var(--text-secondary);
+    margin: 20px auto 8px auto;
+}
+
+.stamp-area {
+    width: 80px;
+    height: 80px;
+    border: 2px dashed var(--text-secondary);
+    margin: 8px auto;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    font-size: 10px;
+}
+
+.card-info {
+    text-align: right;
+    font-size: 11px;
+    color: var(--text-secondary);
+}
+
+.card-info p {
+    margin: 2px 0;
+}
+
+.qr-code {
+    margin-top: 8px;
+    text-align: center;
+}
+
+.qr-placeholder {
+    font-size: 24px;
+    margin-top: 4px;
+}
+
+/* Print Stiller */
+@media print {
+    .vaccination-card-container {
+        padding: 0;
+        background: white;
+    }
+
+    .card-header {
+        display: none;
+    }
+
+    .vaccination-card-content {
+        box-shadow: none;
+        page-break-inside: avoid;
+    }
+
+    .card-header-print {
+        background: #92A78C !important;
+        color: white !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    .vaccination-history-table {
+        font-size: 10px;
+    }
+
+    .vaccination-history-table th,
+    .vaccination-history-table td {
+        padding: 4px;
+    }
+
+    .upcoming-vaccinations-section {
+        page-break-inside: avoid;
+    }
+
+    .signature-section {
+        page-break-inside: avoid;
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+
+    .vaccination-dashboard,
+    .vaccination-container {
+        padding: var(--spacing-1);
+        min-height: auto;
+    }
+
+    .tabs-nav,
+    .vaccination-tabs {
+        flex-direction: column;
+    }
+
+    .filters-section {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .search-input {
+        min-width: auto;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .modal-content {
+        margin: var(--spacing-1);
+        max-height: calc(100vh - 20px);
+    }
+
+    .breeds-selection {
+        grid-template-columns: 1fr;
+    }
+
+    .vaccine-table {
+        font-size: 12px;
+        width: 100%;
+    }
+
+    .vaccine-table th,
+    .vaccine-table td {
+        padding: 8px var(--spacing-1);
+        word-wrap: break-word;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* Aşı Karnesi Mobile */
+    .card-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: var(--spacing-1);
+    }
+
+    .animal-selection {
+        min-width: auto;
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .card-actions {
+        justify-content: center;
+    }
+
+    .card-header-print {
+        flex-direction: column;
+        text-align: center;
+        gap: var(--spacing-1);
+    }
+
+    .card-title {
+        text-align: center;
+    }
+
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .info-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
+
+    .info-row .value {
+        text-align: left;
+        font-size: 14px;
+    }
+
+    .vaccination-table-wrapper {
+        overflow-x: scroll;
+    }
+
+    .vaccination-history-table {
+        min-width: 600px;
+        font-size: 11px;
+    }
+
+    .upcoming-list {
+        grid-template-columns: 1fr;
+    }
+
+    .signature-section {
+        flex-direction: column;
+        gap: var(--spacing-2);
+        align-items: center;
+    }
+
+    .card-footer {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+}

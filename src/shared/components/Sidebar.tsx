@@ -2,7 +2,7 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { usePermissions } from '../../hooks/usePermissions';
 import { useAuth } from '../../context/AuthContext';
-import { useKeycloak } from '@react-keycloak/web';
+import { OFFLINE_MODE } from '../../config/offline';
 import '../styles/components/Sidebar.css';
 
 interface SidebarProps {
@@ -13,8 +13,7 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({ collapsed, toggleSidebar }) => {
   const location = useLocation();
   const { hasPermission } = usePermissions();
-  const { user } = useAuth();
-  const { keycloak } = useKeycloak();
+  const { user, logout } = useAuth();
   
   React.useEffect(() => {
     if (collapsed) {
@@ -22,7 +21,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, toggleSidebar }) => {
     } else {
       document.body.classList.add('sidebar-expanded');
     }
-    
+
     return () => {
       document.body.classList.remove('sidebar-expanded');
     };
@@ -34,6 +33,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, toggleSidebar }) => {
     { icon: 'icon-calendar', text: 'Randevular', path: '/appointments', permission: 'appointments:read' },
     { icon: 'icon-paw', text: 'Hastalar/Hayvanlar', path: '/animals', permission: 'animals:read' },
     { icon: 'icon-lab', text: 'Laboratuvar', path: '/laboratory', permission: 'laboratory:read' },
+    { icon: 'icon-syringe', text: 'Aşı Yönetimi', path: '/vaccinations', permission: 'vaccinations:read' },
     { icon: 'icon-billing', text: 'Ödeme & Fatura', path: '/billing', permission: 'billing:read' },
     { icon: 'icon-box', text: 'Envanter/Stok', path: '/inventory', permission: 'inventory:read' },
     { icon: 'icon-chart', text: 'Raporlar', path: '/reports', permission: 'reports:read' },
@@ -45,9 +45,8 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, toggleSidebar }) => {
 
   // Handle logout
   const handleLogout = () => {
-    keycloak.logout({
-      redirectUri: window.location.origin + '/login'
-    });
+    // Offline veya online fark etmeksizin AuthContext.logout kullan
+    logout();
   };
 
   return (
@@ -59,12 +58,12 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, toggleSidebar }) => {
           <span className={`icon ${collapsed ? 'icon-chevron-right' : 'icon-chevron-left'}`}></span>
         </button>
       </div>
-      
+
       <div className="menu-container">
         {menuItems.map((item, index) => (
-          <Link 
-            key={index} 
-            to={item.path} 
+          <Link
+            key={index}
+            to={item.path}
             className={`menu-item ${location.pathname === item.path ? 'active' : ''}`}
           >
             <span className={`icon ${item.icon}`}></span>
@@ -72,7 +71,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, toggleSidebar }) => {
           </Link>
         ))}
       </div>
-      
+
       <div className="user-container">
         <div className="user-profile">
           <span className="icon icon-user"></span>

@@ -1,14 +1,9 @@
-// Animals Feature
-export * from './animals';
-
-// Appointments Feature  
-export * from './appointments';
-
-// Laboratory Feature
-export * from './laboratory';
-
-// Dashboard Feature
+// Features exports
 export * from './dashboard';
-
-// Billing Feature
-export * from './billing'; 
+export * from './animals';
+export * from './appointments';
+export * from './billing';
+export * from './laboratory';
+export * from './reports';
+export * from './settings';
+export * from './inventory'; 

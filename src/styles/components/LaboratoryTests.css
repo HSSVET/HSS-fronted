@@ -1,0 +1,142 @@
+.laboratory-tests {
+  padding: 20px;
+}
+
+.test-section {
+  margin-bottom: 24px;
+}
+
+.test-result {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.test-result:last-child {
+  border-bottom: none;
+}
+
+.test-label {
+  color: rgba(0, 0, 0, 0.6);
+  font-weight: 500;
+}
+
+.test-value {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.reference-range {
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 0.875rem;
+}
+
+.test-date {
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 0.875rem;
+  font-style: italic;
+}
+
+.test-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 24px;
+}
+
+.test-card {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.test-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.test-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.abnormal-value {
+  color: #d32f2f;
+  font-weight: 500;
+}
+
+.normal-value {
+  color: #2e7d32;
+  font-weight: 500;
+}
+
+.pending-value {
+  color: #ed6c02;
+  font-style: italic;
+}
+
+.test-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+  margin-top: 8px;
+}
+
+.test-notes {
+  margin-top: 8px;
+  padding: 8px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  font-size: 0.875rem;
+}
+
+.test-category-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.test-category-icon {
+  color: #92A78C;
+}
+
+.test-subcategory {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #eee;
+}
+
+.test-subcategory-title {
+  color: rgba(0, 0, 0, 0.87);
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.test-status-chip {
+  border-radius: 16px;
+  padding: 4px 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.test-status-completed {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.test-status-pending {
+  background-color: #fff3e0;
+  color: #ed6c02;
+}
+
+.test-status-cancelled {
+  background-color: #fbe9e7;
+  color: #d32f2f;
+} 

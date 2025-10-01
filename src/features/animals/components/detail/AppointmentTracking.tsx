@@ -121,7 +121,6 @@ const AppointmentTracking: React.FC<AppointmentTrackingProps> = ({ onAddClick })
 
   const renderAppointmentCard = (appointment: Appointment) => (
     <Box
-      key={appointment.id}
       sx={{
         display: 'flex',
         alignItems: 'flex-start',
@@ -315,11 +314,15 @@ const AppointmentTracking: React.FC<AppointmentTrackingProps> = ({ onAddClick })
           Yaklaşan Randevular
         </Typography>
         {upcomingAppointments
-          .filter(app => 
+          .filter(app =>
             (selectedTypes.length === 0 || selectedTypes.includes(app.type)) &&
             (selectedStatuses.length === 0 || selectedStatuses.includes(app.status))
           )
-          .map(renderAppointmentCard)}
+          .map(app => (
+            <React.Fragment key={app.id}>
+              {renderAppointmentCard(app)}
+            </React.Fragment>
+          ))}
       </Box>
 
       <Box>
@@ -327,11 +330,15 @@ const AppointmentTracking: React.FC<AppointmentTrackingProps> = ({ onAddClick })
           Geçmiş Randevular
         </Typography>
         {pastAppointments
-          .filter(app => 
+          .filter(app =>
             (selectedTypes.length === 0 || selectedTypes.includes(app.type)) &&
             (selectedStatuses.length === 0 || selectedStatuses.includes(app.status))
           )
-          .map(renderAppointmentCard)}
+          .map(app => (
+            <React.Fragment key={app.id}>
+              {renderAppointmentCard(app)}
+            </React.Fragment>
+          ))}
       </Box>
     </Box>
   );
