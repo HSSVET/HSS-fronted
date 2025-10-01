@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/Dashboard.css';
 import { CalendarWidget } from '../../../shared';
+import QuickAppointmentModal from './QuickAppointmentModal';
 import { AnimalService, type AnimalRecord } from '../../animals/services/animalService';
 import { AppointmentService, type AppointmentRecord } from '../../appointments/services/appointmentService';
 
@@ -76,98 +77,105 @@ const Dashboard: React.FC = () => {
   const [recentActivities, setRecentActivities] = useState<ActivityItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isQuickModalOpen, setIsQuickModalOpen] = useState(false);
+  const [calendarRefreshKey, setCalendarRefreshKey] = useState(0);
+
+  const loadTodayAppointments = useCallback(async (): Promise<AppointmentRecord[]> => {
+    try {
+      const todayResponse = await AppointmentService.getTodayAppointments();
+      if (todayResponse.success && todayResponse.data) {
+        return todayResponse.data;
+      }
+    } catch (err) {
+      console.warn('Bugünkü randevular alınamadı, tarih aralığı ile tekrar denenecek.', err);
+    }
+
+    try {
+      const now = new Date();
+      const start = new Date(now);
+      start.setHours(0, 0, 0, 0);
+      const end = new Date(now);
+      end.setHours(23, 59, 59, 999);
+
+      const fallbackResponse = await AppointmentService.getAppointmentsByDateRange(start, end);
+      if (fallbackResponse.success && fallbackResponse.data) {
+        return fallbackResponse.data;
+      }
+    } catch (fallbackError) {
+      console.error('Tarih aralığı fallback randevular alınamadı.', fallbackError);
+    }
+
+    return [];
+  }, []);
+
+  const fetchDashboardData = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const [animalResponse, appointmentItems] = await Promise.all([
+        AnimalService.getAnimals(0, 8),
+        loadTodayAppointments(),
+      ]);
+
+      const animalItems: AnimalRecord[] =
+        animalResponse.success && animalResponse.data ? animalResponse.data.items : [];
+
+      const patients: HospitalizedPatient[] = animalItems.slice(0, 5).map((animal, index) => ({
+        id: animal.id ? animal.id.toString() : `${Date.now()}-${index}`,
+        animalId: animal.id ? animal.id.toString() : '',
+        name: animal.name || 'İsimsiz',
+        species: animal.species?.name || 'Bilinmiyor',
+        owner: animal.owner?.name || 'Bilinmiyor',
+        admittedAt: formatDateDisplay(animal.birthDate),
+        status: STATUS_LABELS[index % STATUS_LABELS.length],
+      }));
+
+      const activities: ActivityItem[] = appointmentItems
+        .slice()
+        .sort((a, b) => {
+          const dateA = new Date(a.dateTime || '').getTime();
+          const dateB = new Date(b.dateTime || '').getTime();
+          return dateB - dateA;
+        })
+        .slice(0, 6)
+        .map((appointment, index) => {
+          const generatedId = appointment.id ? appointment.id.toString() : `${Date.now()}-${index}`;
+          const animalId = appointment.animal?.id ? appointment.animal.id.toString() : '';
+
+          return {
+            id: generatedId,
+            animalId,
+            time: formatTimeDisplay(appointment.dateTime),
+            animalName: appointment.animal?.name || 'Hasta',
+            ownerName: appointment.owner?.name || '',
+            description: appointment.subject || 'Randevu',
+          };
+        });
+
+      setStats({
+        totalAnimals: animalResponse.data?.total ?? animalItems.length,
+        todaysAppointments: appointmentItems.length,
+        clinicAnimals: patients.length,
+      });
+      setHospitalizedPatients(patients);
+      setRecentActivities(activities);
+    } catch (err) {
+      console.error('Dashboard verileri alınırken hata:', err);
+      setError('Dashboard verileri alınırken bir sorun oluştu.');
+    } finally {
+      setLoading(false);
+    }
+  }, [loadTodayAppointments]);
 
   useEffect(() => {
-    const loadTodayAppointments = async (): Promise<AppointmentRecord[]> => {
-      try {
-        const todayResponse = await AppointmentService.getTodayAppointments();
-        if (todayResponse.success && todayResponse.data) {
-          return todayResponse.data;
-        }
-      } catch (err) {
-        console.warn('Bugünkü randevular alınamadı, tarih aralığı ile tekrar denenecek.', err);
-      }
-
-      try {
-        const now = new Date();
-        const start = new Date(now);
-        start.setHours(0, 0, 0, 0);
-        const end = new Date(now);
-        end.setHours(23, 59, 59, 999);
-
-        const fallbackResponse = await AppointmentService.getAppointmentsByDateRange(start, end);
-        if (fallbackResponse.success && fallbackResponse.data) {
-          return fallbackResponse.data;
-        }
-      } catch (fallbackError) {
-        console.error('Tarih aralığı fallback randevular alınamadı.', fallbackError);
-      }
-
-      return [];
-    };
-
-    const fetchDashboardData = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-
-        const [animalResponse, appointmentItems] = await Promise.all([
-          AnimalService.getAnimals(0, 8),
-          loadTodayAppointments(),
-        ]);
-
-        const animalItems: AnimalRecord[] =
-          animalResponse.success && animalResponse.data ? animalResponse.data.items : [];
-
-        const patients: HospitalizedPatient[] = animalItems.slice(0, 5).map((animal, index) => ({
-          id: animal.id ? animal.id.toString() : `${Date.now()}-${index}`,
-          animalId: animal.id ? animal.id.toString() : '',
-          name: animal.name || 'İsimsiz',
-          species: animal.species?.name || 'Bilinmiyor',
-          owner: animal.owner?.name || 'Bilinmiyor',
-          admittedAt: formatDateDisplay(animal.birthDate),
-          status: STATUS_LABELS[index % STATUS_LABELS.length],
-        }));
-
-        const activities: ActivityItem[] = appointmentItems
-          .slice()
-          .sort((a, b) => {
-            const dateA = new Date(a.dateTime || '').getTime();
-            const dateB = new Date(b.dateTime || '').getTime();
-            return dateB - dateA;
-          })
-          .slice(0, 6)
-          .map((appointment, index) => {
-            const generatedId = appointment.id ? appointment.id.toString() : `${Date.now()}-${index}`;
-            const animalId = appointment.animal?.id ? appointment.animal.id.toString() : '';
-
-            return {
-              id: generatedId,
-              animalId,
-              time: formatTimeDisplay(appointment.dateTime),
-              animalName: appointment.animal?.name || 'Hasta',
-              ownerName: appointment.owner?.name || '',
-              description: appointment.subject || 'Randevu',
-            };
-          });
-
-        setStats({
-          totalAnimals: animalResponse.data?.total ?? animalItems.length,
-          todaysAppointments: appointmentItems.length,
-          clinicAnimals: patients.length,
-        });
-        setHospitalizedPatients(patients);
-        setRecentActivities(activities);
-      } catch (err) {
-        console.error('Dashboard verileri alınırken hata:', err);
-        setError('Dashboard verileri alınırken bir sorun oluştu.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchDashboardData();
-  }, []);
+  }, [fetchDashboardData]);
+
+  const handleQuickAppointmentCreated = useCallback(async () => {
+    await fetchDashboardData();
+    setCalendarRefreshKey((prev) => prev + 1);
+  }, [fetchDashboardData]);
 
   const handleAnimalClick = (animalId: string) => {
     if (!animalId) {
@@ -181,7 +189,12 @@ const Dashboard: React.FC = () => {
       <div className="topbar mb-3">
         <h1 className="ui-section-title">Veteriner Paneli</h1>
         <div className="topbar__spacer" />
-        <button className="ui-button" style={{ marginRight: 8 }}>
+        <button
+          type="button"
+          className="ui-button"
+          style={{ marginRight: 8 }}
+          onClick={() => setIsQuickModalOpen(true)}
+        >
           <span className="icon icon-plus"></span>
           Yeni Randevu
         </button>
@@ -289,7 +302,7 @@ const Dashboard: React.FC = () => {
         </div>
 
         <div className="widget ui-card panel calendar-wrapper clickable-widget">
-          <CalendarWidget />
+          <CalendarWidget refreshKey={calendarRefreshKey} />
         </div>
 
         <div className="widget ui-card panel low-stock-widget clickable-widget">
@@ -393,6 +406,12 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
       </div>
+
+      <QuickAppointmentModal
+        isOpen={isQuickModalOpen}
+        onClose={() => setIsQuickModalOpen(false)}
+        onCreated={handleQuickAppointmentCreated}
+      />
     </div>
   );
 };
