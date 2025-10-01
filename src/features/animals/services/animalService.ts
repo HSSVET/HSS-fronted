@@ -42,6 +42,15 @@ export interface AnimalRecord {
   hasAllergies?: boolean;
 }
 
+export interface BasicAnimalRecord {
+  id: number;
+  name: string;
+  ownerName?: string;
+  speciesName?: string;
+  breedName?: string;
+  microchipNumber?: string;
+}
+
 const normalizeSpringPage = <T>(page: SpringPage<T>): PaginatedResponse<T> => ({
   items: page.content,
   total: page.totalElements,
@@ -92,7 +101,7 @@ export class AnimalService {
   }
 
   // Get basic animals list for dropdowns
-  static async getBasicAnimals(): Promise<ApiResponse<any[]>> {
+  static async getBasicAnimals(): Promise<ApiResponse<BasicAnimalRecord[]>> {
     return apiClient.get(API_ENDPOINTS.ANIMALS_BASIC);
   }
 

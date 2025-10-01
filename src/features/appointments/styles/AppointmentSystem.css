@@ -22,6 +22,16 @@
     gap: var(--spacing-3);
 }
 
+.calendar-status {
+    margin-top: var(--spacing-2);
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
+.calendar-status.error {
+    color: var(--danger-color, #d9534f);
+}
+
 /* Dashboard-style başlık */
 .appointment-system-header {
     text-align: center;

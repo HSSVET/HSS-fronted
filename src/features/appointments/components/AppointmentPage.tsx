@@ -1,55 +1,71 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Calendar from './Calendar';
 import AppointmentList from './AppointmentList';
 import AppointmentForm from './AppointmentForm';
-import { LegacyAppointment, AppointmentFormData } from '../types/appointment';
+import { AppointmentService } from '../services/appointmentService';
+import type { LegacyAppointment, AppointmentFormData } from '../types/appointment';
+import { mapCalendarPayloadToLegacy } from '../utils/calendarMapping';
 import '../styles/AppointmentSystem.css';
 
 const AppointmentPage: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const [appointments, setAppointments] = useState<LegacyAppointment[]>([
-    {
-      id: '1',
-      date: '2024-01-15',
-      time: '09:00',
-      patientName: 'Max',
-      ownerName: 'Ahmet Yılmaz',
-      patientId: '12345678901',
-      phone: '0555 123 4567',
-      chipNumber: 'TR123456789',
-      breed: 'Golden Retriever',
-      petType: 'Köpek',
-      description: 'Rutin kontrol ve aşı'
-    },
-    {
-      id: '2',
-      date: '2024-01-15',
-      time: '10:30',
-      patientName: 'Luna',
-      ownerName: 'Ayşe Demir',
-      patientId: '09876543210',
-      phone: '0532 987 6543',
-      chipNumber: 'TR987654321',
-      breed: 'British Shorthair',
-      petType: 'Kedi',
-      description: 'Kısırlaştırma operasyonu'
-    },
-    {
-      id: '3',
-      date: '2024-01-15',
-      time: '14:00',
-      patientName: 'Rocky',
-      ownerName: 'Mehmet Kaya',
-      patientId: '55512345678',
-      phone: '0505 555 1234',
-      chipNumber: 'TR555123456',
-      breed: 'German Shepherd',
-      petType: 'Köpek',
-      description: 'Topallik şikayeti'
-    }
-  ]);
+  const [appointments, setAppointments] = useState<LegacyAppointment[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
   const [showForm, setShowForm] = useState<boolean>(false);
   const [editingAppointment, setEditingAppointment] = useState<LegacyAppointment | null>(null);
+
+  const monthKey = `${selectedDate.getFullYear()}-${selectedDate.getMonth()}`;
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const [yearStr, monthStr] = monthKey.split('-');
+    const year = Number(yearStr);
+    const month = Number(monthStr);
+
+    const startOfMonth = new Date(year, month, 1);
+    const endOfMonth = new Date(year, month + 1, 0, 23, 59, 59, 999);
+
+    const loadAppointments = async (): Promise<void> => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        const response = await AppointmentService.getCalendarAppointments(startOfMonth, endOfMonth);
+
+        if (!isMounted) {
+          return;
+        }
+
+        if (response.success && Array.isArray(response.data)) {
+          const mapped = response.data
+            .map(mapCalendarPayloadToLegacy)
+            .filter((item): item is LegacyAppointment => item !== null)
+            .sort((a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time));
+          setAppointments(mapped);
+        } else {
+          setAppointments([]);
+          setError('Randevu verileri alınamadı.');
+        }
+      } catch (err) {
+        console.error('Randevular yüklenirken hata oluştu:', err);
+        if (isMounted) {
+          setAppointments([]);
+          setError('Randevular yüklenirken bir hata oluştu.');
+        }
+      } finally {
+        if (isMounted) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    loadAppointments();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [monthKey]);
 
   const formatDate = (date: Date): string => {
     const year = date.getFullYear();
@@ -124,16 +140,24 @@ const AppointmentPage: React.FC = () => {
             onDateSelect={handleDateSelect}
             appointments={appointments}
           />
+          {isLoading && (
+            <p className="calendar-status">Randevular yükleniyor...</p>
+          )}
+          {error && !isLoading && (
+            <p className="calendar-status error">{error}</p>
+          )}
         </div>
 
         <div className="content-section">
           <div className="ui-card panel ui-card--hover">
             <AppointmentList
-            appointments={todayAppointments}
-            selectedDate={selectedDate}
-            onEdit={editAppointment}
-            onDelete={deleteAppointment}
-            onNewAppointment={handleNewAppointment}
+              appointments={todayAppointments}
+              selectedDate={selectedDate}
+              onEdit={editAppointment}
+              onDelete={deleteAppointment}
+              onNewAppointment={handleNewAppointment}
+              isLoading={isLoading}
+              errorMessage={!isLoading ? error : null}
             />
           </div>
 

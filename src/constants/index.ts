@@ -23,6 +23,10 @@ export const API_ENDPOINTS = {
   APPOINTMENTS_SEARCH_SUBJECT: '/api/appointments/search/subject',
   APPOINTMENTS_SEARCH_ANIMAL: '/api/appointments/search/animal',
   APPOINTMENTS_SEARCH_OWNER: '/api/appointments/search/owner',
+
+  // Veterinarian endpoints
+  VETERINARIANS: '/api/veterinarians',
+  VETERINARIANS_BASIC: '/api/veterinarians/basic',
   
   // Owner endpoints
   OWNERS: '/api/owners',

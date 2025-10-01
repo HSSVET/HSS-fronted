@@ -143,3 +143,26 @@
 .compact-appointments {
   flex: 1;
 }
+
+.no-appointments.error {
+  color: var(--danger-color, #d9534f);
+}
+
+.no-appointments.error p {
+  color: inherit;
+}
+
+.react-calendar__tile.has-appointment {
+  position: relative;
+}
+
+.react-calendar__tile.has-appointment::after {
+  content: '';
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--primary-color, #4f46e5);
+  bottom: 6px;
+  right: 6px;
+}

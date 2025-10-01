@@ -33,14 +33,10 @@ export interface AppointmentSlot {
 }
 
 export interface CreateAppointmentRequest {
-  animalId: string;
-  veterinarianId: string;
-  date: Date;
-  startTime: string;
-  type: AppointmentType;
-  reason: string;
-  notes?: string;
-  estimatedDuration: number;
+  animalId: number;
+  dateTime: string;
+  subject?: string;
+  veterinarianId?: number;
 }
 
 // Temporary interface for backward compatibility with existing forms
@@ -69,4 +65,48 @@ export interface AppointmentFormData {
   breed: string;
   petType: string;
   description: string;
-} 
+}
+
+export interface CalendarAppointmentMeta {
+  animalName?: string;
+  ownerName?: string;
+  veterinarianName?: string;
+  speciesName?: string;
+  subject?: string;
+}
+
+export interface CalendarAppointment {
+  id?: number;
+  title?: string;
+  start: string;
+  end?: string;
+  backgroundColor?: string;
+  textColor?: string;
+  extendedProps?: CalendarAppointmentMeta;
+}
+
+export interface CalendarAppointmentResponse {
+  id: number;
+  animal?: {
+    id: number;
+    name: string;
+    ownerName?: string;
+    speciesName?: string;
+    breedName?: string;
+    microchipNumber?: string;
+  };
+  dateTime: string;
+  subject?: string;
+  veterinarianId?: number;
+  veterinarianName?: string;
+  owner?: {
+    id: number;
+    fullName: string;
+    phone?: string;
+    email?: string;
+  };
+  googleCalendarEventId?: string | null;
+  googleCalendarSynced?: boolean;
+}
+
+export type CalendarAppointmentPayload = CalendarAppointment | CalendarAppointmentResponse;

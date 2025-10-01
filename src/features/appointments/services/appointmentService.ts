@@ -1,6 +1,11 @@
 import { apiClient } from '../../../services/api';
 import { API_ENDPOINTS } from '../../../constants';
-import type { Appointment, AppointmentSlot, CreateAppointmentRequest } from '../types/appointment';
+import type {
+  Appointment,
+  AppointmentSlot,
+  CalendarAppointmentPayload,
+  CreateAppointmentRequest,
+} from '../types/appointment';
 import type { ApiResponse, PaginatedResponse, SpringPage } from '../../../types/common';
 
 export interface AppointmentRecord {
@@ -85,7 +90,20 @@ export class AppointmentService {
 
   // Create new appointment
   static async createAppointment(appointment: CreateAppointmentRequest): Promise<ApiResponse<AppointmentRecord>> {
-    return apiClient.post(API_ENDPOINTS.APPOINTMENTS, appointment);
+    const payload: Record<string, unknown> = {
+      animalId: appointment.animalId,
+      dateTime: appointment.dateTime,
+    };
+
+    if (appointment.subject) {
+      payload.subject = appointment.subject;
+    }
+
+    if (typeof appointment.veterinarianId === 'number') {
+      payload.veterinarianId = appointment.veterinarianId;
+    }
+
+    return apiClient.post(API_ENDPOINTS.APPOINTMENTS, payload);
   }
 
   // Update appointment
@@ -191,10 +209,11 @@ export class AppointmentService {
   static async getCalendarAppointments(
     startDate: Date,
     endDate: Date
-  ): Promise<ApiResponse<any[]>> {
+  ): Promise<ApiResponse<CalendarAppointmentPayload[]>> {
+    const toApiDateTime = (value: Date): string => value.toISOString().split('.')[0];
     const params = new URLSearchParams({
-      startDate: startDate.toISOString(),
-      endDate: endDate.toISOString(),
+      startDate: toApiDateTime(startDate),
+      endDate: toApiDateTime(endDate),
     });
 
     return apiClient.get(`${API_ENDPOINTS.APPOINTMENTS_CALENDAR}?${params}`);
