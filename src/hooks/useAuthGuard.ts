@@ -22,7 +22,7 @@ export interface AuthGuardResult {
   isAuthenticated: boolean;
   hasAccess: boolean;
   isLoading: boolean;
-  
+
   // Role & Permission checks
   hasRole: (role: string) => boolean;
   hasPermission: (permission: string) => boolean;
@@ -30,16 +30,16 @@ export interface AuthGuardResult {
   hasAllRoles: (roles: string[]) => boolean;
   hasAnyPermission: (permissions: string[]) => boolean;
   hasAllPermissions: (permissions: string[]) => boolean;
-  
+
   // User info
   user: any;
   roles: string[];
   permissions: string[];
-  
+
   // Actions
   login: (redirectUrl?: string) => void;
   logout: () => void;
-  
+
   // Utilities
   requireAuth: (redirectUrl?: string) => boolean;
   requireRole: (role: string) => boolean;
@@ -48,12 +48,12 @@ export interface AuthGuardResult {
   requireAllRoles: (roles: string[]) => boolean;
   requireAnyPermission: (permissions: string[]) => boolean;
   requireAllPermissions: (permissions: string[]) => boolean;
-  
+
   // Token info
   tokenTimeRemaining: number;
   isTokenExpiringSoon: boolean;
   formatTokenTime: (seconds: number) => string;
-  
+
   // Error handling
   error: string | null;
   clearError: () => void;
@@ -135,15 +135,15 @@ export const useAuthGuard = (options: AuthGuardOptions = {}): AuthGuardResult =>
 
   const validateRoles = useMemo(() => {
     if (requiredRoles.length === 0) return true;
-    
-    return requireAllRoles 
+
+    return requireAllRoles
       ? hasAllRoles(requiredRoles)
       : hasAnyRole(requiredRoles);
   }, [requiredRoles, requireAllRoles, hasAllRoles, hasAnyRole]);
 
   const validatePermissions = useMemo(() => {
     if (requiredPermissions.length === 0) return true;
-    
+
     return requireAllPermissions
       ? requiredPermissions.every(permission => hasPermission(permission))
       : requiredPermissions.some(permission => hasPermission(permission));
@@ -211,20 +211,20 @@ export const useAuthGuard = (options: AuthGuardOptions = {}): AuthGuardResult =>
       if (onAccessDenied) {
         onAccessDenied('Authentication required');
       }
-      
+
       const finalRedirectUrl = redirectUrl || redirectTo;
       if (finalRedirectUrl) {
         const url = `${finalRedirectUrl}?redirect=${encodeURIComponent(location.pathname + location.search)}`;
         navigate(url);
       }
-      
+
       addAuditLog('permission_check', {
         action: 'requireAuth',
         result: 'denied',
         reason: 'Not authenticated',
         path: location.pathname
       });
-      
+
       return false;
     }
     return true;
@@ -235,7 +235,7 @@ export const useAuthGuard = (options: AuthGuardOptions = {}): AuthGuardResult =>
       if (onAccessDenied) {
         onAccessDenied(`Role required: ${role}`);
       }
-      
+
       addAuditLog('permission_check', {
         action: 'requireRole',
         result: 'denied',
@@ -243,7 +243,7 @@ export const useAuthGuard = (options: AuthGuardOptions = {}): AuthGuardResult =>
         userRoles: state.roles,
         path: location.pathname
       });
-      
+
       return false;
     }
     return true;
@@ -254,7 +254,7 @@ export const useAuthGuard = (options: AuthGuardOptions = {}): AuthGuardResult =>
       if (onAccessDenied) {
         onAccessDenied(`Permission required: ${permission}`);
       }
-      
+
       addAuditLog('permission_check', {
         action: 'requirePermission',
         result: 'denied',
@@ -262,7 +262,7 @@ export const useAuthGuard = (options: AuthGuardOptions = {}): AuthGuardResult =>
         userPermissions: state.permissions,
         path: location.pathname
       });
-      
+
       return false;
     }
     return true;
@@ -273,7 +273,7 @@ export const useAuthGuard = (options: AuthGuardOptions = {}): AuthGuardResult =>
       if (onAccessDenied) {
         onAccessDenied(`One of these roles required: ${roles.join(', ')}`);
       }
-      
+
       addAuditLog('permission_check', {
         action: 'requireAnyRole',
         result: 'denied',
@@ -281,7 +281,7 @@ export const useAuthGuard = (options: AuthGuardOptions = {}): AuthGuardResult =>
         userRoles: state.roles,
         path: location.pathname
       });
-      
+
       return false;
     }
     return true;
@@ -292,7 +292,7 @@ export const useAuthGuard = (options: AuthGuardOptions = {}): AuthGuardResult =>
       if (onAccessDenied) {
         onAccessDenied(`All of these roles required: ${roles.join(', ')}`);
       }
-      
+
       addAuditLog('permission_check', {
         action: 'requireAllRoles',
         result: 'denied',
@@ -300,7 +300,7 @@ export const useAuthGuard = (options: AuthGuardOptions = {}): AuthGuardResult =>
         userRoles: state.roles,
         path: location.pathname
       });
-      
+
       return false;
     }
     return true;
@@ -311,7 +311,7 @@ export const useAuthGuard = (options: AuthGuardOptions = {}): AuthGuardResult =>
       if (onAccessDenied) {
         onAccessDenied(`One of these permissions required: ${permissions.join(', ')}`);
       }
-      
+
       addAuditLog('permission_check', {
         action: 'requireAnyPermission',
         result: 'denied',
@@ -319,7 +319,7 @@ export const useAuthGuard = (options: AuthGuardOptions = {}): AuthGuardResult =>
         userPermissions: state.permissions,
         path: location.pathname
       });
-      
+
       return false;
     }
     return true;
@@ -330,7 +330,7 @@ export const useAuthGuard = (options: AuthGuardOptions = {}): AuthGuardResult =>
       if (onAccessDenied) {
         onAccessDenied(`All of these permissions required: ${permissions.join(', ')}`);
       }
-      
+
       addAuditLog('permission_check', {
         action: 'requireAllPermissions',
         result: 'denied',
@@ -338,7 +338,7 @@ export const useAuthGuard = (options: AuthGuardOptions = {}): AuthGuardResult =>
         userPermissions: state.permissions,
         path: location.pathname
       });
-      
+
       return false;
     }
     return true;
@@ -362,7 +362,7 @@ export const useAuthGuard = (options: AuthGuardOptions = {}): AuthGuardResult =>
     isAuthenticated: state.isAuthenticated,
     hasAccess,
     isLoading: state.isLoading,
-    
+
     // Role & Permission checks
     hasRole,
     hasPermission,
@@ -370,16 +370,16 @@ export const useAuthGuard = (options: AuthGuardOptions = {}): AuthGuardResult =>
     hasAllRoles,
     hasAnyPermission,
     hasAllPermissions,
-    
+
     // User info
     user: state.user,
     roles: state.roles,
     permissions: state.permissions,
-    
+
     // Actions
     login,
     logout,
-    
+
     // Utilities
     requireAuth: requireAuthFn,
     requireRole: requireRoleFn,
@@ -388,12 +388,12 @@ export const useAuthGuard = (options: AuthGuardOptions = {}): AuthGuardResult =>
     requireAllRoles: requireAllRolesFn,
     requireAnyPermission: requireAnyPermissionFn,
     requireAllPermissions: requireAllPermissionsFn,
-    
+
     // Token info
     tokenTimeRemaining: state.tokenTimeRemaining,
     isTokenExpiringSoon: isTokenExpiringSoon(),
     formatTokenTime,
-    
+
     // Error handling
     error: state.error,
     clearError

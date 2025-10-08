@@ -24,13 +24,16 @@
   align-items: center;
   justify-content: space-between;
   padding: var(--spacing-2);
-  height: 60px; /* Daha ince header */
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* Beyaz çizgi */
+  height: 60px;
+  /* Daha ince header */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  /* Beyaz çizgi */
 }
 
 .logo-container h2 {
   margin: 0;
-  font-size: 18px; /* Daha küçük yazı */
+  font-size: 18px;
+  /* Daha küçük yazı */
   color: var(--text-on-primary);
   font-weight: var(--font-weight-medium);
   letter-spacing: 0.15px;
@@ -41,19 +44,23 @@
   border: none;
   color: rgba(255, 255, 255, 0.7);
   cursor: pointer;
-  font-size: 20px; /* Daha küçük ikon */
+  font-size: 20px;
+  /* Daha küçük ikon */
   padding: var(--spacing-1);
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  width: 36px; /* Daha küçük buton */
-  height: 36px; /* Daha küçük buton */
+  width: 36px;
+  /* Daha küçük buton */
+  height: 36px;
+  /* Daha küçük buton */
   transition: background-color var(--transition-speed) var(--transition-function);
 }
 
 .toggle-button:hover {
-  background-color: rgba(255, 255, 255, 0.1); /* Beyaz hover efekti */
+  background-color: rgba(255, 255, 255, 0.1);
+  /* Beyaz hover efekti */
   color: var(--text-on-primary);
 }
 
@@ -310,7 +317,8 @@
   display: flex;
   align-items: center;
   padding: 0 var(--spacing-2);
-  height: 44px; /* Daha ince menü öğesi */
+  height: 44px;
+  /* Daha ince menü öğesi */
   color: rgba(255, 255, 255, 0.8);
   text-decoration: none;
   transition: background-color var(--transition-speed) var(--transition-function);
@@ -319,12 +327,14 @@
 }
 
 .menu-item:hover {
-  background-color: rgba(255, 255, 255, 0.1); /* Beyaz hover efekti */
+  background-color: rgba(255, 255, 255, 0.1);
+  /* Beyaz hover efekti */
   color: var(--text-on-primary);
 }
 
 .menu-item.active {
-  background-color: rgba(255, 255, 255, 0.15); /* Daha belirgin aktif renk */
+  background-color: rgba(255, 255, 255, 0.15);
+  /* Daha belirgin aktif renk */
   color: var(--text-on-primary);
 }
 
@@ -352,7 +362,8 @@
 
 .user-container {
   padding: var(--spacing-2);
-  border-top: 1px solid rgba(255, 255, 255, 0.1); /* Beyaz çizgi */
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  /* Beyaz çizgi */
   margin-top: auto;
 }
 
@@ -360,19 +371,33 @@
   display: flex;
   align-items: center;
   margin-bottom: var(--spacing-2);
+  text-decoration: none;
+  padding: var(--spacing-1);
+  border-radius: 8px;
+  transition: background-color var(--transition-speed) var(--transition-function);
+  cursor: pointer;
+}
+
+.user-profile:hover {
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
 .user-profile .icon {
-  font-size: 18px; /* Daha küçük ikon */
+  font-size: 18px;
+  /* Daha küçük ikon */
   margin-right: var(--spacing-2);
-  background-color: rgba(255, 255, 255, 0.15); /* Beyaz arka plan */
-  width: 36px; /* Daha küçük avatar */
-  height: 36px; /* Daha küçük avatar */
+  background-color: rgba(255, 255, 255, 0.15);
+  /* Beyaz arka plan */
+  width: 36px;
+  /* Daha küçük avatar */
+  height: 36px;
+  /* Daha küçük avatar */
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--text-on-primary); /* Beyaz ikon rengi */
+  color: var(--text-on-primary);
+  /* Beyaz ikon rengi */
 }
 
 .sidebar.collapsed .user-profile .icon {
@@ -425,7 +450,8 @@
 }
 
 .logout .icon {
-  font-size: 18px; /* Daha küçük ikon */
+  font-size: 18px;
+  /* Daha küçük ikon */
   margin-right: var(--spacing-2);
   color: rgba(255, 255, 255, 0.7);
 }
@@ -472,6 +498,7 @@
     opacity: 0;
     transform: translateY(-50%) translateX(-10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(-50%) translateX(0);
@@ -481,10 +508,11 @@
 /* Responsive */
 @media (max-width: 768px) {
   .sidebar {
-    width: 56px; /* Material Design mobile standard */
+    width: 56px;
+    /* Material Design mobile standard */
   }
-  
+
   .sidebar.collapsed {
     width: 56px;
   }
-} 
+}

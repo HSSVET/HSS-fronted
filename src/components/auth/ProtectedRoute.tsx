@@ -10,35 +10,35 @@ import AccessDenied from '../common/AccessDenied';
 
 export interface ProtectedRouteProps {
   children: React.ReactNode;
-  
+
   // Role-based access control
   requiredRoles?: string[];
   requiredPermissions?: string[];
   requireAllRoles?: boolean;
   requireAllPermissions?: boolean;
-  
+
   // Page-level settings
   requireAuth?: boolean;
   requireMFA?: boolean;
-  
+
   // Fallback components
   fallback?: React.ReactNode;
   unauthorizedFallback?: React.ReactNode;
   loadingFallback?: React.ReactNode;
-  
+
   // Redirection
   redirectTo?: string;
   preserveRedirectUrl?: boolean;
-  
+
   // Security options
   sessionValidation?: boolean;
   tokenValidation?: boolean;
   auditAccess?: boolean;
-  
+
   // UI options
   showAccessDenied?: boolean;
   showLoading?: boolean;
-  
+
   // Advanced options
   customValidator?: (user: any) => Promise<boolean> | boolean;
   onAccessDenied?: (reason: string) => void;
@@ -90,10 +90,10 @@ const PERMISSION_MAPPINGS = {
 // ============================================================================
 
 const useAccessControl = (props: ProtectedRouteProps) => {
-  const { 
-    requiredRoles, 
-    requiredPermissions, 
-    requireAllRoles, 
+  const {
+    requiredRoles,
+    requiredPermissions,
+    requireAllRoles,
     requireAllPermissions,
     requireAuth,
     sessionValidation,
@@ -101,10 +101,10 @@ const useAccessControl = (props: ProtectedRouteProps) => {
     onAccessGranted,
     onAccessDenied
   } = props;
-  
+
   const { state } = useAuth();
   const location = useLocation();
-  
+
   const [accessResult, setAccessResult] = useState<AccessResult>({
     level: 'pending',
     reason: 'Checking access...'
@@ -116,9 +116,9 @@ const useAccessControl = (props: ProtectedRouteProps) => {
 
   const validateRoles = useMemo(() => {
     if (!requiredRoles || requiredRoles.length === 0) return true;
-    
+
     const userRoles = state.roles || [];
-    
+
     if (requireAllRoles) {
       // User must have ALL required roles
       return requiredRoles.every(role => userRoles.includes(role));
@@ -134,9 +134,9 @@ const useAccessControl = (props: ProtectedRouteProps) => {
 
   const validatePermissions = useMemo(() => {
     if (!requiredPermissions || requiredPermissions.length === 0) return true;
-    
+
     const userRoles = state.roles || [];
-    
+
     if (requireAllPermissions) {
       // User must have ALL required permissions
       return requiredPermissions.every(permission => {
@@ -257,18 +257,18 @@ const useAccessControl = (props: ProtectedRouteProps) => {
     state.isAuthenticated,
     state.isInitialized,
     state.isLoading,
-    
+
     // User roles
     state.roles,
-    
+
     // Route requirements
     requiredRoles,
     requiredPermissions,
-    
+
     // Validation flags
     validateRoles,
     validatePermissions,
-    
+
     // Location
     location.pathname
   ]);
@@ -309,29 +309,29 @@ const ProtectedRoute = (props: ProtectedRouteProps): React.ReactElement | null =
     if (props.loadingFallback) {
       return <>{props.loadingFallback}</>;
     }
-    
+
     if (props.showLoading !== false) {
       return <LoadingComponent message={accessResult.reason} />;
     }
-    
+
     return null;
   }
 
   // Handle redirection
   if (accessResult.level === 'denied' || accessResult.level === 'expired') {
     if (accessResult.redirect) {
-      const redirectUrl = preserveRedirectUrl 
+      const redirectUrl = preserveRedirectUrl
         ? `${accessResult.redirect}?redirect=${encodeURIComponent(location.pathname + location.search)}`
         : accessResult.redirect;
-      
+
       return <Navigate to={redirectUrl} replace />;
     }
-    
+
     if (redirectTo) {
-      const redirectUrl = preserveRedirectUrl 
+      const redirectUrl = preserveRedirectUrl
         ? `${redirectTo}?redirect=${encodeURIComponent(location.pathname + location.search)}`
         : redirectTo;
-      
+
       return <Navigate to={redirectUrl} replace />;
     }
   }
@@ -341,12 +341,12 @@ const ProtectedRoute = (props: ProtectedRouteProps): React.ReactElement | null =
     if (props.unauthorizedFallback) {
       return <>{props.unauthorizedFallback}</>;
     }
-    
+
     if (props.showAccessDenied !== false) {
       // Determine required roles/permissions from context
       const requiredRoleText = props.requiredRoles?.join(', ') || 'Belirtilmemiş';
       const requiredPermissionText = props.requiredPermissions?.join(', ') || 'Belirtilmemiş';
-      
+
       return (
         <AccessDenied
           message={accessResult.reason}
@@ -355,7 +355,7 @@ const ProtectedRoute = (props: ProtectedRouteProps): React.ReactElement | null =
         />
       );
     }
-    
+
     return null;
   }
 

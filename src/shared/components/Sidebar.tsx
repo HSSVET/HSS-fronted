@@ -15,7 +15,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, toggleSidebar }) => {
   const { hasPermission } = usePermissions();
   const { user } = useAuth();
   const { keycloak } = useKeycloak();
-  
+
   React.useEffect(() => {
     if (collapsed) {
       document.body.classList.remove('sidebar-expanded');
@@ -27,7 +27,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, toggleSidebar }) => {
       document.body.classList.remove('sidebar-expanded');
     };
   }, [collapsed]);
-  
+
   // Menu items with permission requirements
   const allMenuItems = [
     { icon: 'icon-dashboard', text: 'Panel', path: '/dashboard', permission: 'dashboard:read' },
@@ -80,8 +80,8 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, toggleSidebar }) => {
           {!collapsed && (
             <div className="user-info">
               <span className="user-name">
-                {user?.firstName && user?.lastName 
-                  ? `${user.firstName} ${user.lastName}` 
+                {user?.firstName && user?.lastName
+                  ? `${user.firstName} ${user.lastName}`
                   : user?.username || 'Kullanıcı'}
               </span>
               <span className="user-role">

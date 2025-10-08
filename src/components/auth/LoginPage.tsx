@@ -230,7 +230,7 @@ const LoginPage: React.FC<LoginPageProps> = ({
       console.log('✅ Authentication successful, redirecting...');
       const redirectUrl = new URLSearchParams(location.search).get('redirect') || '/dashboard';
       console.log('🔗 Redirecting to:', redirectUrl);
-      
+
       // Set success state and redirect after a short delay
       setLoginStep('success');
       setTimeout(() => {
@@ -252,7 +252,7 @@ const LoginPage: React.FC<LoginPageProps> = ({
     const timer = setTimeout(() => {
       setAnimationStep(1);
     }, 100);
-    
+
     return () => clearTimeout(timer);
   }, []);
 
@@ -265,14 +265,14 @@ const LoginPage: React.FC<LoginPageProps> = ({
       console.log('🔑 SSO Login started...');
       setLoading(true);
       setError(null);
-      
+
       const redirectUrl = new URLSearchParams(location.search).get('redirect') || '/dashboard';
       console.log('🔗 Redirect URL:', redirectUrl);
-      
+
       console.log('🚀 Calling login function...');
       await login(redirectUrl);
       console.log('✅ Login function completed');
-      
+
       if (onLogin) {
         onLogin();
       }
@@ -292,10 +292,10 @@ const LoginPage: React.FC<LoginPageProps> = ({
     try {
       setLoading(true);
       setError(null);
-      
+
       // Simulate password login
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
+
       if (loginMethods.includes('mfa')) {
         setLoginStep('mfa');
         setShowMFADialog(true);
@@ -317,10 +317,10 @@ const LoginPage: React.FC<LoginPageProps> = ({
     try {
       setLoading(true);
       setError(null);
-      
+
       // Simulate MFA verification
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
+
       if (mfaCode.length === 6) {
         setLoginStep('success');
         setShowMFADialog(false);
@@ -388,10 +388,10 @@ const LoginPage: React.FC<LoginPageProps> = ({
               <Pets sx={{ fontSize: 40 }} />
             </Avatar>
           </Zoom>
-          <Typography 
-            variant="h4" 
-            component="h1" 
-            sx={{ 
+          <Typography
+            variant="h4"
+            component="h1"
+            sx={{
               fontWeight: 'bold',
               mb: 1,
               background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
@@ -404,8 +404,8 @@ const LoginPage: React.FC<LoginPageProps> = ({
           >
             {companyName}
           </Typography>
-          <Typography 
-            variant="subtitle1" 
+          <Typography
+            variant="subtitle1"
             color="text.secondary"
             sx={{ mb: 2 }}
           >
@@ -565,7 +565,7 @@ const LoginPage: React.FC<LoginPageProps> = ({
             ),
           }}
         />
-        
+
         {allowRememberMe && (
           <FormControlLabel
             control={
@@ -618,8 +618,8 @@ const LoginPage: React.FC<LoginPageProps> = ({
   );
 
   const renderMFADialog = () => (
-    <Dialog 
-      open={showMFADialog} 
+    <Dialog
+      open={showMFADialog}
       onClose={() => setShowMFADialog(false)}
       maxWidth="sm"
       fullWidth
@@ -634,7 +634,7 @@ const LoginPage: React.FC<LoginPageProps> = ({
         <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
           Güvenliğiniz için ek doğrulama gereklidir. Lütfen bir doğrulama yöntemi seçin.
         </Typography>
-        
+
         <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2 }}>
           {mockMFAMethods.map((method) => (
             <Paper
@@ -685,8 +685,8 @@ const LoginPage: React.FC<LoginPageProps> = ({
         )}
       </DialogContent>
       <DialogActions>
-        <Button 
-          onClick={() => setShowMFADialog(false)} 
+        <Button
+          onClick={() => setShowMFADialog(false)}
           disabled={loading}
         >
           İptal
@@ -707,12 +707,12 @@ const LoginPage: React.FC<LoginPageProps> = ({
     <Fade in={loginStep === 'success'} timeout={600}>
       <Box sx={{ textAlign: 'center', py: 4 }}>
         <Zoom in={loginStep === 'success'} timeout={800}>
-          <CheckCircle 
-            sx={{ 
-              fontSize: 80, 
+          <CheckCircle
+            sx={{
+              fontSize: 80,
               color: 'success.main',
               animation: `${pulseAnimation} 2s ease-in-out infinite`
-            }} 
+            }}
           />
         </Zoom>
         <Typography variant="h5" sx={{ mt: 2, mb: 1, fontWeight: 'bold' }}>
@@ -721,13 +721,13 @@ const LoginPage: React.FC<LoginPageProps> = ({
         <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
           Yönlendiriliyorsunuz...
         </Typography>
-        <LinearProgress 
-          sx={{ 
+        <LinearProgress
+          sx={{
             mb: 2,
             '& .MuiLinearProgress-bar': {
               background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
             }
-          }} 
+          }}
         />
         <Typography variant="body2" color="text.secondary">
           Hedef: {redirectUrl}
@@ -737,9 +737,9 @@ const LoginPage: React.FC<LoginPageProps> = ({
   );
 
   const renderControls = () => (
-    <Box sx={{ 
-      position: 'absolute', 
-      top: 20, 
+    <Box sx={{
+      position: 'absolute',
+      top: 20,
       right: 20,
       display: 'flex',
       gap: 1,
@@ -747,7 +747,7 @@ const LoginPage: React.FC<LoginPageProps> = ({
     }}>
       {showThemeSelector && (
         <Tooltip title="Tema Değiştir">
-          <IconButton 
+          <IconButton
             onClick={() => handleThemeChange(currentTheme === 'light' ? 'dark' : 'light')}
             sx={{
               backgroundColor: 'background.paper',
@@ -762,10 +762,10 @@ const LoginPage: React.FC<LoginPageProps> = ({
           </IconButton>
         </Tooltip>
       )}
-      
+
       {showLanguageSelector && (
         <Tooltip title="Dil Değiştir">
-          <IconButton 
+          <IconButton
             onClick={() => handleLanguageChange(currentLanguage === 'tr' ? 'en' : 'tr')}
             sx={{
               backgroundColor: 'background.paper',
@@ -780,9 +780,9 @@ const LoginPage: React.FC<LoginPageProps> = ({
           </IconButton>
         </Tooltip>
       )}
-      
+
       <Tooltip title="Sistem İstatistikleri">
-        <IconButton 
+        <IconButton
           onClick={() => setShowStatsDialog(true)}
           sx={{
             backgroundColor: 'background.paper',
@@ -800,8 +800,8 @@ const LoginPage: React.FC<LoginPageProps> = ({
   );
 
   const renderStatsDialog = () => (
-    <Dialog 
-      open={showStatsDialog} 
+    <Dialog
+      open={showStatsDialog}
       onClose={() => setShowStatsDialog(false)}
       maxWidth="sm"
       fullWidth
@@ -859,8 +859,8 @@ const LoginPage: React.FC<LoginPageProps> = ({
 
   const renderErrorAlert = () => (
     <Fade in={!!error} timeout={400}>
-      <Alert 
-        severity="error" 
+      <Alert
+        severity="error"
         sx={{ mb: 3 }}
         action={
           <IconButton
@@ -887,9 +887,9 @@ const LoginPage: React.FC<LoginPageProps> = ({
   if (state.isAuthenticated && state.isInitialized) {
     return (
       <Container maxWidth="lg" sx={{ minHeight: '100vh', py: 4 }}>
-        <Box sx={{ 
-          display: 'flex', 
-          flexDirection: 'column', 
+        <Box sx={{
+          display: 'flex',
+          flexDirection: 'column',
           justifyContent: 'center',
           alignItems: 'center',
           height: '100vh'
@@ -907,27 +907,27 @@ const LoginPage: React.FC<LoginPageProps> = ({
   return (
     <Container maxWidth="lg" sx={{ minHeight: '100vh', py: 4 }}>
       {renderControls()}
-      
-      <Box sx={{ 
-        display: 'grid', 
-        gridTemplateColumns: { xs: '1fr', md: '7fr 5fr' }, 
-        gap: 4, 
-        minHeight: '100vh' 
+
+      <Box sx={{
+        display: 'grid',
+        gridTemplateColumns: { xs: '1fr', md: '7fr 5fr' },
+        gap: 4,
+        minHeight: '100vh'
       }}>
         {/* Left Panel - Branding & Info */}
-        <Box sx={{ 
-          display: 'flex', 
-          flexDirection: 'column', 
+        <Box sx={{
+          display: 'flex',
+          flexDirection: 'column',
           justifyContent: 'center',
           height: '100%',
           px: { xs: 2, md: 4 }
         }}>
           <Slide in={animationStep >= 1} direction="right" timeout={1000}>
             <Box>
-              <Typography 
-                variant="h2" 
-                component="h1" 
-                sx={{ 
+              <Typography
+                variant="h2"
+                component="h1"
+                sx={{
                   fontWeight: 'bold',
                   mb: 2,
                   background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
@@ -939,9 +939,9 @@ const LoginPage: React.FC<LoginPageProps> = ({
               >
                 Veteriner Klinik
               </Typography>
-              <Typography 
-                variant="h4" 
-                sx={{ 
+              <Typography
+                variant="h4"
+                sx={{
                   mb: 3,
                   color: 'text.secondary',
                   fontWeight: 300
@@ -949,18 +949,18 @@ const LoginPage: React.FC<LoginPageProps> = ({
               >
                 Yönetim Sistemi
               </Typography>
-              <Typography 
-                variant="h6" 
-                sx={{ 
+              <Typography
+                variant="h6"
+                sx={{
                   mb: 4,
                   color: 'text.secondary',
                   lineHeight: 1.6
                 }}
               >
-                Modern, güvenli ve kullanıcı dostu arayüz ile veteriner klinik süreçlerinizi 
+                Modern, güvenli ve kullanıcı dostu arayüz ile veteriner klinik süreçlerinizi
                 dijitalleştirin. Randevu yönetimi, hasta takibi, faturalandırma ve daha fazlası.
               </Typography>
-              
+
               <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
                 <Chip
                   icon={<MedicalServices />}
@@ -1020,16 +1020,16 @@ const LoginPage: React.FC<LoginPageProps> = ({
         </Box>
 
         {/* Right Panel - Login Form */}
-        <Box sx={{ 
-          display: 'flex', 
-          flexDirection: 'column', 
+        <Box sx={{
+          display: 'flex',
+          flexDirection: 'column',
           justifyContent: 'center',
           height: '100%',
           px: { xs: 2, md: 4 }
         }}>
-          <Box sx={{ 
-            display: 'flex', 
-            flexDirection: 'column', 
+          <Box sx={{
+            display: 'flex',
+            flexDirection: 'column',
             justifyContent: 'center',
             height: '100%',
             px: { xs: 2, md: 4 }
@@ -1073,7 +1073,7 @@ const LoginPage: React.FC<LoginPageProps> = ({
 
       {renderMFADialog()}
       {renderStatsDialog()}
-      
+
       <Snackbar
         open={showSuccessMessage}
         autoHideDuration={3000}
