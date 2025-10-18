@@ -1,26 +1,26 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { AnimalService, type AnimalRecord } from '../services/animalService';
 import {
-  Paper,
-  TextField,
-  SelectChangeEvent,
-  Typography,
-  IconButton,
-  Button,
-  Popover,
-  Divider,
-  Checkbox
-} from '@mui/material';
-import {
-  Search as SearchIcon,
-  Sort as SortIcon,
+  Description as DescriptionIcon,
   Edit as EditIcon,
   Event as EventIcon,
-  Description as DescriptionIcon
+  Search as SearchIcon,
+  Sort as SortIcon
 } from '@mui/icons-material';
-import { AnimalListItem } from '../types/animal';
+import {
+  Button,
+  Checkbox,
+  Divider,
+  IconButton,
+  Paper,
+  Popover,
+  SelectChangeEvent,
+  TextField,
+  Typography
+} from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { AnimalService, type AnimalRecord } from '../services/animalService';
 import '../styles/AnimalList.css';
+import { AnimalListItem } from '../types/animal';
 
 interface AnimalListProps {
   onAddAnimal?: (animal: AnimalListItem) => void;
@@ -48,16 +48,26 @@ const formatDisplayDate = (value: string) => {
   return date ? date.toLocaleDateString('tr-TR') : '—';
 };
 
-const mapToAnimalListItem = (animal: AnimalRecord): AnimalListItem => ({
-  id: animal.id ? animal.id.toString() : '0',
-  name: animal.name || 'İsimsiz',
-  species: (animal.species?.name as AnimalListItem['species']) || 'Diğer',
-  breed: animal.breed?.name || 'Bilinmiyor',
-  health: 'İyi',
-  lastCheckup: formatDateValue(animal.birthDate),
-  owner: animal.owner?.fullName || animal.owner?.name || 'Bilinmiyor',
-  nextVaccine: formatDateValue(animal.birthDate),
-});
+const mapToAnimalListItem = (animal: AnimalRecord): AnimalListItem => {
+  // Mock verilerden health status'u belirle
+  let healthStatus: AnimalListItem['health'] = 'İyi';
+  if (animal.hasChronicDiseases) {
+    healthStatus = 'Tedavi Altında';
+  } else if (animal.hasAllergies) {
+    healthStatus = 'Kontrol Gerekli';
+  }
+
+  return {
+    id: animal.id ? animal.id.toString() : '0',
+    name: animal.name || 'İsimsiz',
+    species: (animal.species?.name as AnimalListItem['species']) || 'Diğer',
+    breed: animal.breed?.name || 'Bilinmiyor',
+    health: healthStatus,
+    lastCheckup: animal.lastVisitDate || formatDateValue(animal.birthDate),
+    owner: animal.owner?.fullName || animal.owner?.name || 'Bilinmiyor',
+    nextVaccine: animal.nextVaccinationDate || formatDateValue(animal.birthDate),
+  };
+};
 
 const AnimalList: React.FC<AnimalListProps> = ({ onAddAnimal }) => {
   const navigate = useNavigate();
@@ -81,6 +91,8 @@ const AnimalList: React.FC<AnimalListProps> = ({ onAddAnimal }) => {
         setLoading(true);
         setError(null);
         console.log('🐶 Animals API çağrısı yapılıyor...');
+        console.log('🐶 OFFLINE_MODE:', process.env.NODE_ENV);
+
         const response = await AnimalService.getAnimals(0, 20);
         console.log('🐶 Animals API response:', response);
 
@@ -89,12 +101,13 @@ const AnimalList: React.FC<AnimalListProps> = ({ onAddAnimal }) => {
           setAnimals(formattedAnimals);
           console.log('🐶 Formatted animals:', formattedAnimals);
         } else {
+          console.error('🐶 API response failed:', response);
           setError(response.error || 'Hayvan listesi alınamadı.');
           setAnimals([]);
         }
       } catch (err) {
         console.error('🐶 Animals API error:', err);
-        setError('Hayvan listesi alınırken bir hata oluştu.');
+        setError(`Hayvan listesi alınırken bir hata oluştu: ${err instanceof Error ? err.message : 'Bilinmeyen hata'}`);
         setAnimals([]);
       } finally {
         setLoading(false);
@@ -185,9 +198,9 @@ const AnimalList: React.FC<AnimalListProps> = ({ onAddAnimal }) => {
       const matchesDateRange = !checkupDate || (!startDate && !endDate)
         ? true
         : (
-            (!startDate || (checkupDate && checkupDate >= startDate)) &&
-            (!endDate || (checkupDate && checkupDate <= endDate))
-          );
+          (!startDate || (checkupDate && checkupDate >= startDate)) &&
+          (!endDate || (checkupDate && checkupDate <= endDate))
+        );
 
       return matchesSearch && matchesSpecies && matchesBreed && matchesHealth && matchesDateRange;
     });

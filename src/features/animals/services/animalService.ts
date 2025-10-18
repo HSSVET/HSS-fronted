@@ -1,7 +1,6 @@
-import { apiClient } from '../../../services/api';
-import { API_ENDPOINTS } from '../../../constants';
-import type { Animal, MedicalRecord, Vaccination } from '../types/animal';
+import { ServiceFactory } from '../../../services/mockServiceFactory';
 import type { ApiResponse, PaginatedResponse, SpringPage } from '../../../types/common';
+import type { Animal, MedicalRecord, Vaccination } from '../types/animal';
 
 export interface AnimalRecord {
   id: number;
@@ -70,7 +69,8 @@ const emptyPage = <T>(page: number, limit: number): PaginatedResponse<T> => ({
 export class AnimalService {
   // Get all animals
   static async getAllAnimals(): Promise<ApiResponse<AnimalRecord[]>> {
-    return apiClient.get(API_ENDPOINTS.ANIMALS);
+    const service = ServiceFactory.getAnimalService();
+    return service.getAllAnimals();
   }
 
   // Get all animals with pagination
@@ -79,55 +79,44 @@ export class AnimalService {
     limit: number = 10,
     search?: string
   ): Promise<ApiResponse<PaginatedResponse<AnimalRecord>>> {
-    const params = new URLSearchParams({
-      page: page.toString(),
-      limit: limit.toString(),
-      ...(search && { search }),
-    });
-
-    const response = await apiClient.get<SpringPage<AnimalRecord>>(`${API_ENDPOINTS.ANIMALS_PAGED}?${params}`);
-
-    if (!response.success || !response.data) {
-      return {
-        ...response,
-        data: emptyPage<AnimalRecord>(page, limit),
-      };
-    }
-
-    return {
-      ...response,
-      data: normalizeSpringPage(response.data),
-    };
+    const service = ServiceFactory.getAnimalService();
+    return service.getAnimals(page, limit, search);
   }
 
   // Get basic animals list for dropdowns
   static async getBasicAnimals(): Promise<ApiResponse<BasicAnimalRecord[]>> {
-    return apiClient.get(API_ENDPOINTS.ANIMALS_BASIC);
+    const service = ServiceFactory.getAnimalService();
+    return service.getBasicAnimals();
   }
 
   // Get animal by ID
   static async getAnimalById(id: string): Promise<ApiResponse<AnimalRecord>> {
-    return apiClient.get(`${API_ENDPOINTS.ANIMALS}/${id}`);
+    const service = ServiceFactory.getAnimalService();
+    return service.getAnimalById(id);
   }
 
   // Create new animal
   static async createAnimal(animal: Omit<Animal, 'id' | 'createdAt' | 'updatedAt'>): Promise<ApiResponse<AnimalRecord>> {
-    return apiClient.post(API_ENDPOINTS.ANIMALS, animal);
+    const service = ServiceFactory.getAnimalService();
+    return service.createAnimal(animal);
   }
 
   // Update animal
   static async updateAnimal(id: string, animal: Partial<Animal>): Promise<ApiResponse<AnimalRecord>> {
-    return apiClient.put(`${API_ENDPOINTS.ANIMALS}/${id}`, animal);
+    const service = ServiceFactory.getAnimalService();
+    return service.updateAnimal(id, animal);
   }
 
   // Delete animal
   static async deleteAnimal(id: string): Promise<ApiResponse<void>> {
-    return apiClient.delete(`${API_ENDPOINTS.ANIMALS}/${id}`);
+    const service = ServiceFactory.getAnimalService();
+    return service.deleteAnimal(id);
   }
 
   // Get animal medical history
   static async getMedicalHistory(animalId: string): Promise<ApiResponse<MedicalRecord[]>> {
-    return apiClient.get(`${API_ENDPOINTS.ANIMALS}/${animalId}/medical-history`);
+    const service = ServiceFactory.getAnimalService();
+    return service.getMedicalHistory(animalId);
   }
 
   // Add medical record
@@ -135,12 +124,14 @@ export class AnimalService {
     animalId: string,
     record: Omit<MedicalRecord, 'id' | 'createdAt' | 'updatedAt' | 'animalId'>
   ): Promise<ApiResponse<MedicalRecord>> {
-    return apiClient.post(`${API_ENDPOINTS.ANIMALS}/${animalId}/medical-history`, record);
+    const service = ServiceFactory.getAnimalService();
+    return service.addMedicalRecord(animalId, record);
   }
 
   // Get animal vaccinations
   static async getVaccinations(animalId: string): Promise<ApiResponse<Vaccination[]>> {
-    return apiClient.get(`${API_ENDPOINTS.ANIMALS}/${animalId}/vaccinations`);
+    const service = ServiceFactory.getAnimalService();
+    return service.getVaccinations(animalId);
   }
 
   // Add vaccination
@@ -148,62 +139,74 @@ export class AnimalService {
     animalId: string,
     vaccination: Omit<Vaccination, 'id' | 'createdAt' | 'updatedAt' | 'animalId'>
   ): Promise<ApiResponse<Vaccination>> {
-    return apiClient.post(`${API_ENDPOINTS.ANIMALS}/${animalId}/vaccinations`, vaccination);
+    const service = ServiceFactory.getAnimalService();
+    return service.addVaccination(animalId, vaccination);
   }
 
   // Search animals by owner
   static async searchByOwner(ownerName: string): Promise<ApiResponse<AnimalRecord[]>> {
-    return apiClient.get(`${API_ENDPOINTS.ANIMALS_SEARCH_OWNER}?ownerName=${encodeURIComponent(ownerName)}`);
+    const service = ServiceFactory.getAnimalService();
+    return service.searchByOwner(ownerName);
   }
 
   // Search animals by name
   static async searchByName(name: string): Promise<ApiResponse<AnimalRecord[]>> {
-    return apiClient.get(`${API_ENDPOINTS.ANIMALS_SEARCH_NAME}?name=${encodeURIComponent(name)}`);
+    const service = ServiceFactory.getAnimalService();
+    return service.searchByName(name);
   }
 
   // Search animals by microchip
   static async searchByMicrochip(microchip: string): Promise<ApiResponse<AnimalRecord[]>> {
-    return apiClient.get(`${API_ENDPOINTS.ANIMALS_SEARCH_MICROCHIP}?microchip=${encodeURIComponent(microchip)}`);
+    const service = ServiceFactory.getAnimalService();
+    return service.searchByMicrochip(microchip);
   }
 
   // Get animal by microchip number
   static async getAnimalByMicrochip(microchipNumber: string): Promise<ApiResponse<AnimalRecord>> {
-    return apiClient.get(`${API_ENDPOINTS.ANIMALS}/microchip/${microchipNumber}`);
+    const service = ServiceFactory.getAnimalService();
+    return service.getAnimalByMicrochip(microchipNumber);
   }
 
   // Get animals by owner ID
   static async getAnimalsByOwnerId(ownerId: string): Promise<ApiResponse<AnimalRecord[]>> {
-    return apiClient.get(`${API_ENDPOINTS.ANIMALS}/owner/${ownerId}`);
+    const service = ServiceFactory.getAnimalService();
+    return service.getAnimalsByOwnerId(ownerId);
   }
 
   // Get animals by species ID
   static async getAnimalsBySpeciesId(speciesId: string): Promise<ApiResponse<AnimalRecord[]>> {
-    return apiClient.get(`${API_ENDPOINTS.ANIMALS}/species/${speciesId}`);
+    const service = ServiceFactory.getAnimalService();
+    return service.getAnimalsBySpeciesId(speciesId);
   }
 
   // Get animals by breed ID
   static async getAnimalsByBreedId(breedId: string): Promise<ApiResponse<AnimalRecord[]>> {
-    return apiClient.get(`${API_ENDPOINTS.ANIMALS}/breed/${breedId}`);
+    const service = ServiceFactory.getAnimalService();
+    return service.getAnimalsByBreedId(breedId);
   }
 
   // Get animals with allergies
   static async getAnimalsWithAllergies(): Promise<ApiResponse<AnimalRecord[]>> {
-    return apiClient.get(API_ENDPOINTS.ANIMALS_WITH_ALLERGIES);
+    const service = ServiceFactory.getAnimalService();
+    return service.getAnimalsWithAllergies();
   }
 
   // Get animals with chronic diseases
   static async getAnimalsWithChronicDiseases(): Promise<ApiResponse<AnimalRecord[]>> {
-    return apiClient.get(API_ENDPOINTS.ANIMALS_WITH_CHRONIC_DISEASES);
+    const service = ServiceFactory.getAnimalService();
+    return service.getAnimalsWithChronicDiseases();
   }
 
   // Get animals with birthday today
   static async getAnimalsWithBirthdayToday(): Promise<ApiResponse<AnimalRecord[]>> {
-    return apiClient.get(API_ENDPOINTS.ANIMALS_BIRTHDAY_TODAY);
+    const service = ServiceFactory.getAnimalService();
+    return service.getAnimalsWithBirthdayToday();
   }
 
   // Get animals with birthday this month
   static async getAnimalsWithBirthdayThisMonth(): Promise<ApiResponse<AnimalRecord[]>> {
-    return apiClient.get(API_ENDPOINTS.ANIMALS_BIRTHDAY_THIS_MONTH);
+    const service = ServiceFactory.getAnimalService();
+    return service.getAnimalsWithBirthdayThisMonth();
   }
 }
 

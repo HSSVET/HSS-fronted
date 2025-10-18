@@ -1,10 +1,10 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import '../styles/Dashboard.css';
 import { CalendarWidget } from '../../../shared';
-import QuickAppointmentModal from './QuickAppointmentModal';
 import { AnimalService, type AnimalRecord } from '../../animals/services/animalService';
 import { AppointmentService, type AppointmentRecord } from '../../appointments/services/appointmentService';
+import '../styles/Dashboard.css';
+import QuickAppointmentModal from './QuickAppointmentModal';
 
 interface DashboardStats {
   totalAnimals: number;
@@ -412,6 +412,7 @@ const Dashboard: React.FC = () => {
         onClose={() => setIsQuickModalOpen(false)}
         onCreated={handleQuickAppointmentCreated}
       />
+
     </div>
   );
 };
