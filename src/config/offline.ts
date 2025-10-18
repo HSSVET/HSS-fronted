@@ -1,11 +1,11 @@
 // Basit offline kip bayrağı okuması
 // .env dosyasında REACT_APP_OFFLINE_MODE=true ise backend ve keycloak devre dışı bırakılır
 
-// Backend API'ların çalışması için OFFLINE_MODE'u kapatıyoruz
-// Sadece authentication bypass edilecek
-export const OFFLINE_MODE: boolean = false;
+// Mock data servislerini test etmek için OFFLINE_MODE'u açıyoruz
+// Backend API'lar yerine mock servisler kullanılacak
+export const OFFLINE_MODE: boolean = true;
 
-console.log('🔍 OFFLINE_MODE manually set to false - API calls will work!');
+console.log('🔍 OFFLINE_MODE manually set to true - Mock services will be used!');
 console.log('  OFFLINE_MODE:', OFFLINE_MODE);
 
 // Geliştirici kolaylığı: konsolda göster

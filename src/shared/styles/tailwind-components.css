@@ -1,0 +1,430 @@
+/* Tailwind CSS Component Styles for HSS Project */
+
+/* Button Components */
+@layer components {
+    .btn {
+        @apply px-4 py-2 rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2;
+    }
+
+    .btn-primary {
+        @apply bg-primary-400 text-white hover:bg-primary-500 focus:ring-primary-400 shadow-soft;
+    }
+
+    .btn-secondary {
+        @apply bg-secondary-400 text-white hover:bg-secondary-500 focus:ring-secondary-400 shadow-soft;
+    }
+
+    .btn-outline {
+        @apply border-2 border-primary-400 text-primary-400 hover:bg-primary-400 hover:text-white focus:ring-primary-400;
+    }
+
+    .btn-ghost {
+        @apply text-primary-400 hover:bg-primary-50 focus:ring-primary-400;
+    }
+
+    .btn-sm {
+        @apply px-3 py-1.5 text-sm;
+    }
+
+    .btn-lg {
+        @apply px-6 py-3 text-lg;
+    }
+
+    .btn-danger {
+        @apply bg-error-500 text-white hover:bg-error-600 focus:ring-error-500 shadow-soft;
+    }
+
+    .btn-success {
+        @apply bg-success-500 text-white hover:bg-success-600 focus:ring-success-500 shadow-soft;
+    }
+
+    .btn-warning {
+        @apply bg-warning-500 text-white hover:bg-warning-600 focus:ring-warning-500 shadow-soft;
+    }
+
+    /* Card Components */
+    .card {
+        @apply bg-white rounded-xl shadow-soft border border-gray-100 overflow-hidden;
+    }
+
+    .card-header {
+        @apply px-6 py-4 border-b border-gray-100 bg-gray-50;
+    }
+
+    .card-body {
+        @apply px-6 py-4;
+    }
+
+    .card-footer {
+        @apply px-6 py-4 border-t border-gray-100 bg-gray-50;
+    }
+
+    .card-hover {
+        @apply hover:shadow-medium transition-shadow duration-200 cursor-pointer;
+    }
+
+    /* Form Components */
+    .form-input {
+        @apply w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent transition-all duration-200;
+    }
+
+    .form-input-error {
+        @apply border-error-500 focus:ring-error-500;
+    }
+
+    .form-label {
+        @apply block text-sm font-medium text-gray-700 mb-2;
+    }
+
+    .form-error {
+        @apply text-sm text-error-500 mt-1;
+    }
+
+    .form-help {
+        @apply text-sm text-gray-500 mt-1;
+    }
+
+    .form-group {
+        @apply mb-4;
+    }
+
+    /* Badge Components */
+    .badge {
+        @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+    }
+
+    .badge-primary {
+        @apply bg-primary-100 text-primary-800;
+    }
+
+    .badge-secondary {
+        @apply bg-secondary-100 text-secondary-800;
+    }
+
+    .badge-success {
+        @apply bg-success-100 text-success-800;
+    }
+
+    .badge-warning {
+        @apply bg-warning-100 text-warning-800;
+    }
+
+    .badge-error {
+        @apply bg-error-100 text-error-800;
+    }
+
+    .badge-gray {
+        @apply bg-gray-100 text-gray-800;
+    }
+
+    /* Status Badges */
+    .status-healthy {
+        @apply bg-green-100 text-green-800;
+    }
+
+    .status-treatment {
+        @apply bg-orange-100 text-orange-800;
+    }
+
+    .status-monitor {
+        @apply bg-blue-100 text-blue-800;
+    }
+
+    .status-critical {
+        @apply bg-red-100 text-red-800;
+    }
+
+    /* Layout Components */
+    .container {
+        @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+    }
+
+    .section {
+        @apply py-8;
+    }
+
+    .section-sm {
+        @apply py-4;
+    }
+
+    .section-lg {
+        @apply py-12;
+    }
+
+    /* Grid Components */
+    .grid-responsive {
+        @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6;
+    }
+
+    .grid-2 {
+        @apply grid grid-cols-1 md:grid-cols-2 gap-6;
+    }
+
+    .grid-3 {
+        @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6;
+    }
+
+    .grid-4 {
+        @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6;
+    }
+
+    /* Spacing Utilities */
+    .space-y-6>*+* {
+        @apply mt-6;
+    }
+
+    .space-y-4>*+* {
+        @apply mt-4;
+    }
+
+    .space-y-2>*+* {
+        @apply mt-2;
+    }
+
+    /* Text Utilities */
+    .text-muted {
+        @apply text-gray-500;
+    }
+
+    .text-primary {
+        @apply text-primary-400;
+    }
+
+    .text-success {
+        @apply text-success-500;
+    }
+
+    .text-warning {
+        @apply text-warning-500;
+    }
+
+    .text-error {
+        @apply text-error-500;
+    }
+
+    /* Animation Utilities */
+    .animate-fade-in {
+        @apply animate-fade-in;
+    }
+
+    .animate-slide-up {
+        @apply animate-slide-up;
+    }
+
+    .animate-slide-down {
+        @apply animate-slide-down;
+    }
+
+    .animate-pulse-soft {
+        @apply animate-pulse-soft;
+    }
+
+    /* Hover Effects */
+    .hover-lift {
+        @apply hover:-translate-y-1 hover:shadow-medium transition-all duration-200;
+    }
+
+    .hover-scale {
+        @apply hover:scale-105 transition-transform duration-200;
+    }
+
+    .hover-glow {
+        @apply hover:shadow-lg hover:shadow-primary-200 transition-shadow duration-200;
+    }
+
+    /* Focus States */
+    .focus-ring {
+        @apply focus:outline-none focus:ring-2 focus:ring-primary-400 focus:ring-offset-2;
+    }
+
+    .focus-ring-inset {
+        @apply focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-400;
+    }
+
+    /* Loading States */
+    .loading {
+        @apply animate-pulse;
+    }
+
+    .loading-spinner {
+        @apply animate-spin rounded-full border-2 border-gray-300 border-t-primary-400;
+    }
+
+    /* Table Components */
+    .table {
+        @apply w-full border-collapse;
+    }
+
+    .table th {
+        @apply px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200;
+    }
+
+    .table td {
+        @apply px-4 py-3 text-sm text-gray-900 border-b border-gray-100;
+    }
+
+    .table-striped tbody tr:nth-child(even) {
+        @apply bg-gray-50;
+    }
+
+    .table-hover tbody tr:hover {
+        @apply bg-gray-100;
+    }
+
+    /* Modal Components */
+    .modal-overlay {
+        @apply fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50;
+    }
+
+    .modal-content {
+        @apply bg-white rounded-xl shadow-strong max-w-lg w-full mx-4 max-h-screen overflow-y-auto;
+    }
+
+    .modal-header {
+        @apply px-6 py-4 border-b border-gray-200 flex items-center justify-between;
+    }
+
+    .modal-body {
+        @apply px-6 py-4;
+    }
+
+    .modal-footer {
+        @apply px-6 py-4 border-t border-gray-200 flex justify-end space-x-3;
+    }
+
+    /* Alert Components */
+    .alert {
+        @apply px-4 py-3 rounded-lg border;
+    }
+
+    .alert-info {
+        @apply bg-blue-50 border-blue-200 text-blue-800;
+    }
+
+    .alert-success {
+        @apply bg-green-50 border-green-200 text-green-800;
+    }
+
+    .alert-warning {
+        @apply bg-yellow-50 border-yellow-200 text-yellow-800;
+    }
+
+    .alert-error {
+        @apply bg-red-50 border-red-200 text-red-800;
+    }
+
+    /* Navigation Components */
+    .nav-link {
+        @apply px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200;
+    }
+
+    .nav-link-active {
+        @apply bg-primary-100 text-primary-700;
+    }
+
+    .nav-link-inactive {
+        @apply text-gray-600 hover:text-gray-900 hover:bg-gray-100;
+    }
+
+    /* Sidebar Components */
+    .sidebar {
+        @apply w-64 bg-white shadow-lg border-r border-gray-200;
+    }
+
+    .sidebar-item {
+        @apply flex items-center px-4 py-3 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors duration-200;
+    }
+
+    .sidebar-item-active {
+        @apply bg-primary-100 text-primary-700 border-r-2 border-primary-400;
+    }
+
+    /* Dashboard Specific Components */
+    .stat-card {
+        @apply bg-white rounded-xl shadow-soft p-6 hover:shadow-medium transition-shadow duration-200;
+    }
+
+    .stat-number {
+        @apply text-3xl font-bold text-gray-900;
+    }
+
+    .stat-label {
+        @apply text-sm font-medium text-gray-500 uppercase tracking-wide;
+    }
+
+    .widget {
+        @apply bg-white rounded-xl shadow-soft overflow-hidden;
+    }
+
+    .widget-header {
+        @apply px-6 py-4 bg-gray-50 border-b border-gray-200;
+    }
+
+    .widget-title {
+        @apply text-lg font-semibold text-gray-900;
+    }
+
+    .widget-content {
+        @apply p-6;
+    }
+
+    /* Animal Card Components */
+    .animal-card {
+        @apply bg-white rounded-xl shadow-soft border border-gray-100 overflow-hidden hover:shadow-medium transition-shadow duration-200;
+    }
+
+    .animal-card-header {
+        @apply px-4 py-3 bg-gradient-to-r from-primary-50 to-secondary-50 border-b border-gray-100;
+    }
+
+    .animal-card-body {
+        @apply px-4 py-3;
+    }
+
+    .animal-card-footer {
+        @apply px-4 py-3 bg-gray-50 border-t border-gray-100;
+    }
+
+    /* Appointment Card Components */
+    .appointment-card {
+        @apply bg-white rounded-lg shadow-soft border border-gray-100 p-4 hover:shadow-medium transition-shadow duration-200;
+    }
+
+    .appointment-time {
+        @apply text-sm font-medium text-primary-600;
+    }
+
+    .appointment-patient {
+        @apply text-lg font-semibold text-gray-900;
+    }
+
+    .appointment-owner {
+        @apply text-sm text-gray-600;
+    }
+
+    .appointment-status {
+        @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+    }
+
+    /* Responsive Utilities */
+    .mobile-only {
+        @apply block md:hidden;
+    }
+
+    .desktop-only {
+        @apply hidden md:block;
+    }
+
+    .tablet-only {
+        @apply hidden sm:block lg:hidden;
+    }
+
+    /* Print Utilities */
+    .print-hidden {
+        @apply print:hidden;
+    }
+
+    .print-only {
+        @apply hidden print:block;
+    }
+}

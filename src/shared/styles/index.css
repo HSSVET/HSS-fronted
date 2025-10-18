@@ -1,3 +1,10 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Import Tailwind Component Styles */
+@import './tailwind-components.css';
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -14,59 +21,59 @@ code {
 
 /* CSS Variables for Appointment System - Updated to match Dashboard */
 :root {
-    /* Dashboard uyumlu ana renk paleti */
+  /* Dashboard uyumlu ana renk paleti */
   --appointment-primary: #92A78C;
   /* Dashboard primary color */
-    --appointment-primary-light: #B4C7AF;
-    --appointment-primary-dark: #6A7B65;
+  --appointment-primary-light: #B4C7AF;
+  --appointment-primary-dark: #6A7B65;
   --appointment-secondary: #F7CD82;
   /* Dashboard secondary color */
-    --appointment-secondary-light: #FFEEB0;
-    --appointment-secondary-dark: #D5AE60;
+  --appointment-secondary-light: #FFEEB0;
+  --appointment-secondary-dark: #D5AE60;
   --appointment-accent: #F79E6B;
   /* Dashboard accent color */
-    --appointment-accent-light: #FFD0B0;
-    --appointment-accent-dark: #D57A4A;
+  --appointment-accent-light: #FFD0B0;
+  --appointment-accent-dark: #D57A4A;
 
-    /* Arka Plan Renkleri */
+  /* Arka Plan Renkleri */
   --bg-primary: #F9F9F9;
   /* Dashboard background */
   --bg-secondary: rgba(146, 167, 140, 0.05);
   /* Light primary color */
-    --bg-card: #FFFFFF;
+  --bg-card: #FFFFFF;
   --bg-soft: #FAFBFA;
   /* Very light green tint */
   --background-color: #F9F9F9;
   --surface-color: #FFFFFF;
 
-    /* Metin Renkleri */
-    --text-primary: rgba(0, 0, 0, 0.87);
-    --text-secondary: rgba(0, 0, 0, 0.6);
-    --text-muted: rgba(0, 0, 0, 0.38);
-    --text-white: #ffffff;
+  /* Metin Renkleri */
+  --text-primary: rgba(0, 0, 0, 0.87);
+  --text-secondary: rgba(0, 0, 0, 0.6);
+  --text-muted: rgba(0, 0, 0, 0.38);
+  --text-white: #ffffff;
   --text-on-primary: #ffffff;
 
-    /* Gölge Efektleri */
+  /* Gölge Efektleri */
   --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.08);
   --shadow-medium: 0 2px 4px rgba(0, 0, 0, 0.10);
   --shadow-strong: 0 4px 8px rgba(0, 0, 0, 0.12);
   --elevation-1: 0 2px 4px rgba(0, 0, 0, 0.10);
   --elevation-2: 0 4px 8px rgba(0, 0, 0, 0.12);
 
-    /* Aksiyon Renkleri */
-    --primary-color: var(--appointment-primary);
-    --primary-hover: var(--appointment-primary-dark);
+  /* Aksiyon Renkleri */
+  --primary-color: var(--appointment-primary);
+  --primary-hover: var(--appointment-primary-dark);
   --primary-dark: var(--appointment-primary-dark);
-    --accent-color: var(--appointment-accent);
-    --accent-hover: var(--appointment-accent-dark);
-    --success-color: #4CAF50;
-    --warning-color: #FF9800;
-    --error-color: #F44336;
-    
-    /* Status Colors */
-    --status-healthy: #4CAF50;
-    --status-treatment: #FF9800;
-    --status-monitor: #2196F3;
+  --accent-color: var(--appointment-accent);
+  --accent-hover: var(--appointment-accent-dark);
+  --success-color: #4CAF50;
+  --warning-color: #FF9800;
+  --error-color: #F44336;
+
+  /* Status Colors */
+  --status-healthy: #4CAF50;
+  --status-treatment: #FF9800;
+  --status-monitor: #2196F3;
 
   /* Spacing */
   --spacing-1: 8px;
@@ -87,23 +94,23 @@ code {
   --transition-speed: 0.2s;
   --transition-function: ease;
 
-    /* Eski beige/brown renkleri dashboard uyumlu yeşil tonlarına güncellendi */
-    --beige-dark: var(--appointment-primary);
-    --beige-dark-rgb: 146, 167, 140;
-    --beige-medium: var(--appointment-primary-light);
-    --beige-medium-rgb: 180, 199, 175;
-    --beige-light: rgba(146, 167, 140, 0.1);
-    --beige-light-rgb: 146, 167, 140;
-    --brown-dark: var(--appointment-primary-dark);
-    --brown-dark-rgb: 106, 123, 101;
-    --brown-text: var(--text-primary);
-    --brown-text-rgb: 0, 0, 0;
+  /* Eski beige/brown renkleri dashboard uyumlu yeşil tonlarına güncellendi */
+  --beige-dark: var(--appointment-primary);
+  --beige-dark-rgb: 146, 167, 140;
+  --beige-medium: var(--appointment-primary-light);
+  --beige-medium-rgb: 180, 199, 175;
+  --beige-light: rgba(146, 167, 140, 0.1);
+  --beige-light-rgb: 146, 167, 140;
+  --brown-dark: var(--appointment-primary-dark);
+  --brown-dark-rgb: 106, 123, 101;
+  --brown-text: var(--text-primary);
+  --brown-text-rgb: 0, 0, 0;
 
-    /* Açık/Koyu Varyasyonlar */
-    --beige-dark-light: rgba(var(--beige-dark-rgb), 0.1);
-    --beige-dark-medium: rgba(var(--beige-dark-rgb), 0.2);
-    --beige-medium-light: rgba(var(--beige-medium-rgb), 0.1);
-    --beige-medium-medium: rgba(var(--beige-medium-rgb), 0.2);
-    --brown-dark-light: rgba(var(--brown-dark-rgb), 0.1);
-    --brown-dark-medium: rgba(var(--brown-dark-rgb), 0.2);
+  /* Açık/Koyu Varyasyonlar */
+  --beige-dark-light: rgba(var(--beige-dark-rgb), 0.1);
+  --beige-dark-medium: rgba(var(--beige-dark-rgb), 0.2);
+  --beige-medium-light: rgba(var(--beige-medium-rgb), 0.1);
+  --beige-medium-medium: rgba(var(--beige-medium-rgb), 0.2);
+  --brown-dark-light: rgba(var(--brown-dark-rgb), 0.1);
+  --brown-dark-medium: rgba(var(--brown-dark-rgb), 0.2);
 }

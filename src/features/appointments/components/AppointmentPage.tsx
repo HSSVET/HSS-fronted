@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import Calendar from './Calendar';
-import AppointmentList from './AppointmentList';
-import AppointmentForm from './AppointmentForm';
 import { AppointmentService } from '../services/appointmentService';
-import type { LegacyAppointment, AppointmentFormData } from '../types/appointment';
-import { mapCalendarPayloadToLegacy } from '../utils/calendarMapping';
 import '../styles/AppointmentSystem.css';
+import type { AppointmentFormData, LegacyAppointment } from '../types/appointment';
+import { mapCalendarPayloadToLegacy } from '../utils/calendarMapping';
+import AppointmentForm from './AppointmentForm';
+import AppointmentList from './AppointmentList';
+import Calendar from './Calendar';
 
 const AppointmentPage: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -31,7 +31,9 @@ const AppointmentPage: React.FC = () => {
       try {
         setIsLoading(true);
         setError(null);
+        console.log('📅 Loading appointments for:', startOfMonth, 'to', endOfMonth);
         const response = await AppointmentService.getCalendarAppointments(startOfMonth, endOfMonth);
+        console.log('📅 Calendar appointments response:', response);
 
         if (!isMounted) {
           return;
@@ -51,7 +53,7 @@ const AppointmentPage: React.FC = () => {
         console.error('Randevular yüklenirken hata oluştu:', err);
         if (isMounted) {
           setAppointments([]);
-          setError('Randevular yüklenirken bir hata oluştu.');
+          setError(`Randevular yüklenirken bir hata oluştu: ${err instanceof Error ? err.message : 'Bilinmeyen hata'}`);
         }
       } finally {
         if (isMounted) {
@@ -128,12 +130,12 @@ const AppointmentPage: React.FC = () => {
 
   return (
     <div className="appointment-system">
-      <div className="appointment-system-header ui-card panel ui-card--hover" style={{textAlign:'left'}}>
+      <div className="appointment-system-header ui-card panel ui-card--hover" style={{ textAlign: 'left' }}>
         <h1 className="appointment-system-title ui-section-title">Randevu Sistemi</h1>
         <p className="appointment-system-subtitle">Veteriner Hekim Randevu Yönetimi</p>
       </div>
 
-      <div className="appointment-system-container grid gap-3" style={{gridTemplateColumns:'420px 1fr'}}>
+      <div className="appointment-system-container grid gap-3" style={{ gridTemplateColumns: '420px 1fr' }}>
         <div className="calendar-section ui-card panel">
           <Calendar
             selectedDate={selectedDate}
