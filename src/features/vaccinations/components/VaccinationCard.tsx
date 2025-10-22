@@ -25,7 +25,8 @@ const VaccinationCard: React.FC = () => {
     const loadAnimals = async () => {
         try {
             setLoading(true);
-            const response = await AnimalService.getAllAnimals();
+            const animalService = new AnimalService();
+            const response = await animalService.getAllAnimals();
             if (response.success && response.data) {
                 setAnimals(response.data);
             } else {

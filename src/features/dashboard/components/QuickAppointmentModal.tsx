@@ -55,8 +55,9 @@ const QuickAppointmentModal: React.FC<QuickAppointmentModalProps> = ({ isOpen, o
         setIsLoading(true);
         setError(null);
 
+        const animalService = new AnimalService();
         const [animalResponse, veterinarianResponse] = await Promise.all([
-          AnimalService.getBasicAnimals(),
+          animalService.getBasicAnimals(),
           VeterinarianService.getActiveVeterinarians(),
         ]);
 
@@ -133,7 +134,8 @@ const QuickAppointmentModal: React.FC<QuickAppointmentModalProps> = ({ isOpen, o
       setIsSubmitting(true);
       setError(null);
 
-      const response = await AppointmentService.createAppointment(payload);
+      const appointmentService = new AppointmentService();
+      const response = await appointmentService.createAppointment(payload);
 
       if (!response.success) {
         setError(response.error || 'Randevu oluşturulamadı.');

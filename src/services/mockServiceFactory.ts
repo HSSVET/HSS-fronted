@@ -1,6 +1,5 @@
 import { OFFLINE_MODE } from '../config/offline';
 import { AnimalService } from '../features/animals/services/animalService';
-import { AppointmentService } from '../features/appointments/services/appointmentService';
 import { MockAnimalService } from './mockAnimalService';
 import { MockAppointmentService } from './mockAppointmentService';
 import { MockOwnerService } from './mockOwnerService';
@@ -9,15 +8,22 @@ import { MockOwnerService } from './mockOwnerService';
 const mockAnimalService = new MockAnimalService();
 const mockAppointmentService = new MockAppointmentService();
 const mockOwnerService = new MockOwnerService();
+const realAnimalService = new AnimalService();
 
 // Service factory that returns mock services when offline mode is enabled
 export class ServiceFactory {
     static getAnimalService() {
-        return OFFLINE_MODE ? mockAnimalService : AnimalService;
+        return OFFLINE_MODE ? mockAnimalService : realAnimalService;
     }
 
     static getAppointmentService() {
-        return OFFLINE_MODE ? mockAppointmentService : AppointmentService;
+        if (OFFLINE_MODE) {
+            return mockAppointmentService;
+        } else {
+            // Lazy load AppointmentService to avoid circular dependency
+            const { AppointmentService } = require('../features/appointments/services/appointmentService');
+            return new AppointmentService();
+        }
     }
 
     static getOwnerService() {
@@ -27,8 +33,10 @@ export class ServiceFactory {
 
 // Export individual services for easy access
 export const animalService = ServiceFactory.getAnimalService();
-export const appointmentService = ServiceFactory.getAppointmentService();
 export const ownerService = ServiceFactory.getOwnerService();
+
+// Lazy export for appointmentService to avoid circular dependency
+export const getAppointmentService = () => ServiceFactory.getAppointmentService();
 
 // Export mock services directly for testing
 export { MockAnimalService, MockAppointmentService, MockOwnerService };

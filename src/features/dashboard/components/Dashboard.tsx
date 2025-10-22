@@ -81,8 +81,10 @@ const Dashboard: React.FC = () => {
   const [calendarRefreshKey, setCalendarRefreshKey] = useState(0);
 
   const loadTodayAppointments = useCallback(async (): Promise<AppointmentRecord[]> => {
+    const appointmentService = new AppointmentService();
+    
     try {
-      const todayResponse = await AppointmentService.getTodayAppointments();
+      const todayResponse = await appointmentService.getTodayAppointments();
       if (todayResponse.success && todayResponse.data) {
         return todayResponse.data;
       }
@@ -97,7 +99,7 @@ const Dashboard: React.FC = () => {
       const end = new Date(now);
       end.setHours(23, 59, 59, 999);
 
-      const fallbackResponse = await AppointmentService.getAppointmentsByDateRange(start, end);
+      const fallbackResponse = await appointmentService.getAppointmentsByDateRange(start, end);
       if (fallbackResponse.success && fallbackResponse.data) {
         return fallbackResponse.data;
       }
@@ -113,15 +115,16 @@ const Dashboard: React.FC = () => {
       setLoading(true);
       setError(null);
 
+      const animalService = new AnimalService();
       const [animalResponse, appointmentItems] = await Promise.all([
-        AnimalService.getAnimals(0, 8),
+        animalService.getAnimals(0, 8),
         loadTodayAppointments(),
       ]);
 
       const animalItems: AnimalRecord[] =
-        animalResponse.success && animalResponse.data ? animalResponse.data.items : [];
+        animalResponse.success && animalResponse.data ? animalResponse.data.items || [] : [];
 
-      const patients: HospitalizedPatient[] = animalItems.slice(0, 5).map((animal, index) => ({
+      const patients: HospitalizedPatient[] = (animalItems || []).slice(0, 5).map((animal, index) => ({
         id: animal.id ? animal.id.toString() : `${Date.now()}-${index}`,
         animalId: animal.id ? animal.id.toString() : '',
         name: animal.name || 'İsimsiz',
@@ -131,7 +134,7 @@ const Dashboard: React.FC = () => {
         status: STATUS_LABELS[index % STATUS_LABELS.length],
       }));
 
-      const activities: ActivityItem[] = appointmentItems
+      const activities: ActivityItem[] = (appointmentItems || [])
         .slice()
         .sort((a, b) => {
           const dateA = new Date(a.dateTime || '').getTime();
@@ -140,15 +143,15 @@ const Dashboard: React.FC = () => {
         })
         .slice(0, 6)
         .map((appointment, index) => {
-          const generatedId = appointment.id ? appointment.id.toString() : `${Date.now()}-${index}`;
-          const animalId = appointment.animal?.id ? appointment.animal.id.toString() : '';
+          const generatedId = appointment.appointmentId ? appointment.appointmentId.toString() : `${Date.now()}-${index}`;
+          const animalId = appointment.animalId ? appointment.animalId.toString() : '';
 
           return {
             id: generatedId,
             animalId,
             time: formatTimeDisplay(appointment.dateTime),
-            animalName: appointment.animal?.name || 'Hasta',
-            ownerName: appointment.owner?.name || '',
+            animalName: appointment.animalName || 'Hasta',
+            ownerName: appointment.ownerName || '',
             description: appointment.subject || 'Randevu',
           };
         });

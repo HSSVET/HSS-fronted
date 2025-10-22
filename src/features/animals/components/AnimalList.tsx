@@ -93,7 +93,8 @@ const AnimalList: React.FC<AnimalListProps> = ({ onAddAnimal }) => {
         console.log('🐶 Animals API çağrısı yapılıyor...');
         console.log('🐶 OFFLINE_MODE:', process.env.NODE_ENV);
 
-        const response = await AnimalService.getAnimals(0, 20);
+        const animalService = new AnimalService();
+        const response = await animalService.getAnimals(0, 20);
         console.log('🐶 Animals API response:', response);
 
         if (response.success && response.data) {
