@@ -67,60 +67,124 @@ const emptyPage = <T>(page: number, limit: number): PaginatedResponse<T> => ({
 });
 
 export class AnimalService {
+  private mapBackendToAnimalRecord = (backend: any): AnimalRecord => {
+    return {
+      id: backend.animalId ?? backend.id ?? 0,
+      name: backend.name,
+      owner: backend.ownerId || backend.ownerName ? {
+        id: backend.ownerId ?? 0,
+        name: backend.ownerName ?? '',
+      } : undefined,
+      species: backend.speciesId || backend.speciesName ? {
+        id: backend.speciesId ?? 0,
+        name: backend.speciesName ?? '',
+      } : undefined,
+      breed: backend.breedId || backend.breedName ? {
+        id: backend.breedId ?? 0,
+        name: backend.breedName ?? '',
+      } : undefined,
+      gender: backend.gender,
+      birthDate: backend.birthDate?.toString(),
+      weight: backend.weight,
+      color: backend.color,
+      microchipNumber: backend.microchipNo ?? backend.microchipNumber,
+      allergies: backend.allergies,
+      chronicDiseases: backend.chronicDiseases,
+      notes: backend.notes,
+      lastVisitDate: backend.lastVisitDate,
+      nextVaccinationDate: backend.nextVaccinationDate,
+    };
+  };
   // Get all animals
-  static async getAllAnimals(): Promise<ApiResponse<AnimalRecord[]>> {
-    const service = ServiceFactory.getAnimalService();
-    return service.getAllAnimals();
+  async getAllAnimals(): Promise<ApiResponse<AnimalRecord[]>> {
+    // Direct API call instead of going through ServiceFactory
+    const { apiClient } = await import('../../../services/api');
+    const response = await apiClient.get<SpringPage<any>>('/api/animals?page=0&size=100');
+    if (response.success && response.data) {
+      const items = (response.data.content || []).map(this.mapBackendToAnimalRecord);
+      return { success: true, data: items, status: response.status } as ApiResponse<AnimalRecord[]>;
+    }
+    return { success: false, data: [], error: response.error || 'Failed to fetch animals' };
   }
 
   // Get all animals with pagination
-  static async getAnimals(
+  async getAnimals(
     page: number = 0,
     limit: number = 10,
     search?: string
   ): Promise<ApiResponse<PaginatedResponse<AnimalRecord>>> {
-    const service = ServiceFactory.getAnimalService();
-    return service.getAnimals(page, limit, search);
+    // Direct API call instead of going through ServiceFactory
+    const { apiClient } = await import('../../../services/api');
+    const response = await apiClient.get<SpringPage<any>>(`/api/animals?page=${page}&size=${limit}${search ? `&search=${encodeURIComponent(search)}` : ''}`);
+    
+    // Convert Spring Page to PaginatedResponse
+    if (response.success && response.data) {
+      const paginatedResponse: PaginatedResponse<AnimalRecord> = {
+        items: (response.data.content || []).map(this.mapBackendToAnimalRecord),
+        total: response.data.totalElements,
+        page: response.data.number,
+        limit: response.data.size,
+        totalPages: response.data.totalPages,
+      };
+      return { success: true, data: paginatedResponse };
+    }
+    
+    return { success: false, data: emptyPage<AnimalRecord>(page, limit), error: 'Failed to fetch animals' };
   }
 
   // Get basic animals list for dropdowns
-  static async getBasicAnimals(): Promise<ApiResponse<BasicAnimalRecord[]>> {
-    const service = ServiceFactory.getAnimalService();
-    return service.getBasicAnimals();
+  async getBasicAnimals(): Promise<ApiResponse<BasicAnimalRecord[]>> {
+    // Use the main animals endpoint and transform the data
+    const { apiClient } = await import('../../../services/api');
+    const response = await apiClient.get<SpringPage<any>>('/api/animals?page=0&size=1000');
+    
+    if (response.success && response.data) {
+      const basicAnimals: BasicAnimalRecord[] = (response.data.content || []).map(a => ({
+        id: a.animalId ?? a.id ?? 0,
+        name: a.name,
+        ownerName: a.ownerName,
+        speciesName: a.speciesName,
+        breedName: a.breedName,
+        microchipNumber: a.microchipNo ?? a.microchipNumber,
+      }));
+      return { success: true, data: basicAnimals };
+    }
+    
+    return { success: false, data: [], error: 'Failed to fetch basic animals' };
   }
 
   // Get animal by ID
-  static async getAnimalById(id: string): Promise<ApiResponse<AnimalRecord>> {
+  async getAnimalById(id: string): Promise<ApiResponse<AnimalRecord>> {
     const service = ServiceFactory.getAnimalService();
     return service.getAnimalById(id);
   }
 
   // Create new animal
-  static async createAnimal(animal: Omit<Animal, 'id' | 'createdAt' | 'updatedAt'>): Promise<ApiResponse<AnimalRecord>> {
+  async createAnimal(animal: Omit<Animal, 'id' | 'createdAt' | 'updatedAt'>): Promise<ApiResponse<AnimalRecord>> {
     const service = ServiceFactory.getAnimalService();
     return service.createAnimal(animal);
   }
 
   // Update animal
-  static async updateAnimal(id: string, animal: Partial<Animal>): Promise<ApiResponse<AnimalRecord>> {
+  async updateAnimal(id: string, animal: Partial<Animal>): Promise<ApiResponse<AnimalRecord>> {
     const service = ServiceFactory.getAnimalService();
     return service.updateAnimal(id, animal);
   }
 
   // Delete animal
-  static async deleteAnimal(id: string): Promise<ApiResponse<void>> {
+  async deleteAnimal(id: string): Promise<ApiResponse<void>> {
     const service = ServiceFactory.getAnimalService();
     return service.deleteAnimal(id);
   }
 
   // Get animal medical history
-  static async getMedicalHistory(animalId: string): Promise<ApiResponse<MedicalRecord[]>> {
+  async getMedicalHistory(animalId: string): Promise<ApiResponse<MedicalRecord[]>> {
     const service = ServiceFactory.getAnimalService();
     return service.getMedicalHistory(animalId);
   }
 
   // Add medical record
-  static async addMedicalRecord(
+  async addMedicalRecord(
     animalId: string,
     record: Omit<MedicalRecord, 'id' | 'createdAt' | 'updatedAt' | 'animalId'>
   ): Promise<ApiResponse<MedicalRecord>> {
@@ -129,13 +193,13 @@ export class AnimalService {
   }
 
   // Get animal vaccinations
-  static async getVaccinations(animalId: string): Promise<ApiResponse<Vaccination[]>> {
+  async getVaccinations(animalId: string): Promise<ApiResponse<Vaccination[]>> {
     const service = ServiceFactory.getAnimalService();
     return service.getVaccinations(animalId);
   }
 
   // Add vaccination
-  static async addVaccination(
+  async addVaccination(
     animalId: string,
     vaccination: Omit<Vaccination, 'id' | 'createdAt' | 'updatedAt' | 'animalId'>
   ): Promise<ApiResponse<Vaccination>> {
@@ -144,67 +208,67 @@ export class AnimalService {
   }
 
   // Search animals by owner
-  static async searchByOwner(ownerName: string): Promise<ApiResponse<AnimalRecord[]>> {
+  async searchByOwner(ownerName: string): Promise<ApiResponse<AnimalRecord[]>> {
     const service = ServiceFactory.getAnimalService();
     return service.searchByOwner(ownerName);
   }
 
   // Search animals by name
-  static async searchByName(name: string): Promise<ApiResponse<AnimalRecord[]>> {
+  async searchByName(name: string): Promise<ApiResponse<AnimalRecord[]>> {
     const service = ServiceFactory.getAnimalService();
     return service.searchByName(name);
   }
 
   // Search animals by microchip
-  static async searchByMicrochip(microchip: string): Promise<ApiResponse<AnimalRecord[]>> {
+  async searchByMicrochip(microchip: string): Promise<ApiResponse<AnimalRecord[]>> {
     const service = ServiceFactory.getAnimalService();
     return service.searchByMicrochip(microchip);
   }
 
   // Get animal by microchip number
-  static async getAnimalByMicrochip(microchipNumber: string): Promise<ApiResponse<AnimalRecord>> {
+  async getAnimalByMicrochip(microchipNumber: string): Promise<ApiResponse<AnimalRecord>> {
     const service = ServiceFactory.getAnimalService();
     return service.getAnimalByMicrochip(microchipNumber);
   }
 
   // Get animals by owner ID
-  static async getAnimalsByOwnerId(ownerId: string): Promise<ApiResponse<AnimalRecord[]>> {
+  async getAnimalsByOwnerId(ownerId: string): Promise<ApiResponse<AnimalRecord[]>> {
     const service = ServiceFactory.getAnimalService();
     return service.getAnimalsByOwnerId(ownerId);
   }
 
   // Get animals by species ID
-  static async getAnimalsBySpeciesId(speciesId: string): Promise<ApiResponse<AnimalRecord[]>> {
+  async getAnimalsBySpeciesId(speciesId: string): Promise<ApiResponse<AnimalRecord[]>> {
     const service = ServiceFactory.getAnimalService();
     return service.getAnimalsBySpeciesId(speciesId);
   }
 
   // Get animals by breed ID
-  static async getAnimalsByBreedId(breedId: string): Promise<ApiResponse<AnimalRecord[]>> {
+  async getAnimalsByBreedId(breedId: string): Promise<ApiResponse<AnimalRecord[]>> {
     const service = ServiceFactory.getAnimalService();
     return service.getAnimalsByBreedId(breedId);
   }
 
   // Get animals with allergies
-  static async getAnimalsWithAllergies(): Promise<ApiResponse<AnimalRecord[]>> {
+  async getAnimalsWithAllergies(): Promise<ApiResponse<AnimalRecord[]>> {
     const service = ServiceFactory.getAnimalService();
     return service.getAnimalsWithAllergies();
   }
 
   // Get animals with chronic diseases
-  static async getAnimalsWithChronicDiseases(): Promise<ApiResponse<AnimalRecord[]>> {
+  async getAnimalsWithChronicDiseases(): Promise<ApiResponse<AnimalRecord[]>> {
     const service = ServiceFactory.getAnimalService();
     return service.getAnimalsWithChronicDiseases();
   }
 
   // Get animals with birthday today
-  static async getAnimalsWithBirthdayToday(): Promise<ApiResponse<AnimalRecord[]>> {
+  async getAnimalsWithBirthdayToday(): Promise<ApiResponse<AnimalRecord[]>> {
     const service = ServiceFactory.getAnimalService();
     return service.getAnimalsWithBirthdayToday();
   }
 
   // Get animals with birthday this month
-  static async getAnimalsWithBirthdayThisMonth(): Promise<ApiResponse<AnimalRecord[]>> {
+  async getAnimalsWithBirthdayThisMonth(): Promise<ApiResponse<AnimalRecord[]>> {
     const service = ServiceFactory.getAnimalService();
     return service.getAnimalsWithBirthdayThisMonth();
   }

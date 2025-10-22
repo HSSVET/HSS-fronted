@@ -32,7 +32,8 @@ const AppointmentPage: React.FC = () => {
         setIsLoading(true);
         setError(null);
         console.log('📅 Loading appointments for:', startOfMonth, 'to', endOfMonth);
-        const response = await AppointmentService.getCalendarAppointments(startOfMonth, endOfMonth);
+        const appointmentService = new AppointmentService();
+        const response = await appointmentService.getCalendarAppointments(startOfMonth, endOfMonth);
         console.log('📅 Calendar appointments response:', response);
 
         if (!isMounted) {

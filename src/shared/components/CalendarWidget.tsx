@@ -60,7 +60,8 @@ const CalendarWidget: React.FC<CalendarWidgetProps> = ({ refreshKey }) => {
         setError(null);
         setAppointmentsMap({});
 
-        const response = await AppointmentService.getCalendarAppointments(startDate, endDate);
+        const appointmentService = new AppointmentService();
+        const response = await appointmentService.getCalendarAppointments(startDate, endDate);
 
         if (!isMounted) {
           return;

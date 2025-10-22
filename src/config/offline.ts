@@ -3,7 +3,7 @@
 
 // Mock data servislerini test etmek için OFFLINE_MODE'u açıyoruz
 // Backend API'lar yerine mock servisler kullanılacak
-export const OFFLINE_MODE: boolean = true;
+export const OFFLINE_MODE: boolean = false;
 
 console.log('🔍 OFFLINE_MODE manually set to true - Mock services will be used!');
 console.log('  OFFLINE_MODE:', OFFLINE_MODE);
