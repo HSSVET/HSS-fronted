@@ -76,7 +76,12 @@ export class AppointmentService {
       return { success: true, data: paginatedResponse };
     }
     
-    return { success: false, data: { items: [], total: 0, page, limit, totalPages: 0 }, error: 'Failed to fetch appointments' };
+    return { 
+      success: false, 
+      data: { items: [], total: 0, page, limit, totalPages: 0 }, 
+      error: response.error || 'Failed to fetch appointments',
+      status: response.status 
+    };
   }
 
   // Get basic appointments list for dropdowns
@@ -239,6 +244,11 @@ export class AppointmentService {
       return { success: true, data: calendarPayloads };
     }
     
-    return { success: false, data: [], error: 'Failed to fetch calendar appointments' };
+    return { 
+      success: false, 
+      data: [], 
+      error: response.error || 'Failed to fetch calendar appointments',
+      status: response.status 
+    };
   }
 }

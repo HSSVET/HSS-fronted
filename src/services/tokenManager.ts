@@ -1,194 +1,182 @@
-// @ts-ignore
-import Keycloak from 'keycloak-js';
+interface TokenData {
+  accessToken: string;
+  refreshToken: string;
+  expiresAt: number;
+  tokenType: string;
+}
 
-export class TokenManager {
-  private keycloak: any;
-  private refreshTimer: NodeJS.Timeout | null = null;
-  private onTokenExpired?: () => void;
-  private isRefreshing: boolean = false; // Token yenileme durumunu takip et
+interface UserInfo {
+  id: string;
+  email: string;
+  name: string;
+  roles: string[];
+}
 
-  constructor(keycloak: any) {
-    this.keycloak = keycloak;
-    this.setupTokenRefresh();
+class TokenManager {
+  private static instance: TokenManager;
+  private readonly ACCESS_TOKEN_KEY = 'hss_access_token';
+  private readonly REFRESH_TOKEN_KEY = 'hss_refresh_token';
+  private readonly TOKEN_EXPIRY_KEY = 'hss_token_expiry';
+  private readonly USER_INFO_KEY = 'hss_user_info';
+
+  private constructor() {}
+
+  static getInstance(): TokenManager {
+    if (!TokenManager.instance) {
+      TokenManager.instance = new TokenManager();
+    }
+    return TokenManager.instance;
   }
 
-  /**
-   * Token yenileme sistemini başlat
-   */
-  private setupTokenRefresh() {
-    if (!this.keycloak || !this.keycloak.authenticated) {
-      return;
+  // Token Storage Methods
+  setTokens(tokenData: TokenData): void {
+    try {
+      localStorage.setItem(this.ACCESS_TOKEN_KEY, tokenData.accessToken);
+      localStorage.setItem(this.REFRESH_TOKEN_KEY, tokenData.refreshToken);
+      localStorage.setItem(this.TOKEN_EXPIRY_KEY, tokenData.expiresAt.toString());
+    } catch (error) {
+      console.error('Failed to store tokens:', error);
     }
-
-    // Token süresini kontrol et
-    this.scheduleTokenRefresh();
-
-    // Keycloak olaylarını dinle
-    this.keycloak.onTokenExpired = () => {
-      if (!this.isRefreshing) {
-        console.log('Token expired, attempting to refresh...');
-        this.refreshToken();
-      }
-    };
-
-    this.keycloak.onAuthRefreshSuccess = () => {
-      console.log('Token refreshed successfully');
-      this.isRefreshing = false;
-      this.scheduleTokenRefresh();
-    };
-
-    this.keycloak.onAuthRefreshError = () => {
-      console.error('Token refresh failed');
-      this.isRefreshing = false;
-      if (this.onTokenExpired) {
-        this.onTokenExpired();
-      }
-    };
   }
 
-  /**
-   * Token yenileme zamanlaması
-   */
-  private scheduleTokenRefresh() {
-    if (!this.keycloak?.tokenParsed?.exp) {
-      return;
+  getAccessToken(): string | null {
+    try {
+      return localStorage.getItem(this.ACCESS_TOKEN_KEY);
+    } catch (error) {
+      console.error('Failed to get access token:', error);
+      return null;
     }
-
-    // Clear existing timer
-    if (this.refreshTimer) {
-      clearTimeout(this.refreshTimer);
-      this.refreshTimer = null;
-    }
-
-    // Token'ın son kullanma süresi
-    const tokenExpiration = this.keycloak.tokenParsed.exp * 1000;
-    const now = Date.now();
-    const timeUntilExpiry = tokenExpiration - now;
-
-    // Token'ı 60 saniye önceden yenile (daha güvenli)
-    const refreshTime = Math.max(timeUntilExpiry - 60000, 10000);
-
-    // Sadece debug modunda log yaz
-    if (process.env.NODE_ENV === 'development') {
-      console.log(`Token will be refreshed in ${Math.round(refreshTime / 1000)} seconds`);
-    }
-
-    this.refreshTimer = setTimeout(() => {
-      this.refreshToken();
-    }, refreshTime);
   }
 
-  /**
-   * Token'ı manuel olarak yenile
-   */
-  public async refreshToken(): Promise<boolean> {
-    if (this.isRefreshing) {
-      return false; // Zaten yenileme devam ediyor
+  getRefreshToken(): string | null {
+    try {
+      return localStorage.getItem(this.REFRESH_TOKEN_KEY);
+    } catch (error) {
+      console.error('Failed to get refresh token:', error);
+      return null;
     }
+  }
 
-    this.isRefreshing = true;
+  getTokenExpiry(): number | null {
+    try {
+      const expiry = localStorage.getItem(this.TOKEN_EXPIRY_KEY);
+      return expiry ? parseInt(expiry, 10) : null;
+    } catch (error) {
+      console.error('Failed to get token expiry:', error);
+      return null;
+    }
+  }
+
+  isTokenExpired(): boolean {
+    const expiry = this.getTokenExpiry();
+    if (!expiry) return true;
     
+    // Add 5 minute buffer before actual expiry
+    const bufferTime = 5 * 60 * 1000; // 5 minutes in milliseconds
+    return Date.now() >= (expiry - bufferTime);
+  }
+
+  isTokenValid(): boolean {
+    const token = this.getAccessToken();
+    return token !== null && !this.isTokenExpired();
+  }
+
+  // User Info Methods
+  setUserInfo(userInfo: UserInfo): void {
     try {
-      const refreshed = await this.keycloak.updateToken(60); // 60 saniye threshold
-      if (refreshed) {
-        console.log('Token was successfully refreshed');
-        this.scheduleTokenRefresh();
-        return true;
-      } else {
-        console.log('Token is still valid');
-        this.isRefreshing = false;
-        return true;
-      }
+      localStorage.setItem(this.USER_INFO_KEY, JSON.stringify(userInfo));
     } catch (error) {
-      console.error('Failed to refresh token:', error);
-      this.isRefreshing = false;
-      if (this.onTokenExpired) {
-        this.onTokenExpired();
-      }
-      return false;
+      console.error('Failed to store user info:', error);
     }
   }
 
-  /**
-   * Token süresini kontrol et
-   */
-  public isTokenExpired(): boolean {
-    if (!this.keycloak?.tokenParsed?.exp) {
-      return true;
-    }
-
-    const tokenExpiration = this.keycloak.tokenParsed.exp * 1000;
-    const now = Date.now();
-    return now >= tokenExpiration;
-  }
-
-  /**
-   * Token süresini al (saniye cinsinden)
-   */
-  public getTokenTimeRemaining(): number {
-    if (!this.keycloak?.tokenParsed?.exp) {
-      return 0;
-    }
-
-    const tokenExpiration = this.keycloak.tokenParsed.exp * 1000;
-    const now = Date.now();
-    return Math.max(0, Math.floor((tokenExpiration - now) / 1000));
-  }
-
-  /**
-   * Token süresinin dolması durumunda çağrılacak callback
-   */
-  public onTokenExpiration(callback: () => void) {
-    this.onTokenExpired = callback;
-  }
-
-  /**
-   * Token bilgilerini al
-   */
-  public getTokenInfo() {
-    if (!this.keycloak?.tokenParsed) {
-      return null;
-    }
-
-    return {
-      username: this.keycloak.tokenParsed.preferred_username,
-      email: this.keycloak.tokenParsed.email,
-      firstName: this.keycloak.tokenParsed.given_name,
-      lastName: this.keycloak.tokenParsed.family_name,
-      roles: this.keycloak.tokenParsed.realm_access?.roles || [],
-      exp: this.keycloak.tokenParsed.exp,
-      iat: this.keycloak.tokenParsed.iat,
-      timeRemaining: this.getTokenTimeRemaining()
-    };
-  }
-
-  /**
-   * Temizleme işlemi
-   */
-  public cleanup() {
-    if (this.refreshTimer) {
-      clearTimeout(this.refreshTimer);
-      this.refreshTimer = null;
-    }
-  }
-
-  /**
-   * Güvenli token alma - kullanmadan önce geçerliliğini kontrol et
-   */
-  public async getValidToken(): Promise<string | null> {
-    if (!this.keycloak || !this.keycloak.authenticated) {
-      return null;
-    }
-
-    // Token geçerli mi kontrol et, gerekirse yenile
+  getUserInfo(): UserInfo | null {
     try {
-      await this.keycloak.updateToken(30);
-      return this.keycloak.token;
+      const userInfo = localStorage.getItem(this.USER_INFO_KEY);
+      return userInfo ? JSON.parse(userInfo) : null;
     } catch (error) {
-      console.error('Failed to get valid token:', error);
+      console.error('Failed to get user info:', error);
       return null;
     }
+  }
+
+  // Clear Methods
+  clearTokens(): void {
+    try {
+      localStorage.removeItem(this.ACCESS_TOKEN_KEY);
+      localStorage.removeItem(this.REFRESH_TOKEN_KEY);
+      localStorage.removeItem(this.TOKEN_EXPIRY_KEY);
+    } catch (error) {
+      console.error('Failed to clear tokens:', error);
+    }
+  }
+
+  clearUserInfo(): void {
+    try {
+      localStorage.removeItem(this.USER_INFO_KEY);
+    } catch (error) {
+      console.error('Failed to clear user info:', error);
+    }
+  }
+
+  clearAll(): void {
+    this.clearTokens();
+    this.clearUserInfo();
+  }
+
+  // Token Refresh Logic
+  async refreshAccessToken(): Promise<string | null> {
+    const refreshToken = this.getRefreshToken();
+    if (!refreshToken) {
+      console.warn('No refresh token available');
+      return null;
+    }
+
+    try {
+      const response = await fetch('/api/auth/refresh', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ refreshToken }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Refresh failed: ${response.status}`);
+      }
+
+      const data = await response.json();
+      
+      if (data.accessToken) {
+        const tokenData: TokenData = {
+          accessToken: data.accessToken,
+          refreshToken: data.refreshToken || refreshToken,
+          expiresAt: data.expiresAt || (Date.now() + 3600000), // Default 1 hour
+          tokenType: data.tokenType || 'Bearer',
+        };
+        
+        this.setTokens(tokenData);
+        return data.accessToken;
+      }
+
+      return null;
+    } catch (error) {
+      console.error('Token refresh failed:', error);
+      this.clearTokens();
+      return null;
+    }
+  }
+
+  // Get Authorization Header
+  getAuthHeader(): string | null {
+    const token = this.getAccessToken();
+    const tokenType = 'Bearer'; // Default token type
+    
+    if (!token) return null;
+    
+    return `${tokenType} ${token}`;
   }
 }
 
-export default TokenManager; 
+export default TokenManager;
+export type { TokenData, UserInfo };
