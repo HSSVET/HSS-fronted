@@ -99,12 +99,17 @@ export class AnimalService {
   async getAllAnimals(): Promise<ApiResponse<AnimalRecord[]>> {
     // Direct API call instead of going through ServiceFactory
     const { apiClient } = await import('../../../services/api');
-    const response = await apiClient.get<SpringPage<any>>('/api/animals?page=0&size=100');
+    const response = await apiClient.get<SpringPage<any>>('/api/animals?page=0&limit=100');
     if (response.success && response.data) {
       const items = (response.data.content || []).map(this.mapBackendToAnimalRecord);
       return { success: true, data: items, status: response.status } as ApiResponse<AnimalRecord[]>;
     }
-    return { success: false, data: [], error: response.error || 'Failed to fetch animals' };
+    return { 
+      success: false, 
+      data: [], 
+      error: response.error || 'Failed to fetch animals',
+      status: response.status 
+    };
   }
 
   // Get all animals with pagination
@@ -115,7 +120,7 @@ export class AnimalService {
   ): Promise<ApiResponse<PaginatedResponse<AnimalRecord>>> {
     // Direct API call instead of going through ServiceFactory
     const { apiClient } = await import('../../../services/api');
-    const response = await apiClient.get<SpringPage<any>>(`/api/animals?page=${page}&size=${limit}${search ? `&search=${encodeURIComponent(search)}` : ''}`);
+    const response = await apiClient.get<SpringPage<any>>(`/api/animals?page=${page}&limit=${limit}${search ? `&search=${encodeURIComponent(search)}` : ''}`);
     
     // Convert Spring Page to PaginatedResponse
     if (response.success && response.data) {
@@ -129,14 +134,19 @@ export class AnimalService {
       return { success: true, data: paginatedResponse };
     }
     
-    return { success: false, data: emptyPage<AnimalRecord>(page, limit), error: 'Failed to fetch animals' };
+    return { 
+      success: false, 
+      data: emptyPage<AnimalRecord>(page, limit), 
+      error: response.error || 'Failed to fetch animals',
+      status: response.status 
+    };
   }
 
   // Get basic animals list for dropdowns
   async getBasicAnimals(): Promise<ApiResponse<BasicAnimalRecord[]>> {
     // Use the main animals endpoint and transform the data
     const { apiClient } = await import('../../../services/api');
-    const response = await apiClient.get<SpringPage<any>>('/api/animals?page=0&size=1000');
+    const response = await apiClient.get<SpringPage<any>>('/api/animals?page=0&limit=1000');
     
     if (response.success && response.data) {
       const basicAnimals: BasicAnimalRecord[] = (response.data.content || []).map(a => ({

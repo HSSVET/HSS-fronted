@@ -19,6 +19,9 @@ import {
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AnimalService, type AnimalRecord } from '../services/animalService';
+import { useError } from '../../../context/ErrorContext';
+import { useLoading } from '../../../hooks/useLoading';
+import LoadingSpinner from '../../../components/LoadingSpinner';
 import '../styles/AnimalList.css';
 import { AnimalListItem } from '../types/animal';
 
@@ -71,9 +74,10 @@ const mapToAnimalListItem = (animal: AnimalRecord): AnimalListItem => {
 
 const AnimalList: React.FC<AnimalListProps> = ({ onAddAnimal }) => {
   const navigate = useNavigate();
+  const { addError, showSuccess } = useError();
+  const { loading, startLoading, stopLoading } = useLoading();
+  
   const [animals, setAnimals] = useState<AnimalListItem[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortAnchorEl, setSortAnchorEl] = useState<null | HTMLElement>(null);
   const [sortBy, setSortBy] = useState<string>('name');
@@ -88,8 +92,7 @@ const AnimalList: React.FC<AnimalListProps> = ({ onAddAnimal }) => {
   useEffect(() => {
     const fetchAnimals = async () => {
       try {
-        setLoading(true);
-        setError(null);
+        startLoading('Hayvan listesi yükleniyor...');
         console.log('🐶 Animals API çağrısı yapılıyor...');
         console.log('🐶 OFFLINE_MODE:', process.env.NODE_ENV);
 
@@ -101,22 +104,40 @@ const AnimalList: React.FC<AnimalListProps> = ({ onAddAnimal }) => {
           const formattedAnimals = response.data.items.map(mapToAnimalListItem);
           setAnimals(formattedAnimals);
           console.log('🐶 Formatted animals:', formattedAnimals);
+          showSuccess('Hayvan listesi başarıyla yüklendi');
         } else {
           console.error('🐶 API response failed:', response);
-          setError(response.error || 'Hayvan listesi alınamadı.');
+          addError(
+            'Hayvan listesi alınamadı',
+            'error',
+            response.error || 'API yanıtı başarısız',
+            {
+              label: 'Tekrar Dene',
+              onClick: () => fetchAnimals(),
+            }
+          );
           setAnimals([]);
         }
       } catch (err) {
         console.error('🐶 Animals API error:', err);
-        setError(`Hayvan listesi alınırken bir hata oluştu: ${err instanceof Error ? err.message : 'Bilinmeyen hata'}`);
+        const errorMessage = err instanceof Error ? err.message : 'Bilinmeyen hata';
+        addError(
+          'Hayvan listesi alınırken bir hata oluştu',
+          'error',
+          errorMessage,
+          {
+            label: 'Tekrar Dene',
+            onClick: () => fetchAnimals(),
+          }
+        );
         setAnimals([]);
       } finally {
-        setLoading(false);
+        stopLoading();
       }
     };
 
     fetchAnimals();
-  }, []);
+  }, [startLoading, stopLoading, addError, showSuccess]);
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
@@ -230,22 +251,14 @@ const AnimalList: React.FC<AnimalListProps> = ({ onAddAnimal }) => {
     navigate(`/animals/${animalId}`);
   };
 
-  if (loading) {
+  if (loading.isLoading) {
     return (
       <div className="animal-list-container">
-        <div className="ui-card panel" style={{ padding: '20px', textAlign: 'center' }}>
-          <Typography>Animals API'dan veriler yükleniyor...</Typography>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="animal-list-container">
-        <div className="ui-card panel" style={{ padding: '20px', textAlign: 'center' }}>
-          <Typography color="error">{error}</Typography>
-        </div>
+        <LoadingSpinner 
+          isLoading={loading.isLoading}
+          message={loading.loadingMessage || 'Hayvan listesi yükleniyor...'}
+          variant="backdrop"
+        />
       </div>
     );
   }

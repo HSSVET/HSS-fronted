@@ -3,12 +3,14 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { ThemeProvider, CssBaseline, createTheme } from '@mui/material';
 import { AuthProvider } from './context/AuthContext';
 import { AppProvider } from './context/AppContext';
+import { ErrorProvider } from './context/ErrorContext';
 import { Layout } from './shared';
 import { Dashboard } from './features/dashboard';
 import { AnimalPage, AnimalDetailPage } from './features/animals';
 import { AppointmentPage } from './features/appointments';
 import { LabDashboard, LabTestTypes } from './features/laboratory';
 import { Billing } from './features/billing';
+import Toast from './components/Toast';
 
 // Error Boundaries
 import {
@@ -104,9 +106,10 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <GlobalErrorBoundary>
-        <AuthProvider>
-          <AppProvider>
-            <Router>
+        <ErrorProvider>
+          <AuthProvider>
+            <AppProvider>
+              <Router>
             <Routes>
               {/* Main Dashboard Route */}
               <Route
@@ -268,10 +271,12 @@ function App() {
               />
             </Routes>
             </Router>
+            <Toast />
           </AppProvider>
         </AuthProvider>
-      </GlobalErrorBoundary>
-    </ThemeProvider>
+      </ErrorProvider>
+    </GlobalErrorBoundary>
+  </ThemeProvider>
   );
 }
 

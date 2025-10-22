@@ -5,6 +5,8 @@ import '../styles/components/Calendar.css';
 import { AppointmentService } from '../../features/appointments/services/appointmentService';
 import { mapCalendarPayloadToLegacy } from '../../features/appointments/utils/calendarMapping';
 import type { LegacyAppointment } from '../../features/appointments/types/appointment';
+import { useError } from '../../context/ErrorContext';
+import { useLoading } from '../../hooks/useLoading';
 
 type ValuePiece = Date | null;
 type Value = ValuePiece | [ValuePiece, ValuePiece];
@@ -22,6 +24,9 @@ interface CalendarWidgetProps {
 }
 
 const CalendarWidget: React.FC<CalendarWidgetProps> = ({ refreshKey }) => {
+  const { addError, showSuccess } = useError();
+  const { loading, startLoading, stopLoading } = useLoading();
+  
   const today = new Date();
   const [value, onChange] = useState<Value>(today);
   const [selectedDay, setSelectedDay] = useState<Date | null>(today);
@@ -30,8 +35,6 @@ const CalendarWidget: React.FC<CalendarWidgetProps> = ({ refreshKey }) => {
     new Date(today.getFullYear(), today.getMonth(), 1)
   );
   const [appointmentsMap, setAppointmentsMap] = useState<Record<string, LegacyAppointment[]>>({});
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
 
   const getDateKey = (date: Date): string => {
     const year = date.getFullYear();
@@ -56,8 +59,7 @@ const CalendarWidget: React.FC<CalendarWidgetProps> = ({ refreshKey }) => {
 
     const loadAppointments = async (): Promise<void> => {
       try {
-        setIsLoading(true);
-        setError(null);
+        startLoading('Takvim randevuları yükleniyor...');
         setAppointmentsMap({});
 
         const appointmentService = new AppointmentService();
@@ -86,19 +88,29 @@ const CalendarWidget: React.FC<CalendarWidgetProps> = ({ refreshKey }) => {
           });
 
           setAppointmentsMap(grouped);
+          showSuccess('Takvim randevuları başarıyla yüklendi');
         } else {
           setAppointmentsMap({});
-          setError('Takvim verileri alınamadı.');
+          addError('Takvim verileri alınamadı', 'warning');
         }
       } catch (err) {
         console.error('Takvim randevuları yüklenirken hata oluştu:', err);
         if (isMounted) {
           setAppointmentsMap({});
-          setError('Takvim randevuları yüklenirken bir hata oluştu.');
+          const errorMessage = err instanceof Error ? err.message : 'Bilinmeyen hata';
+          addError(
+            'Takvim randevuları yüklenirken bir hata oluştu',
+            'error',
+            errorMessage,
+            {
+              label: 'Tekrar Dene',
+              onClick: () => loadAppointments(),
+            }
+          );
         }
       } finally {
         if (isMounted) {
-          setIsLoading(false);
+          stopLoading();
         }
       }
     };
@@ -274,13 +286,9 @@ const CalendarWidget: React.FC<CalendarWidgetProps> = ({ refreshKey }) => {
               </button>
             </div>
             
-            {isLoading ? (
+            {loading.isLoading ? (
               <div className="no-appointments">
-                <p>Randevular yükleniyor...</p>
-              </div>
-            ) : error ? (
-              <div className="no-appointments error">
-                <p>{error}</p>
+                <p>{loading.loadingMessage || 'Randevular yükleniyor...'}</p>
               </div>
             ) : selectedDayAppointments.length > 0 ? (
               <div className="day-appointments">
