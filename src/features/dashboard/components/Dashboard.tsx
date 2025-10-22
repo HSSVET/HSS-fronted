@@ -286,15 +286,15 @@ const Dashboard: React.FC = () => {
       <div className="stats-container grid gap-3" style={{ gridTemplateColumns: 'repeat(3, minmax(180px, 1fr))' }}>
         <div className="ui-card panel ui-card--hover stat-card">
           <h3 className="muted">Toplam Aktif Hasta</h3>
-          <div className="ui-stat-number">{loading ? '...' : stats.totalAnimals}</div>
+          <div className="ui-stat-number">{loading.isLoading ? '...' : stats.totalAnimals}</div>
         </div>
         <div className="ui-card panel ui-card--hover stat-card">
           <h3 className="muted">Bugünkü Randevular</h3>
-          <div className="ui-stat-number">{loading ? '...' : stats.todaysAppointments}</div>
+          <div className="ui-stat-number">{loading.isLoading ? '...' : stats.todaysAppointments}</div>
         </div>
         <div className="ui-card panel ui-card--hover stat-card">
           <h3 className="muted">Klinikte Bulunan Hayvanlar</h3>
-          <div className="ui-stat-number">{loading ? '...' : stats.clinicAnimals}</div>
+          <div className="ui-stat-number">{loading.isLoading ? '...' : stats.clinicAnimals}</div>
         </div>
       </div>
 
@@ -304,7 +304,7 @@ const Dashboard: React.FC = () => {
             <h2 className="ui-section-title"><span className="icon icon-hospital"></span> Klinikte Yatan Hastalar</h2>
           </div>
           <div className="widget-content">
-            {loading ? (
+            {loading.isLoading ? (
               <div className="muted">Yükleniyor...</div>
             ) : hospitalizedPatients.length === 0 ? (
               <div className="muted">Şu anda klinikte yatan hasta bulunmuyor.</div>
@@ -344,7 +344,7 @@ const Dashboard: React.FC = () => {
             <h2 className="ui-section-title"><span className="icon icon-paw"></span> Son Hasta Aktiviteleri</h2>
           </div>
           <div className="widget-content">
-            {loading ? (
+            {loading.isLoading ? (
               <div className="muted">Yükleniyor...</div>
             ) : recentActivities.length === 0 ? (
               <div className="muted">Bugün gerçekleşen kayıt bulunmuyor.</div>
