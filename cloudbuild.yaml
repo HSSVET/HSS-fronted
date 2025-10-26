@@ -59,15 +59,20 @@ steps:
         
         # Change to HSS directory if exists
         pwd
+        ls -la
         if [ -d "HSS" ]; then
           cd HSS
         fi
+        
+        # Check firebase.json exists
+        echo "📁 Firebase config kontrolü..."
+        ls -la firebase.json
+        cat firebase.json
         
         # Deploy to staging channel
         echo "📤 Staging channel'a deploy..."
         firebase hosting:channel:deploy staging \
           --project ${_FIREBASE_PROJECT} \
-          --only hosting:staging \
           --non-interactive
         
         echo "✅ Deploy başarılı!"
