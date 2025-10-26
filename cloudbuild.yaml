@@ -43,7 +43,7 @@ steps:
   # Note: Firebase CLI is installed in this step via npm
 
   # 4) Deploy (staging channel)
-  - name: 'gcr.io/cloud-builders/npm'
+  - name: 'node:20-alpine'
     id: 'deploy'
     entrypoint: 'bash'
     args:
@@ -55,7 +55,7 @@ steps:
         
         # Install firebase-tools
         echo "🔥 Firebase CLI yükleniyor..."
-        npm install -g firebase-tools
+        npm install -g firebase-tools@latest
         
         # Change to HSS directory if exists
         pwd
