@@ -12,7 +12,11 @@ steps:
       - |
         set -euo pipefail
         echo "📦 Dependencies yükleniyor..."
-        cd HSS
+        pwd
+        ls -la
+        if [ -d "HSS" ]; then
+          cd HSS
+        fi
         npm ci --prefer-offline --no-audit
         echo "✅ Dependencies hazır!"
 
@@ -24,9 +28,12 @@ steps:
       - '-c'
       - |
         set -euo pipefail
-        cd HSS
         echo "🔨 Frontend build..."
         echo "Backend URL: ${_BACKEND_URL}"
+        pwd
+        if [ -d "HSS" ]; then
+          cd HSS
+        fi
         echo "REACT_APP_API_URL=${_BACKEND_URL}" > .env.production
         cat .env.production
         npm run build
@@ -54,7 +61,10 @@ steps:
         set -euo pipefail
         echo "🚀 Firebase Hosting deploy..."
         echo "Project: ${_FIREBASE_PROJECT}"
-        cd HSS
+        pwd
+        if [ -d "HSS" ]; then
+          cd HSS
+        fi
         # Not: Eğer firebase.json'da 'staging' adlı target yoksa --only'i kaldırıp --site kullanın:
         # firebase hosting:channel:deploy staging --project ${_FIREBASE_PROJECT} --site <siteId> --non-interactive
         firebase hosting:channel:deploy staging \
