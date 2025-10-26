@@ -33,6 +33,8 @@ export class ApiClient {
   private responseInterceptors: ResponseInterceptor[] = [];
   private isRefreshing = false;
   private refreshPromise: Promise<string | null> | null = null;
+  private defaultMaxRetries = 3;
+  private defaultRetryDelay = 1000;
 
   constructor() {
     this.tokenManager = TokenManager.getInstance();
@@ -105,6 +107,39 @@ export class ApiClient {
     // This would need to be implemented based on your specific retry logic
     // For now, we'll just rethrow the original error
     throw originalError;
+  }
+
+  private async executeWithRetry<T>(
+    requestFn: () => Promise<Response>,
+    retries: number = this.defaultMaxRetries,
+    delay: number = this.defaultRetryDelay
+  ): Promise<Response> {
+    let lastError: any;
+    
+    for (let attempt = 0; attempt <= retries; attempt++) {
+      try {
+        return await requestFn();
+      } catch (error: any) {
+        lastError = error;
+        
+        // Don't retry on 4xx errors (client errors)
+        if (error.status >= 400 && error.status < 500) {
+          throw error;
+        }
+        
+        // Don't retry on last attempt
+        if (attempt === retries) {
+          throw error;
+        }
+        
+        // Exponential backoff
+        const waitTime = delay * Math.pow(2, attempt);
+        console.log(`Retrying request (attempt ${attempt + 1}/${retries + 1}) after ${waitTime}ms`);
+        await new Promise(resolve => setTimeout(resolve, waitTime));
+      }
+    }
+    
+    throw lastError;
   }
 
   private handleAuthFailure(): void {
@@ -209,7 +244,7 @@ export class ApiClient {
     return error;
   }
 
-  async get<T>(endpoint: string): Promise<ApiResponse<T>> {
+  async get<T>(endpoint: string, retries?: number): Promise<ApiResponse<T>> {
     if (OFFLINE_MODE) {
       console.log('API GET çağrısı OFFLINE_MODE nedeniyle atlandı:', endpoint);
       return Promise.resolve({
@@ -223,10 +258,15 @@ export class ApiClient {
     try {
       console.log('API GET çağrısı:', `${API_BASE_URL}${endpoint}`);
       const headers = await this.getHeaders();
-      const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-        method: 'GET',
-        headers,
-      });
+      
+      const response = await this.executeWithRetry(
+        () => fetch(`${API_BASE_URL}${endpoint}`, {
+          method: 'GET',
+          headers,
+        }),
+        retries
+      );
+      
       console.log('API GET response:', response.status, response.statusText);
       return await this.handleResponse<T>(response);
     } catch (error) {
@@ -235,7 +275,7 @@ export class ApiClient {
     }
   }
 
-  async post<T>(endpoint: string, data?: any): Promise<ApiResponse<T>> {
+  async post<T>(endpoint: string, data?: any, retries?: number): Promise<ApiResponse<T>> {
     if (OFFLINE_MODE) {
       return Promise.resolve({
         success: false,
@@ -245,15 +285,18 @@ export class ApiClient {
       });
     }
     const headers = await this.getHeaders();
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-      method: 'POST',
-      headers,
-      body: data ? JSON.stringify(data) : undefined,
-    });
+    const response = await this.executeWithRetry(
+      () => fetch(`${API_BASE_URL}${endpoint}`, {
+        method: 'POST',
+        headers,
+        body: data ? JSON.stringify(data) : undefined,
+      }),
+      retries
+    );
     return this.handleResponse<T>(response);
   }
 
-  async put<T>(endpoint: string, data?: any): Promise<ApiResponse<T>> {
+  async put<T>(endpoint: string, data?: any, retries?: number): Promise<ApiResponse<T>> {
     if (OFFLINE_MODE) {
       return Promise.resolve({
         success: false,
@@ -263,15 +306,18 @@ export class ApiClient {
       });
     }
     const headers = await this.getHeaders();
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-      method: 'PUT',
-      headers,
-      body: data ? JSON.stringify(data) : undefined,
-    });
+    const response = await this.executeWithRetry(
+      () => fetch(`${API_BASE_URL}${endpoint}`, {
+        method: 'PUT',
+        headers,
+        body: data ? JSON.stringify(data) : undefined,
+      }),
+      retries
+    );
     return this.handleResponse<T>(response);
   }
 
-  async delete<T>(endpoint: string): Promise<ApiResponse<T>> {
+  async delete<T>(endpoint: string, retries?: number): Promise<ApiResponse<T>> {
     if (OFFLINE_MODE) {
       return Promise.resolve({
         success: false,
@@ -281,14 +327,17 @@ export class ApiClient {
       });
     }
     const headers = await this.getHeaders();
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-      method: 'DELETE',
-      headers,
-    });
+    const response = await this.executeWithRetry(
+      () => fetch(`${API_BASE_URL}${endpoint}`, {
+        method: 'DELETE',
+        headers,
+      }),
+      retries
+    );
     return this.handleResponse<T>(response);
   }
 
-  async patch<T>(endpoint: string, data?: any): Promise<ApiResponse<T>> {
+  async patch<T>(endpoint: string, data?: any, retries?: number): Promise<ApiResponse<T>> {
     if (OFFLINE_MODE) {
       return Promise.resolve({
         success: false,
@@ -298,11 +347,14 @@ export class ApiClient {
       });
     }
     const headers = await this.getHeaders();
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-      method: 'PATCH',
-      headers,
-      body: data ? JSON.stringify(data) : undefined,
-    });
+    const response = await this.executeWithRetry(
+      () => fetch(`${API_BASE_URL}${endpoint}`, {
+        method: 'PATCH',
+        headers,
+        body: data ? JSON.stringify(data) : undefined,
+      }),
+      retries
+    );
     return this.handleResponse<T>(response);
   }
 }

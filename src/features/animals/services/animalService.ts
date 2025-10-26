@@ -1,4 +1,3 @@
-import { ServiceFactory } from '../../../services/mockServiceFactory';
 import type { ApiResponse, PaginatedResponse, SpringPage } from '../../../types/common';
 import type { Animal, MedicalRecord, Vaccination } from '../types/animal';
 
@@ -165,32 +164,37 @@ export class AnimalService {
 
   // Get animal by ID
   async getAnimalById(id: string): Promise<ApiResponse<AnimalRecord>> {
-    const service = ServiceFactory.getAnimalService();
-    return service.getAnimalById(id);
+    const { apiClient } = await import('../../../services/api');
+    const response = await apiClient.get<AnimalRecord>(`/api/animals/${id}`);
+    return response;
   }
 
   // Create new animal
   async createAnimal(animal: Omit<Animal, 'id' | 'createdAt' | 'updatedAt'>): Promise<ApiResponse<AnimalRecord>> {
-    const service = ServiceFactory.getAnimalService();
-    return service.createAnimal(animal);
+    const { apiClient } = await import('../../../services/api');
+    const response = await apiClient.post<AnimalRecord>('/api/animals', animal);
+    return response;
   }
 
   // Update animal
   async updateAnimal(id: string, animal: Partial<Animal>): Promise<ApiResponse<AnimalRecord>> {
-    const service = ServiceFactory.getAnimalService();
-    return service.updateAnimal(id, animal);
+    const { apiClient } = await import('../../../services/api');
+    const response = await apiClient.put<AnimalRecord>(`/api/animals/${id}`, animal);
+    return response;
   }
 
   // Delete animal
   async deleteAnimal(id: string): Promise<ApiResponse<void>> {
-    const service = ServiceFactory.getAnimalService();
-    return service.deleteAnimal(id);
+    const { apiClient } = await import('../../../services/api');
+    const response = await apiClient.delete<void>(`/api/animals/${id}`);
+    return response;
   }
 
   // Get animal medical history
   async getMedicalHistory(animalId: string): Promise<ApiResponse<MedicalRecord[]>> {
-    const service = ServiceFactory.getAnimalService();
-    return service.getMedicalHistory(animalId);
+    const { apiClient } = await import('../../../services/api');
+    const response = await apiClient.get<MedicalRecord[]>(`/api/animals/${animalId}/medical-history`);
+    return response;
   }
 
   // Add medical record
@@ -198,14 +202,16 @@ export class AnimalService {
     animalId: string,
     record: Omit<MedicalRecord, 'id' | 'createdAt' | 'updatedAt' | 'animalId'>
   ): Promise<ApiResponse<MedicalRecord>> {
-    const service = ServiceFactory.getAnimalService();
-    return service.addMedicalRecord(animalId, record);
+    const { apiClient } = await import('../../../services/api');
+    const response = await apiClient.post<MedicalRecord>(`/api/animals/${animalId}/medical-history`, record);
+    return response;
   }
 
   // Get animal vaccinations
   async getVaccinations(animalId: string): Promise<ApiResponse<Vaccination[]>> {
-    const service = ServiceFactory.getAnimalService();
-    return service.getVaccinations(animalId);
+    const { apiClient } = await import('../../../services/api');
+    const response = await apiClient.get<Vaccination[]>(`/api/animals/${animalId}/vaccinations`);
+    return response;
   }
 
   // Add vaccination
@@ -213,74 +219,86 @@ export class AnimalService {
     animalId: string,
     vaccination: Omit<Vaccination, 'id' | 'createdAt' | 'updatedAt' | 'animalId'>
   ): Promise<ApiResponse<Vaccination>> {
-    const service = ServiceFactory.getAnimalService();
-    return service.addVaccination(animalId, vaccination);
+    const { apiClient } = await import('../../../services/api');
+    const response = await apiClient.post<Vaccination>(`/api/animals/${animalId}/vaccinations`, vaccination);
+    return response;
   }
 
   // Search animals by owner
   async searchByOwner(ownerName: string): Promise<ApiResponse<AnimalRecord[]>> {
-    const service = ServiceFactory.getAnimalService();
-    return service.searchByOwner(ownerName);
+    const { apiClient } = await import('../../../services/api');
+    const response = await apiClient.get<AnimalRecord[]>(`/api/animals?ownerName=${encodeURIComponent(ownerName)}`);
+    return response;
   }
 
   // Search animals by name
   async searchByName(name: string): Promise<ApiResponse<AnimalRecord[]>> {
-    const service = ServiceFactory.getAnimalService();
-    return service.searchByName(name);
+    const { apiClient } = await import('../../../services/api');
+    const response = await apiClient.get<AnimalRecord[]>(`/api/animals?name=${encodeURIComponent(name)}`);
+    return response;
   }
 
   // Search animals by microchip
   async searchByMicrochip(microchip: string): Promise<ApiResponse<AnimalRecord[]>> {
-    const service = ServiceFactory.getAnimalService();
-    return service.searchByMicrochip(microchip);
+    const { apiClient } = await import('../../../services/api');
+    const response = await apiClient.get<AnimalRecord[]>(`/api/animals?microchipNumber=${encodeURIComponent(microchip)}`);
+    return response;
   }
 
   // Get animal by microchip number
   async getAnimalByMicrochip(microchipNumber: string): Promise<ApiResponse<AnimalRecord>> {
-    const service = ServiceFactory.getAnimalService();
-    return service.getAnimalByMicrochip(microchipNumber);
+    const { apiClient } = await import('../../../services/api');
+    const response = await apiClient.get<AnimalRecord>(`/api/animals/microchip/${microchipNumber}`);
+    return response;
   }
 
   // Get animals by owner ID
   async getAnimalsByOwnerId(ownerId: string): Promise<ApiResponse<AnimalRecord[]>> {
-    const service = ServiceFactory.getAnimalService();
-    return service.getAnimalsByOwnerId(ownerId);
+    const { apiClient } = await import('../../../services/api');
+    const response = await apiClient.get<AnimalRecord[]>(`/api/animals/owner/${ownerId}`);
+    return response;
   }
 
   // Get animals by species ID
   async getAnimalsBySpeciesId(speciesId: string): Promise<ApiResponse<AnimalRecord[]>> {
-    const service = ServiceFactory.getAnimalService();
-    return service.getAnimalsBySpeciesId(speciesId);
+    const { apiClient } = await import('../../../services/api');
+    const response = await apiClient.get<AnimalRecord[]>(`/api/animals/species/${speciesId}`);
+    return response;
   }
 
   // Get animals by breed ID
   async getAnimalsByBreedId(breedId: string): Promise<ApiResponse<AnimalRecord[]>> {
-    const service = ServiceFactory.getAnimalService();
-    return service.getAnimalsByBreedId(breedId);
+    const { apiClient } = await import('../../../services/api');
+    const response = await apiClient.get<AnimalRecord[]>(`/api/animals/breed/${breedId}`);
+    return response;
   }
 
   // Get animals with allergies
   async getAnimalsWithAllergies(): Promise<ApiResponse<AnimalRecord[]>> {
-    const service = ServiceFactory.getAnimalService();
-    return service.getAnimalsWithAllergies();
+    const { apiClient } = await import('../../../services/api');
+    const response = await apiClient.get<AnimalRecord[]>('/api/animals?hasAllergies=true');
+    return response;
   }
 
   // Get animals with chronic diseases
   async getAnimalsWithChronicDiseases(): Promise<ApiResponse<AnimalRecord[]>> {
-    const service = ServiceFactory.getAnimalService();
-    return service.getAnimalsWithChronicDiseases();
+    const { apiClient } = await import('../../../services/api');
+    const response = await apiClient.get<AnimalRecord[]>('/api/animals?hasChronicDiseases=true');
+    return response;
   }
 
   // Get animals with birthday today
   async getAnimalsWithBirthdayToday(): Promise<ApiResponse<AnimalRecord[]>> {
-    const service = ServiceFactory.getAnimalService();
-    return service.getAnimalsWithBirthdayToday();
+    const { apiClient } = await import('../../../services/api');
+    const response = await apiClient.get<AnimalRecord[]>('/api/animals/birthday/today');
+    return response;
   }
 
   // Get animals with birthday this month
   async getAnimalsWithBirthdayThisMonth(): Promise<ApiResponse<AnimalRecord[]>> {
-    const service = ServiceFactory.getAnimalService();
-    return service.getAnimalsWithBirthdayThisMonth();
+    const { apiClient } = await import('../../../services/api');
+    const response = await apiClient.get<AnimalRecord[]>('/api/animals/birthday/this-month');
+    return response;
   }
 }
 

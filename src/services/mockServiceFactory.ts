@@ -1,44 +1,40 @@
-import { OFFLINE_MODE } from '../config/offline';
-import { AnimalService } from '../features/animals/services/animalService';
-import { MockAnimalService } from './mockAnimalService';
-import { MockAppointmentService } from './mockAppointmentService';
-import { MockOwnerService } from './mockOwnerService';
+// Import types only to avoid circular dependency
+import type { AnimalService as AnimalServiceType } from '../features/animals/services/animalService';
+import type { AppointmentService as AppointmentServiceType } from '../features/appointments/services/appointmentService';
 
-// Create singleton instances
-const mockAnimalService = new MockAnimalService();
-const mockAppointmentService = new MockAppointmentService();
-const mockOwnerService = new MockOwnerService();
-const realAnimalService = new AnimalService();
+// Lazy import to avoid circular dependency
+let realAnimalService: AnimalServiceType | null = null;
+let realAppointmentService: AppointmentServiceType | null = null;
 
-// Service factory that returns mock services when offline mode is enabled
+// Service factory that returns real services
 export class ServiceFactory {
-    static getAnimalService() {
-        return OFFLINE_MODE ? mockAnimalService : realAnimalService;
+    static getAnimalService(): AnimalServiceType {
+        if (!realAnimalService) {
+            // Lazy load to avoid circular dependency
+            const { AnimalService } = require('../features/animals/services/animalService');
+            realAnimalService = new AnimalService();
+        }
+        return realAnimalService!;
     }
 
-    static getAppointmentService() {
-        if (OFFLINE_MODE) {
-            return mockAppointmentService;
-        } else {
-            // Lazy load AppointmentService to avoid circular dependency
+    static getAppointmentService(): AppointmentServiceType {
+        if (!realAppointmentService) {
+            // Lazy load to avoid circular dependency
             const { AppointmentService } = require('../features/appointments/services/appointmentService');
-            return new AppointmentService();
+            realAppointmentService = new AppointmentService();
         }
+        return realAppointmentService!;
     }
 
     static getOwnerService() {
-        return mockOwnerService; // Always use mock for now since we don't have real owner service
+        // Owner service doesn't exist yet, return null
+        return null;
     }
 }
 
-// Export individual services for easy access
-export const animalService = ServiceFactory.getAnimalService();
-export const ownerService = ServiceFactory.getOwnerService();
-
-// Lazy export for appointmentService to avoid circular dependency
+// Export individual services for easy access (lazy loaded)
+export const getAnimalService = () => ServiceFactory.getAnimalService();
+export const getOwnerService = () => ServiceFactory.getOwnerService();
 export const getAppointmentService = () => ServiceFactory.getAppointmentService();
-
-// Export mock services directly for testing
-export { MockAnimalService, MockAppointmentService, MockOwnerService };
 
 export default ServiceFactory;

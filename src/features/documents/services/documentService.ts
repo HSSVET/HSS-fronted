@@ -14,8 +14,33 @@ export class DocumentService {
   private baseUrl = '/api/documents';
 
   async getAllDocuments(page: number = 0, size: number = 10): Promise<PageResponse<Document>> {
-    const response = await apiClient.get<PageResponse<Document>>(`${this.baseUrl}?page=${page}&size=${size}`);
-    return response.data;
+    try {
+      const response = await apiClient.get<PageResponse<Document>>(`${this.baseUrl}?page=${page}&size=${size}`);
+      
+      // Check if response is successful and has data
+      if (response.success && response.data) {
+        return response.data;
+      }
+      
+      // If response failed, return empty page response
+      console.warn('Documents fetch failed, returning empty page');
+      return {
+        content: [],
+        totalElements: 0,
+        totalPages: 0,
+        size,
+        number: page,
+      };
+    } catch (error) {
+      console.warn('Documents fetch error, returning empty page:', error);
+      return {
+        content: [],
+        totalElements: 0,
+        totalPages: 0,
+        size,
+        number: page,
+      };
+    }
   }
 
   async getDocumentById(id: number): Promise<Document> {
@@ -52,24 +77,56 @@ export class DocumentService {
     await apiClient.delete(`${this.baseUrl}/${id}`);
   }
 
-  async uploadFile(file: File, folder: string = 'documents'): Promise<FileUploadResponse> {
+  async uploadFile(file: File, folder: string = 'documents', onProgress?: (progress: number) => void): Promise<FileUploadResponse> {
     const formData = new FormData();
     formData.append('file', file);
     formData.append('folder', folder);
 
-    const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:8090'}/api/files/upload`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
-      },
-      body: formData,
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+
+      // Progress tracking
+      if (onProgress) {
+        xhr.upload.addEventListener('progress', (e) => {
+          if (e.lengthComputable) {
+            const progress = (e.loaded / e.total) * 100;
+            onProgress(progress);
+          }
+        });
+      }
+
+      // Load completion
+      xhr.addEventListener('load', () => {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          try {
+            const response = JSON.parse(xhr.responseText);
+            resolve(response);
+          } catch (error) {
+            reject(new Error('Failed to parse response'));
+          }
+        } else {
+          reject(new Error(`File upload failed: ${xhr.statusText}`));
+        }
+      });
+
+      // Error handling
+      xhr.addEventListener('error', () => {
+        reject(new Error('File upload failed'));
+      });
+
+      xhr.addEventListener('abort', () => {
+        reject(new Error('File upload aborted'));
+      });
+
+      const token = localStorage.getItem('access_token');
+      xhr.open('POST', `${process.env.REACT_APP_API_URL || 'http://localhost:8090'}/api/files/upload`);
+      
+      if (token) {
+        xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+      }
+
+      xhr.send(formData);
     });
-
-    if (!response.ok) {
-      throw new Error(`File upload failed: ${response.statusText}`);
-    }
-
-    return await response.json();
   }
 
   async downloadFile(fileUrl: string): Promise<Blob> {
