@@ -6,10 +6,11 @@ import VaccineApplicationGuide from './VaccineApplicationGuide';
 import VaccineHistory from './VaccineHistory';
 import StockNotifications from './StockNotifications';
 import VaccinationCard from './VaccinationCard';
+import VaccineReminder from './VaccineReminder';
 import '../styles/Vaccination.css';
 
 const VaccinationDashboard: React.FC = () => {
-    const [activeTab, setActiveTab] = useState<'stock' | 'guide' | 'history' | 'card' | 'notifications'>('stock');
+    const [activeTab, setActiveTab] = useState<'stock' | 'guide' | 'history' | 'card' | 'notifications' | 'reminders'>('stock');
     const [stats, setStats] = useState<VaccinationStats | null>(null);
     const [stockAlerts, setStockAlerts] = useState<StockAlert[]>([]);
     const [loading, setLoading] = useState(true);
@@ -47,7 +48,8 @@ const VaccinationDashboard: React.FC = () => {
             label: 'Stok Bildirimleri',
             icon: '🔔',
             badge: unreadAlerts > 0 ? unreadAlerts : undefined
-        }
+        },
+        { id: 'reminders', label: 'Aşı Hatırlatıcıları', icon: '⏰' }
     ];
 
     const renderTabContent = () => {
@@ -62,6 +64,8 @@ const VaccinationDashboard: React.FC = () => {
                 return <VaccinationCard />;
             case 'notifications':
                 return <StockNotifications />;
+            case 'reminders':
+                return <VaccineReminder />;
             default:
                 return <VaccineStockInfo />;
         }
