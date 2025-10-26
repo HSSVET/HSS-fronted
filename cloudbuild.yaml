@@ -27,9 +27,8 @@ steps:
         cd HSS
         echo "🔨 Frontend build..."
         echo "Backend URL: ${_BACKEND_URL}"
-        ENV_FILE=".env.${_ENVIRONMENT}"
-        echo "REACT_APP_API_URL=${_BACKEND_URL}" > "${ENV_FILE}"
-        cat "${ENV_FILE}"
+        echo "REACT_APP_API_URL=${_BACKEND_URL}" > .env.production
+        cat .env.production
         npm run build
         echo "✅ Build tamamlandı!"
 
@@ -90,6 +89,7 @@ substitutions:
   _BACKEND_URL: 'https://hss-backend-dev-296268886725.europe-west3.run.app'
   _FIREBASE_PROJECT: 'hss-cloud-473511'
   _ENVIRONMENT: 'staging'  # staging | production
+  _MACHINE_TYPE: 'E2_HIGHCPU_8'
 
 options:
   logging: CLOUD_LOGGING_ONLY
