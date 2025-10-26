@@ -15,6 +15,9 @@ const PERMISSION_MAPPINGS = {
   'billing:read': ['ADMIN', 'VETERINER', 'SEKRETER'],
   'billing:write': ['ADMIN', 'SEKRETER'],
   'billing:delete': ['ADMIN'],
+  'documents:read': ['ADMIN', 'VETERINER', 'SEKRETER', 'TEKNISYEN'], // Belgeler için eklendi
+  'documents:write': ['ADMIN', 'VETERINER', 'SEKRETER'],
+  'documents:delete': ['ADMIN', 'VETERINER'],
   'reports:read': ['ADMIN', 'VETERINER'],
   'reports:write': ['ADMIN'],
   'settings:read': ['ADMIN'],
