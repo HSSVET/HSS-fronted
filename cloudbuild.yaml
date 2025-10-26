@@ -1,87 +1,77 @@
 # Cloud Build configuration for HSS Frontend
-# Trigger: develop branch → Firebase Hosting (hssvet.com staging)
+# Trigger: develop branch → Firebase Hosting (staging)
 # Connects to: hss-backend-dev
 
 steps:
-  # 1. Install dependencies with caching
+  # 1) Install dependencies
   - name: 'gcr.io/cloud-builders/npm'
     id: 'install'
     entrypoint: 'bash'
     args:
       - '-c'
       - |
+        set -euo pipefail
         echo "📦 Dependencies yükleniyor..."
         cd HSS
         npm ci --prefer-offline --no-audit
         echo "✅ Dependencies hazır!"
 
-  # 2. Build React app with environment variables
+  # 2) Build
   - name: 'gcr.io/cloud-builders/npm'
     id: 'build'
     entrypoint: 'bash'
     args:
       - '-c'
       - |
-        set -e
+        set -euo pipefail
         cd HSS
-        
-        echo "🔨 Frontend build başlıyor..."
+        echo "🔨 Frontend build..."
         echo "Backend URL: ${_BACKEND_URL}"
-        
-        # Create .env file with backend URL based on environment
         ENV_FILE=".env.${_ENVIRONMENT}"
-        echo "REACT_APP_API_URL=${_BACKEND_URL}" > ${ENV_FILE}
-        cat ${ENV_FILE}
-        
+        echo "REACT_APP_API_URL=${_BACKEND_URL}" > "${ENV_FILE}"
+        cat "${ENV_FILE}"
         npm run build
-        
         echo "✅ Build tamamlandı!"
 
-  # 3. Install Firebase tools
+  # 3) Firebase CLI
   - name: 'gcr.io/cloud-builders/npm'
     id: 'firebase-tools'
     entrypoint: 'bash'
     args:
       - '-c'
       - |
+        set -euo pipefail
         echo "🔥 Firebase tools yükleniyor..."
         npm install -g firebase-tools
         echo "✅ Firebase tools hazır!"
 
-  # 4. Deploy to Firebase Hosting Staging Channel
+  # 4) Deploy (staging channel)
   - name: 'gcr.io/cloud-builders/npm'
     id: 'deploy'
     entrypoint: 'bash'
     args:
       - '-c'
       - |
-        set -e
-        
-        echo "🚀 Firebase Hosting (staging channel) deploy başlıyor..."
+        set -euo pipefail
+        echo "🚀 Firebase Hosting deploy..."
         echo "Project: ${_FIREBASE_PROJECT}"
-        
         cd HSS
-        
-        # Firebase CLI Cloud Build service account'ı kullanır
-        # Staging channel'a deploy ediyoruz (production değil)
-        # Staging channel'a deploy ediyoruz (staging.hssvet.com domain'i otomatik bağlanır)
+        # Not: Eğer firebase.json'da 'staging' adlı target yoksa --only'i kaldırıp --site kullanın:
+        # firebase hosting:channel:deploy staging --project ${_FIREBASE_PROJECT} --site <siteId> --non-interactive
         firebase hosting:channel:deploy staging \
           --project ${_FIREBASE_PROJECT} \
           --only hosting:staging \
           --non-interactive
-        
         echo "✅ Deploy başarılı!"
-        echo "🌐 Staging geçici URL oluşturuldu"
-        echo "📝 Kalıcı domain (staging.hssvet.com) DNS propagation sonrası aktif olacak"
-        echo "🔗 Firebase Console → Hosting → Channels'dan geçici URL'i görebilirsiniz"
 
-  # 5. Logging
+  # 5) Logging
   - name: 'gcr.io/cloud-builders/gcloud'
     id: 'monitoring'
     entrypoint: 'bash'
     args:
       - '-c'
       - |
+        set -euo pipefail
         echo "📊 Deployment logu gönderiliyor..."
         gcloud logging write hss-frontend-deployment \
           "Frontend deployment completed successfully" \
@@ -95,18 +85,16 @@ steps:
             "deployment_time": "'$(date -u +%Y-%m-%dT%H:%M:%SZ)'"
           }' || echo "⚠️ Monitoring gönderilemedi"
 
-# Substitution variables (set in trigger configuration)
+# Substitutions
 substitutions:
   _BACKEND_URL: 'https://hss-backend-dev-296268886725.europe-west3.run.app'
   _FIREBASE_PROJECT: 'hss-cloud-473511'
-  _ENVIRONMENT: 'staging'  # staging veya production
+  _ENVIRONMENT: 'staging'  # staging | production
 
-# Options
 options:
   logging: CLOUD_LOGGING_ONLY
-  machineType: 'e2-highcpu-8'  # 8 vCPU, 8GB RAM - sufficient for npm build
+  machineType: E2_HIGHCPU_8   # << düzeltildi (enum)
   diskSizeGb: 50
   substitution_option: 'ALLOW_LOOSE'
 
 timeout: '1200s'
-
