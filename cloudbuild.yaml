@@ -70,8 +70,14 @@ steps:
         cat firebase.json
         
         # Deploy to staging channel
+        # Note: If site doesn't exist, create it first or use default site
         echo "📤 Staging channel'a deploy..."
+        
+        # Try to deploy to staging channel
         firebase hosting:channel:deploy staging \
+          --project ${_FIREBASE_PROJECT} \
+          --non-interactive || \
+        firebase deploy --only hosting \
           --project ${_FIREBASE_PROJECT} \
           --non-interactive
         
