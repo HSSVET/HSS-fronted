@@ -69,3 +69,5 @@ export const useLoading = (): UseLoadingReturn => {
     updateMessage,
   };
 };
+
+export default useLoading;

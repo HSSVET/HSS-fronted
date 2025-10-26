@@ -192,7 +192,10 @@ const Dashboard: React.FC = () => {
         status: STATUS_LABELS[index % STATUS_LABELS.length],
       }));
 
-      const activities: ActivityItem[] = (appointmentItems || [])
+      // Ensure appointmentItems is an array
+      const appointmentArray = Array.isArray(appointmentItems) ? appointmentItems : [];
+      
+      const activities: ActivityItem[] = appointmentArray
         .slice()
         .sort((a, b) => {
           const dateA = new Date(a.dateTime || '').getTime();
@@ -216,7 +219,7 @@ const Dashboard: React.FC = () => {
 
       setStats({
         totalAnimals: animalResponse.data?.total ?? animalItems.length,
-        todaysAppointments: appointmentItems.length,
+        todaysAppointments: appointmentArray.length,
         clinicAnimals: patients.length,
       });
       setHospitalizedPatients(patients);

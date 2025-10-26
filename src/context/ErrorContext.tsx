@@ -20,6 +20,7 @@ interface ErrorContextType {
   showSuccess: (message: string) => void;
   showWarning: (message: string) => void;
   showInfo: (message: string) => void;
+  showError: (message: string, details?: string) => void;
 }
 
 const ErrorContext = createContext<ErrorContextType | undefined>(undefined);
@@ -85,6 +86,10 @@ export const ErrorProvider: React.FC<ErrorProviderProps> = ({ children }) => {
     addError(message, 'info');
   }, [addError]);
 
+  const showError = useCallback((message: string, details?: string) => {
+    addError(message, 'error', details);
+  }, [addError]);
+
   return (
     <ErrorContext.Provider value={{
       errors,
@@ -94,6 +99,7 @@ export const ErrorProvider: React.FC<ErrorProviderProps> = ({ children }) => {
       showSuccess,
       showWarning,
       showInfo,
+      showError,
     }}>
       {children}
     </ErrorContext.Provider>
