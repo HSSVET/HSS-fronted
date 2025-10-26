@@ -10,6 +10,7 @@ import { AnimalPage, AnimalDetailPage } from './features/animals';
 import { AppointmentPage } from './features/appointments';
 import { LabDashboard, LabTestTypes } from './features/laboratory';
 import { Billing } from './features/billing';
+import { DocumentPage } from './features/documents';
 import Toast from './components/Toast';
 
 // Error Boundaries
@@ -223,6 +224,18 @@ function App() {
                   <Layout>
                     <PageErrorBoundary pageName="Reports">
                       <div>Raporlar Sayfası (Yakında)</div>
+                    </PageErrorBoundary>
+                  </Layout>
+                }
+              />
+
+              {/* Documents */}
+              <Route
+                path="/documents"
+                element={
+                  <Layout>
+                    <PageErrorBoundary pageName="Documents">
+                      <DocumentPage />
                     </PageErrorBoundary>
                   </Layout>
                 }

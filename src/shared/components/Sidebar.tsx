@@ -36,6 +36,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, toggleSidebar }) => {
     { icon: 'icon-syringe', text: 'Aşı Yönetimi', path: '/vaccinations', permission: 'vaccinations:read' },
     { icon: 'icon-billing', text: 'Ödeme & Fatura', path: '/billing', permission: 'billing:read' },
     { icon: 'icon-box', text: 'Envanter/Stok', path: '/inventory', permission: 'inventory:read' },
+    { icon: 'icon-document', text: 'Belgeler/Kontratlar', path: '/documents', permission: 'documents:read' },
     { icon: 'icon-chart', text: 'Raporlar', path: '/reports', permission: 'reports:read' },
     { icon: 'icon-settings', text: 'Ayarlar', path: '/settings', permission: 'settings:read' },
   ];
