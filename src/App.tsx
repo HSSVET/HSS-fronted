@@ -10,6 +10,7 @@ import { AnimalPage, AnimalDetailPage } from './features/animals';
 import { AppointmentPage } from './features/appointments';
 import { LabDashboard, LabTestTypes } from './features/laboratory';
 import { Billing } from './features/billing';
+import LoginPage from './components/auth/LoginPage';
 import Toast from './components/Toast';
 
 // Error Boundaries
@@ -111,6 +112,16 @@ function App() {
             <AppProvider>
               <Router>
             <Routes>
+              {/* Login Route */}
+              <Route
+                path="/login"
+                element={
+                  <PageErrorBoundary pageName="Login">
+                    <LoginPage />
+                  </PageErrorBoundary>
+                }
+              />
+
               {/* Main Dashboard Route */}
               <Route
                 path="/"
