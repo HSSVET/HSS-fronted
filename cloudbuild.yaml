@@ -79,12 +79,14 @@ steps:
           echo "📤 Production deploy (hosting:deploy)"
           firebase hosting:deploy \
             --project ${_FIREBASE_PROJECT} \
+            --site ${_HOSTING_SITE} \
             --non-interactive \
             --only hosting
         else
           echo "📤 Staging channel deploy (channel:deploy staging)"
           firebase hosting:channel:deploy staging \
             --project ${_FIREBASE_PROJECT} \
+            --site ${_HOSTING_SITE} \
             --non-interactive \
             --only hosting
         fi
@@ -118,6 +120,7 @@ substitutions:
   _FIREBASE_PROJECT: 'hss-cloud-473511'
   _ENVIRONMENT: 'staging'  # staging | production
   _MACHINE_TYPE: 'E2_HIGHCPU_8'
+  _HOSTING_SITE: 'hss-cloud-473511'
 
 options:
   logging: CLOUD_LOGGING_ONLY
