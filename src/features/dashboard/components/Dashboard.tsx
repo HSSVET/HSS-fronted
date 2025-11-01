@@ -8,6 +8,7 @@ import { useLoading } from '../../../hooks/useLoading';
 import LoadingSpinner from '../../../components/LoadingSpinner';
 import '../styles/Dashboard.css';
 import QuickAppointmentModal from './QuickAppointmentModal';
+import FastAppointmentModal from './FastAppointmentModal';
 import AddAnimalDialog from '../../animals/components/AddAnimalDialog';
 import { useAnimals } from '../../animals/hooks/useAnimals';
 
@@ -85,6 +86,7 @@ const Dashboard: React.FC = () => {
   const [hospitalizedPatients, setHospitalizedPatients] = useState<HospitalizedPatient[]>([]);
   const [recentActivities, setRecentActivities] = useState<ActivityItem[]>([]);
   const [isQuickModalOpen, setIsQuickModalOpen] = useState(false);
+  const [isFastModalOpen, setIsFastModalOpen] = useState(false);
   const [isAddAnimalOpen, setIsAddAnimalOpen] = useState(false);
   const [calendarRefreshKey, setCalendarRefreshKey] = useState(0);
 
@@ -349,6 +351,15 @@ const Dashboard: React.FC = () => {
         <div className="topbar__spacer" />
         <button
           type="button"
+          className="fast-appointment-btn"
+          style={{ marginRight: 8 }}
+          onClick={() => setIsFastModalOpen(true)}
+        >
+          <span className="fast-appointment-btn__sparkle">✨</span>
+          <span>Hızlı Randevu</span>
+        </button>
+        <button
+          type="button"
           className="ui-button"
           style={{ marginRight: 8 }}
           onClick={() => setIsQuickModalOpen(true)}
@@ -559,6 +570,12 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
       </div>
+
+      <FastAppointmentModal
+        isOpen={isFastModalOpen}
+        onClose={() => setIsFastModalOpen(false)}
+        onCreated={handleQuickAppointmentCreated}
+      />
 
       <QuickAppointmentModal
         isOpen={isQuickModalOpen}

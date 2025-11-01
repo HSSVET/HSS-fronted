@@ -632,4 +632,91 @@
   font-size: 12px;
   font-weight: var(--font-weight-medium);
   letter-spacing: 0.3px;
+}
+
+/* Fast Appointment Button - AI Style */
+.fast-appointment-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+  background-size: 200% 200%;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+  animation: gradient-shift 3s ease infinite;
+}
+
+.fast-appointment-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  transition: left 0.5s;
+}
+
+.fast-appointment-btn:hover::before {
+  left: 100%;
+}
+
+.fast-appointment-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+}
+
+.fast-appointment-btn:active {
+  transform: translateY(0);
+}
+
+.fast-appointment-btn__sparkle {
+  font-size: 16px;
+  animation: sparkle-rotate 2s ease-in-out infinite;
+  display: inline-block;
+}
+
+@keyframes gradient-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes sparkle-rotate {
+  0%, 100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+  25% {
+    transform: scale(1.2) rotate(90deg);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scale(1.3) rotate(180deg);
+    opacity: 0.8;
+  }
+  75% {
+    transform: scale(1.2) rotate(270deg);
+    opacity: 0.9;
+  }
 } 
