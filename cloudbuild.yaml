@@ -70,10 +70,6 @@ steps:
         ls -la firebase.json
         cat firebase.json
 
-        # List sites
-        echo "📋 Mevcut siteler:"
-        firebase hosting:sites:list --project ${_FIREBASE_PROJECT} || echo "⚠️ Site listesi alınamadı"
-
         # Conditional deploy
         if [ "${_ENVIRONMENT}" = "production" ]; then
           echo "📤 Production deploy (hosting:deploy)"
@@ -84,9 +80,9 @@ steps:
             --only hosting
         else
           echo "📤 Staging channel deploy (channel:deploy staging)"
+          # Note: channel:deploy does not support --site parameter
           firebase hosting:channel:deploy staging \
             --project ${_FIREBASE_PROJECT} \
-            --site ${_HOSTING_SITE} \
             --non-interactive \
             --only hosting
         fi
