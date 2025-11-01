@@ -117,7 +117,11 @@ function App() {
                   {/* Login Route - Public */}
                   <Route
                     path="/login"
-                    element={<LoginPage />}
+                    element={
+                      <PageErrorBoundary pageName="Login">
+                        <LoginPage />
+                      </PageErrorBoundary>
+                    }
                   />
 
                   {/* Main Dashboard Route - Protected */}
