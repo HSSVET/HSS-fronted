@@ -80,11 +80,10 @@ steps:
             --only hosting
         else
           echo "📤 Staging channel deploy (channel:deploy staging)"
-          # Note: channel:deploy does not support --site parameter
+          # Note: channel:deploy does not support --site or --only parameters
           firebase hosting:channel:deploy staging \
             --project ${_FIREBASE_PROJECT} \
-            --non-interactive \
-            --only hosting
+            --non-interactive
         fi
 
         echo "✅ Deploy başarılı!"
