@@ -19,7 +19,7 @@ class TokenManager {
   private readonly TOKEN_EXPIRY_KEY = 'hss_token_expiry';
   private readonly USER_INFO_KEY = 'hss_user_info';
 
-  private constructor() {}
+  private constructor() { }
 
   static getInstance(): TokenManager {
     if (!TokenManager.instance) {
@@ -70,7 +70,7 @@ class TokenManager {
   isTokenExpired(): boolean {
     const expiry = this.getTokenExpiry();
     if (!expiry) return true;
-    
+
     // Add 5 minute buffer before actual expiry
     const bufferTime = 5 * 60 * 1000; // 5 minutes in milliseconds
     return Date.now() >= (expiry - bufferTime);
@@ -146,7 +146,7 @@ class TokenManager {
       }
 
       const data = await response.json();
-      
+
       if (data.accessToken) {
         const tokenData: TokenData = {
           accessToken: data.accessToken,
@@ -154,7 +154,7 @@ class TokenManager {
           expiresAt: data.expiresAt || (Date.now() + 3600000), // Default 1 hour
           tokenType: data.tokenType || 'Bearer',
         };
-        
+
         this.setTokens(tokenData);
         return data.accessToken;
       }
@@ -167,14 +167,52 @@ class TokenManager {
     }
   }
 
-  // Get Authorization Header
+  // Get Authorization Header (synchronous, may return null if Firebase token not ready)
   getAuthHeader(): string | null {
     const token = this.getAccessToken();
     const tokenType = 'Bearer'; // Default token type
-    
+
     if (!token) return null;
-    
+
     return `${tokenType} ${token}`;
+  }
+
+  // Get Identity Platform ID token (async) - Firebase SDK kullanıyor
+  async getIdentityPlatformIdToken(): Promise<string | null> {
+    try {
+      // Firebase SDK kullanarak token al
+      const { auth } = await import('../config/firebase');
+      const { onAuthStateChanged } = await import('firebase/auth');
+
+      // Eğer auth instance yoksa localStorage'dan al
+      if (!auth) {
+        return localStorage.getItem('hss_id_token');
+      }
+
+      // Firebase'den mevcut kullanıcıyı al
+      const currentUser = auth.currentUser;
+
+      if (currentUser) {
+        // Token'ı Firebase'den al (force refresh yok)
+        const token = await currentUser.getIdToken(false);
+        // localStorage'a kaydet (sync için)
+        localStorage.setItem('hss_id_token', token);
+        return token;
+      }
+
+      // Kullanıcı yoksa localStorage'dan kontrol et (fallback)
+      const storedToken = localStorage.getItem('hss_id_token');
+      return storedToken;
+    } catch (error) {
+      console.error('Failed to get Identity Platform ID token:', error);
+      // Hata durumunda localStorage'dan dene
+      return localStorage.getItem('hss_id_token');
+    }
+  }
+
+  // Alias for backward compatibility
+  async getFirebaseIdToken(): Promise<string | null> {
+    return this.getIdentityPlatformIdToken();
   }
 }
 

@@ -82,28 +82,28 @@ export interface AuthState {
   isAuthenticated: boolean;
   isInitialized: boolean;
   isLoading: boolean;
-  
+
   // User Information
   user: AuthUser | null;
   permissions: string[];
   roles: string[];
-  
+
   // Session Management
   session: AuthSession | null;
   tokenTimeRemaining: number;
-  
+
   // Security
   security: SecuritySettings | null;
-  
+
   // Error & Status
   error: string | null;
   lastError: Error | null;
-  
+
   // UI State
   showLoginModal: boolean;
   showMfaModal: boolean;
   loginRedirectUrl: string | null;
-  
+
   // Audit & Logging
   auditLog: AuditEntry[];
 }
@@ -309,7 +309,7 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
 
 export interface AuthContextType {
   state: AuthState;
-  
+
   // Direct access to state properties (for convenience)
   user: AuthUser | null;
   roles: string[];
@@ -317,43 +317,43 @@ export interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
-  
+
   // Auth Actions
   login: (redirectUrl?: string) => Promise<void>;
   logout: () => Promise<void>;
   refreshToken: () => Promise<boolean>;
-  
+
   // User Actions
   updateUser: (userData: Partial<AuthUser>) => Promise<void>;
   updatePreferences: (preferences: UserPreferences) => Promise<void>;
-  
+
   // Permission & Role Checks
   hasPermission: (permission: string) => boolean;
   hasRole: (role: string) => boolean;
   hasAnyRole: (roles: string[]) => boolean;
   hasAllRoles: (roles: string[]) => boolean;
-  
+
   // Session Management
   validateSession: () => Promise<boolean>;
   extendSession: () => Promise<void>;
   getSessions: () => Promise<AuthSession[]>;
   terminateSession: (sessionId: string) => Promise<void>;
-  
+
   // Security
   changePassword: (currentPassword: string, newPassword: string) => Promise<void>;
   enableMFA: (method: 'sms' | 'email' | 'authenticator') => Promise<void>;
   disableMFA: () => Promise<void>;
-  
+
   // Audit
   addAuditLog: (action: AuditEntry['action'], details: Record<string, any>) => void;
   clearAuditLog: () => void;
-  
+
   // UI Actions
   showLoginModal: (redirectUrl?: string) => void;
   hideLoginModal: () => void;
   showMfaModal: () => void;
   hideMfaModal: () => void;
-  
+
   // Utils
   isTokenExpiringSoon: () => boolean;
   getTokenTimeRemaining: () => number;
@@ -918,6 +918,332 @@ const AuthProviderOnline: React.FC<AuthProviderProps> = ({ children }) => {
   */
 };
 
+// Google Cloud Identity Platform Auth Provider (Firebase Client SDK kullanarak)
+const AuthProviderIdentityPlatform: React.FC<AuthProviderProps> = ({ children }) => {
+  const [state, dispatch] = useReducer(authReducer, initialState);
+  const [idToken, setIdToken] = React.useState<string | null>(null);
+  const [firebaseUser, setFirebaseUser] = React.useState<any>(null);
+
+  // Import Firebase Auth
+  const auth = React.useMemo(() => {
+    try {
+      return require('../config/firebase').auth;
+    } catch (error) {
+      console.error('Failed to import Firebase auth:', error);
+      return null;
+    }
+  }, []);
+
+  const mapRoleToPermissions = useCallback((role: string): string[] => {
+    const permissions: string[] = [];
+    switch (role) {
+      case 'ADMIN':
+        permissions.push(
+          'animals:read', 'animals:write', 'animals:delete',
+          'appointments:read', 'appointments:write', 'appointments:delete',
+          'laboratory:read', 'laboratory:write', 'laboratory:delete',
+          'billing:read', 'billing:write', 'billing:delete',
+          'reports:read', 'reports:write',
+          'settings:read', 'settings:write',
+          'users:read', 'users:write',
+          'audit:read'
+        );
+        break;
+      case 'VET':
+      case 'VETERINER':
+      case 'VETERINARIAN':
+        permissions.push(
+          'animals:read', 'animals:write', 'animals:delete',
+          'appointments:read', 'appointments:write', 'appointments:delete',
+          'laboratory:read', 'laboratory:write', 'laboratory:delete',
+          'billing:read',
+          'reports:read'
+        );
+        break;
+      case 'CLINIC_STAFF':
+      case 'STAFF':
+        permissions.push(
+          'animals:read', 'animals:write',
+          'appointments:read', 'appointments:write',
+          'billing:read', 'billing:write'
+        );
+        break;
+      case 'OWNER':
+        permissions.push(
+          'animals:read',
+          'appointments:read'
+        );
+        break;
+    }
+    return permissions;
+  }, []);
+
+  // Create AuthUser from Firebase User and ID Token
+  const createAuthUser = useCallback(async (user: any, token: string): Promise<AuthUser> => {
+    try {
+      // Decode ID token to get custom claims (role)
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const role = (payload.role as string) || '';
+      const nameParts = user.displayName?.split(' ') || [];
+      const firstName = nameParts[0] || '';
+      const lastName = nameParts.slice(1).join(' ') || '';
+
+      return {
+        id: user.uid,
+        sub: user.uid,
+        username: user.email?.split('@')[0] || '',
+        email: user.email || '',
+        name: user.displayName || user.email || '',
+        firstName,
+        lastName,
+        roles: role ? [role] : [],
+        permissions: mapRoleToPermissions(role),
+        lastLogin: new Date(),
+        sessionId: user.uid,
+        role: role.toLowerCase() as 'admin' | 'veterinarian' | 'assistant',
+        createdAt: user.metadata?.creationTime ? new Date(user.metadata.creationTime) : new Date(),
+        updatedAt: user.metadata?.lastSignInTime ? new Date(user.metadata.lastSignInTime) : new Date(),
+        profilePicture: user.photoURL || undefined,
+      };
+    } catch (error) {
+      console.error('Error creating auth user:', error);
+      throw error;
+    }
+  }, [mapRoleToPermissions]);
+
+  // Create AuthSession from Firebase User and ID Token
+  const createAuthSession = useCallback((user: any, token: string): AuthSession => {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const exp = payload.exp ? new Date(payload.exp * 1000) : new Date(Date.now() + 3600000);
+
+      return {
+        sessionId: user.uid,
+        isActive: true,
+        createdAt: user.metadata?.creationTime ? new Date(user.metadata.creationTime) : new Date(),
+        lastActivity: new Date(),
+        expiresAt: exp,
+        device: navigator.userAgent,
+        ip: 'unknown',
+        userAgent: navigator.userAgent
+      };
+    } catch (error) {
+      console.error('Error creating auth session:', error);
+      return {
+        sessionId: user.uid,
+        isActive: true,
+        createdAt: new Date(),
+        lastActivity: new Date(),
+        expiresAt: new Date(Date.now() + 3600000),
+        device: navigator.userAgent,
+        ip: 'unknown',
+        userAgent: navigator.userAgent
+      };
+    }
+  }, []);
+
+  // Initialize - Firebase Auth state listener
+  useEffect(() => {
+    if (!auth) {
+      dispatch({ type: 'AUTH_INITIALIZE_FAILURE', payload: { error: 'Firebase Auth not available' } });
+      return;
+    }
+
+    dispatch({ type: 'AUTH_INITIALIZE_START' });
+
+    // Firebase Auth state listener
+    const { onAuthStateChanged, User } = require('firebase/auth');
+    const unsubscribe = onAuthStateChanged(auth, async (user: typeof User | null) => {
+      try {
+        if (user) {
+          // User is signed in
+          setFirebaseUser(user);
+
+          // Get ID token
+          const token = await user.getIdToken(true); // Force refresh to get latest custom claims
+          setIdToken(token);
+
+          // Create auth user and session
+          const authUser = await createAuthUser(user, token);
+          const session = createAuthSession(user, token);
+
+          dispatch({
+            type: 'AUTH_INITIALIZE_SUCCESS',
+            payload: { user: authUser, session }
+          });
+
+          // Store token in localStorage for API calls
+          localStorage.setItem('hss_id_token', token);
+        } else {
+          // User is signed out
+          setFirebaseUser(null);
+          setIdToken(null);
+          localStorage.removeItem('hss_id_token');
+          localStorage.removeItem('hss_refresh_token');
+          localStorage.removeItem('hss_token_expiry');
+          dispatch({ type: 'AUTH_INITIALIZE_FAILURE', payload: { error: 'Not authenticated' } });
+        }
+      } catch (error) {
+        console.error('Auth state change error:', error);
+        dispatch({ type: 'AUTH_INITIALIZE_FAILURE', payload: { error: 'Failed to initialize authentication' } });
+      }
+    });
+
+    return () => unsubscribe();
+  }, [auth, createAuthUser, createAuthSession]);
+
+  // Token refresh on interval
+  useEffect(() => {
+    if (!state.isAuthenticated || !firebaseUser || !auth) return;
+
+    const interval = setInterval(async () => {
+      try {
+        // Firebase automatically handles token refresh
+        // Just update the stored token
+        const token = await firebaseUser.getIdToken(true);
+        setIdToken(token);
+        localStorage.setItem('hss_id_token', token);
+      } catch (error) {
+        console.error('Token refresh error:', error);
+        // Token refresh failed, logout
+        dispatch({ type: 'AUTH_LOGOUT' });
+      }
+    }, 55 * 60 * 1000); // Refresh every 55 minutes (tokens expire in 1 hour)
+
+    return () => clearInterval(interval);
+  }, [state.isAuthenticated, firebaseUser, auth]);
+
+  const login = useCallback(async (redirectUrl?: string) => {
+    try {
+      dispatch({ type: 'AUTH_LOGIN_START' });
+      // Login handled by LoginForm component via Firebase SDK
+      // This is just a placeholder - actual login is done in LoginForm
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Login failed';
+      dispatch({ type: 'AUTH_LOGIN_FAILURE', payload: { error: errorMessage } });
+    }
+  }, []);
+
+  const logout = useCallback(async () => {
+    try {
+      if (!auth) return;
+      const { signOut } = require('firebase/auth');
+      await signOut(auth);
+
+      // Cleanup
+      localStorage.removeItem('hss_id_token');
+      localStorage.removeItem('hss_refresh_token');
+      localStorage.removeItem('hss_token_expiry');
+      localStorage.removeItem('hss_user_info');
+      setIdToken(null);
+      setFirebaseUser(null);
+      dispatch({ type: 'AUTH_LOGOUT' });
+    } catch (error) {
+      console.error('Logout error:', error);
+      // Even if signOut fails, clear local state
+      dispatch({ type: 'AUTH_LOGOUT' });
+    }
+  }, [auth]);
+
+  const refreshToken = useCallback(async (): Promise<boolean> => {
+    try {
+      if (!firebaseUser || !auth) return false;
+      const token = await firebaseUser.getIdToken(true);
+      setIdToken(token);
+      localStorage.setItem('hss_id_token', token);
+      return true;
+    } catch (error) {
+      console.error('Token refresh error:', error);
+      return false;
+    }
+  }, [firebaseUser, auth]);
+
+  const getTokenTimeRemainingFromToken = useCallback((token: string): number => {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      if (!payload.exp) return 0;
+      return Math.max(0, Math.floor((payload.exp * 1000 - Date.now()) / 1000));
+    } catch {
+      return 0;
+    }
+  }, []);
+
+  const contextValue: AuthContextType = {
+    state,
+    user: state.user,
+    roles: state.roles,
+    permissions: state.permissions,
+    isAuthenticated: state.isAuthenticated,
+    isLoading: state.isLoading,
+    error: state.error,
+    login,
+    logout,
+    refreshToken,
+    updateUser: async (userData: Partial<AuthUser>) => {
+      dispatch({ type: 'AUTH_UPDATE_USER', payload: { user: userData } });
+    },
+    updatePreferences: async (preferences: UserPreferences) => {
+      dispatch({ type: 'AUTH_UPDATE_USER', payload: { user: { preferences } } });
+    },
+    hasPermission: useCallback((permission: string) => {
+      return state.permissions.includes(permission);
+    }, [state.permissions]),
+    hasRole: useCallback((role: string) => state.roles.includes(role), [state.roles]),
+    hasAnyRole: useCallback((roles: string[]) => roles.some(role => state.roles.includes(role)), [state.roles]),
+    hasAllRoles: useCallback((roles: string[]) => roles.every(role => state.roles.includes(role)), [state.roles]),
+    validateSession: async () => {
+      if (!firebaseUser || !auth) return false;
+      try {
+        // Firebase automatically validates tokens
+        await firebaseUser.getIdToken(true);
+        return true;
+      } catch {
+        return false;
+      }
+    },
+    extendSession: async () => {
+      await refreshToken();
+    },
+    getSessions: async () => [],
+    terminateSession: async () => { },
+    changePassword: async () => { },
+    enableMFA: async () => { },
+    disableMFA: async () => { },
+    addAuditLog: () => { },
+    clearAuditLog: () => { },
+    showLoginModal: () => { },
+    hideLoginModal: () => { },
+    showMfaModal: () => { },
+    hideMfaModal: () => { },
+    isTokenExpiringSoon: () => {
+      if (!idToken) return true;
+      try {
+        const payload = JSON.parse(atob(idToken.split('.')[1]));
+        const exp = payload.exp * 1000;
+        return Date.now() >= exp - 5 * 60 * 1000; // 5 minutes buffer
+      } catch {
+        return true;
+      }
+    },
+    getTokenTimeRemaining: () => {
+      if (!idToken) return 0;
+      return getTokenTimeRemainingFromToken(idToken);
+    },
+    formatTokenTime: (seconds: number) => {
+      if (seconds <= 0) return '00:00';
+      const minutes = Math.floor(seconds / 60);
+      const remainingSeconds = seconds % 60;
+      return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+    }
+  };
+
+  return (
+    <AuthContext.Provider value={contextValue}>
+      {children}
+    </AuthContext.Provider>
+  );
+};
+
 const AuthProviderOffline: React.FC<AuthProviderProps> = ({ children }) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
 
@@ -933,13 +1259,13 @@ const AuthProviderOffline: React.FC<AuthProviderProps> = ({ children }) => {
       lastName: 'User',
       roles: ['ADMIN'],
       permissions: [
-        'animals:read','animals:write','animals:delete',
-        'appointments:read','appointments:write','appointments:delete',
-        'laboratory:read','laboratory:write','laboratory:delete',
-        'billing:read','billing:write','billing:delete',
-        'reports:read','reports:write',
-        'settings:read','settings:write',
-        'users:read','users:write','audit:read'
+        'animals:read', 'animals:write', 'animals:delete',
+        'appointments:read', 'appointments:write', 'appointments:delete',
+        'laboratory:read', 'laboratory:write', 'laboratory:delete',
+        'billing:read', 'billing:write', 'billing:delete',
+        'reports:read', 'reports:write',
+        'settings:read', 'settings:write',
+        'users:read', 'users:write', 'audit:read'
       ],
       lastLogin: new Date(),
       sessionId: 'offline-session',
@@ -971,7 +1297,7 @@ const AuthProviderOffline: React.FC<AuthProviderProps> = ({ children }) => {
     isAuthenticated: true,
     isLoading: false,
     error: null,
-    login: async () => {},
+    login: async () => { },
     logout: async () => { dispatch({ type: 'AUTH_LOGOUT' }); },
     refreshToken: async () => true,
     updateUser: async (userData: Partial<AuthUser>) => {
@@ -989,18 +1315,18 @@ const AuthProviderOffline: React.FC<AuthProviderProps> = ({ children }) => {
     hasAnyRole: (roles: string[]) => roles.some(role => state.roles.includes(role)),
     hasAllRoles: (roles: string[]) => roles.every(role => state.roles.includes(role)),
     validateSession: async () => true,
-    extendSession: async () => {},
+    extendSession: async () => { },
     getSessions: async () => [],
-    terminateSession: async () => {},
-    changePassword: async () => {},
-    enableMFA: async () => {},
-    disableMFA: async () => {},
-    addAuditLog: () => {},
-    clearAuditLog: () => {},
-    showLoginModal: () => {},
-    hideLoginModal: () => {},
-    showMfaModal: () => {},
-    hideMfaModal: () => {},
+    terminateSession: async () => { },
+    changePassword: async () => { },
+    enableMFA: async () => { },
+    disableMFA: async () => { },
+    addAuditLog: () => { },
+    clearAuditLog: () => { },
+    showLoginModal: () => { },
+    hideLoginModal: () => { },
+    showMfaModal: () => { },
+    hideMfaModal: () => { },
     isTokenExpiringSoon: () => false,
     getTokenTimeRemaining: () => 9999,
     formatTokenTime: () => '99:59'
@@ -1014,9 +1340,16 @@ const AuthProviderOffline: React.FC<AuthProviderProps> = ({ children }) => {
 };
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  // Always use offline auth (no Keycloak) but allow API calls
-  console.log('🔐 Using AuthProviderOffline (mock auth, real API calls)');
-  return <AuthProviderOffline>{children}</AuthProviderOffline>;
+  // Use Google Cloud Identity Platform (Firebase Client SDK)
+  const { OFFLINE_MODE } = require('../config/offline');
+
+  if (OFFLINE_MODE) {
+    console.log('🔐 Using AuthProviderOffline (mock auth, real API calls)');
+    return <AuthProviderOffline>{children}</AuthProviderOffline>;
+  }
+
+  console.log('🔐 Using AuthProviderIdentityPlatform (GCP Identity Platform Firebase Client SDK)');
+  return <AuthProviderIdentityPlatform>{children}</AuthProviderIdentityPlatform>;
 };
 
 // ============================================================================

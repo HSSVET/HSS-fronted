@@ -14,7 +14,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, toggleSidebar }) => {
   const location = useLocation();
   const { hasPermission } = usePermissions();
   const { user, logout } = useAuth();
-  
+
   React.useEffect(() => {
     if (collapsed) {
       document.body.classList.remove('sidebar-expanded');
@@ -26,7 +26,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, toggleSidebar }) => {
       document.body.classList.remove('sidebar-expanded');
     };
   }, [collapsed]);
-  
+
   // Menu items with permission requirements
   const allMenuItems = [
     { icon: 'icon-dashboard', text: 'Panel', path: '/dashboard', permission: 'dashboard:read' },
@@ -79,15 +79,16 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, toggleSidebar }) => {
           {!collapsed && (
             <div className="user-info">
               <span className="user-name">
-                {user?.firstName && user?.lastName 
-                  ? `${user.firstName} ${user.lastName}` 
+                {user?.firstName && user?.lastName
+                  ? `${user.firstName} ${user.lastName}`
                   : user?.username || 'Kullanıcı'}
               </span>
               <span className="user-role">
                 {user?.roles?.includes('ADMIN') && 'Yönetici'}
-                {user?.roles?.includes('VETERINER') && !user?.roles?.includes('ADMIN') && 'Veteriner Hekim'}
-                {user?.roles?.includes('SEKRETER') && !user?.roles?.includes('ADMIN') && !user?.roles?.includes('VETERINER') && 'Sekreter'}
-                {user?.roles?.includes('TEKNISYEN') && !user?.roles?.includes('ADMIN') && !user?.roles?.includes('VETERINER') && !user?.roles?.includes('SEKRETER') && 'Teknisyen'}
+                {(user?.roles?.includes('VETERINER') || user?.roles?.includes('VET') || user?.roles?.includes('VETERINARIAN')) && !user?.roles?.includes('ADMIN') && 'Veteriner Hekim'}
+                {(user?.roles?.includes('SEKRETER') || user?.roles?.includes('CLINIC_STAFF') || user?.roles?.includes('STAFF')) && !user?.roles?.includes('ADMIN') && !user?.roles?.includes('VETERINER') && !user?.roles?.includes('VET') && !user?.roles?.includes('VETERINARIAN') && 'Sekreter'}
+                {user?.roles?.includes('TEKNISYEN') && !user?.roles?.includes('ADMIN') && !user?.roles?.includes('VETERINER') && !user?.roles?.includes('VET') && !user?.roles?.includes('VETERINARIAN') && !user?.roles?.includes('SEKRETER') && !user?.roles?.includes('CLINIC_STAFF') && 'Teknisyen'}
+                {user?.roles?.includes('OWNER') && !user?.roles?.includes('ADMIN') && !user?.roles?.includes('VETERINER') && !user?.roles?.includes('VET') && !user?.roles?.includes('VETERINARIAN') && 'Hayvan Sahibi'}
                 {!user?.roles?.length && 'Kullanıcı'}
               </span>
             </div>
