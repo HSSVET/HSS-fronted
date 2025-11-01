@@ -54,6 +54,21 @@ export class ApiClient {
     // Request interceptor for authentication
     this.addRequestInterceptor({
       onFulfilled: async (config) => {
+        // Try to get Identity Platform ID token first (async)
+        try {
+          const idToken = await this.tokenManager.getIdentityPlatformIdToken();
+          if (idToken) {
+            config.headers = {
+              ...config.headers,
+              'Authorization': `Bearer ${idToken}`,
+            };
+            return config;
+          }
+        } catch (error) {
+          // Fallback to regular token
+        }
+
+        // Fallback to stored token
         const authHeader = this.tokenManager.getAuthHeader();
         if (authHeader) {
           config.headers = {
@@ -133,7 +148,7 @@ export class ApiClient {
     delay: number = this.defaultRetryDelay
   ): Promise<Response> {
     let lastError: any;
-    
+
     for (let attempt = 0; attempt <= retries; attempt++) {
       try {
         const response = await requestFn();
@@ -148,24 +163,24 @@ export class ApiClient {
         return response;
       } catch (error: any) {
         lastError = error;
-        
+
         // Don't retry on 4xx errors (client errors)
         if (error.status >= 400 && error.status < 500) {
           throw error;
         }
-        
+
         // Don't retry on last attempt
         if (attempt === retries) {
           throw error;
         }
-        
+
         // Exponential backoff
         const waitTime = delay * Math.pow(2, attempt);
         console.log(`Retrying request (attempt ${attempt + 1}/${retries + 1}) after ${waitTime}ms`);
         await new Promise(resolve => setTimeout(resolve, waitTime));
       }
     }
-    
+
     throw lastError;
   }
 
@@ -374,11 +389,11 @@ export class ApiClient {
         status: 0,
       });
     }
-    
+
     try {
       console.log('API GET çağrısı:', `${API_BASE_URL}${endpoint}`);
       const headers = await this.getHeaders();
-      
+
       const response = await this.executeWithRetry(
         () => fetch(`${API_BASE_URL}${endpoint}`, {
           method: 'GET',
@@ -386,21 +401,21 @@ export class ApiClient {
         }),
         retries
       );
-      
+
       // 401 hatası için console.log'u gizle (sessiz hata)
       if (response.status !== 401) {
         console.log('API GET response:', response.status, response.statusText);
       }
-      
+
       // handleResponse'ı çağır - 401 için özel işlem yapılacak
       const apiResponse = await this.handleResponse<T>(response);
-      
+
       // handleResponse her zaman ApiResponse döndürmeli (throw etmemeli)
       // Eğer 401 ve refresh token yoksa, success: false olan bir ApiResponse döndürmeli
       return apiResponse;
     } catch (error: any) {
       console.error('API GET error:', error);
-      
+
       // 401 hatası için özel işlem - refresh token yoksa sadece hata döndür
       if (error?.status === 401) {
         const refreshToken = this.tokenManager.getRefreshToken();
@@ -413,7 +428,7 @@ export class ApiClient {
           };
         }
       }
-      
+
       throw error;
     }
   }
@@ -428,12 +443,12 @@ export class ApiClient {
       });
     }
     const headers = await this.getHeaders();
-    
+
     // Log request data for debugging
     if (data) {
       console.log('API POST request to:', `${API_BASE_URL}${endpoint}`, 'Data:', JSON.stringify(data, null, 2));
     }
-    
+
     const response = await this.executeWithRetry(
       () => fetch(`${API_BASE_URL}${endpoint}`, {
         method: 'POST',
@@ -442,7 +457,7 @@ export class ApiClient {
       }),
       retries
     );
-    
+
     // 400 hatası için daha detaylı hata mesajı göster
     if (response.status === 400) {
       try {
@@ -454,7 +469,7 @@ export class ApiClient {
         console.error('Validation error text:', errorText);
       }
     }
-    
+
     return this.handleResponse<T>(response);
   }
 
