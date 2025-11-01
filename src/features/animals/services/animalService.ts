@@ -67,12 +67,15 @@ const emptyPage = <T>(page: number, limit: number): PaginatedResponse<T> => ({
 
 export class AnimalService {
   private mapBackendToAnimalRecord = (backend: any): AnimalRecord => {
-    return {
+    console.log('🔍 Mapping backend animal:', backend);
+    
+    const mapped = {
       id: backend.animalId ?? backend.id ?? 0,
-      name: backend.name,
+      name: backend.name || 'İsimsiz',
       owner: backend.ownerId || backend.ownerName ? {
         id: backend.ownerId ?? 0,
         name: backend.ownerName ?? '',
+        fullName: backend.ownerName ?? '',
       } : undefined,
       species: backend.speciesId || backend.speciesName ? {
         id: backend.speciesId ?? 0,
@@ -83,22 +86,26 @@ export class AnimalService {
         name: backend.breedName ?? '',
       } : undefined,
       gender: backend.gender,
-      birthDate: backend.birthDate?.toString(),
-      weight: backend.weight,
+      birthDate: backend.birthDate ? (typeof backend.birthDate === 'string' ? backend.birthDate : backend.birthDate.toString()) : undefined,
+      weight: backend.weight ? (typeof backend.weight === 'number' ? backend.weight : Number(backend.weight)) : undefined,
       color: backend.color,
       microchipNumber: backend.microchipNo ?? backend.microchipNumber,
       allergies: backend.allergies,
       chronicDiseases: backend.chronicDiseases,
       notes: backend.notes,
-      lastVisitDate: backend.lastVisitDate,
-      nextVaccinationDate: backend.nextVaccinationDate,
+      lastVisitDate: backend.lastVisitDate ? (typeof backend.lastVisitDate === 'string' ? backend.lastVisitDate : backend.lastVisitDate.toString()) : undefined,
+      nextVaccinationDate: backend.nextVaccinationDate ? (typeof backend.nextVaccinationDate === 'string' ? backend.nextVaccinationDate : backend.nextVaccinationDate.toString()) : undefined,
     };
+    
+    console.log('🔍 Mapped result:', mapped);
+    return mapped;
   };
   // Get all animals
   async getAllAnimals(): Promise<ApiResponse<AnimalRecord[]>> {
     // Direct API call instead of going through ServiceFactory
     const { apiClient } = await import('../../../services/api');
-    const response = await apiClient.get<SpringPage<any>>('/api/animals?page=0&limit=100');
+    // Spring Boot Pageable uses 'size' not 'limit'
+    const response = await apiClient.get<SpringPage<any>>('/api/animals?page=0&size=100');
     if (response.success && response.data) {
       const items = (response.data.content || []).map(this.mapBackendToAnimalRecord);
       return { success: true, data: items, status: response.status } as ApiResponse<AnimalRecord[]>;
@@ -119,20 +126,34 @@ export class AnimalService {
   ): Promise<ApiResponse<PaginatedResponse<AnimalRecord>>> {
     // Direct API call instead of going through ServiceFactory
     const { apiClient } = await import('../../../services/api');
-    const response = await apiClient.get<SpringPage<any>>(`/api/animals?page=${page}&limit=${limit}${search ? `&search=${encodeURIComponent(search)}` : ''}`);
+    // Spring Boot Pageable uses 'size' not 'limit'
+    const response = await apiClient.get<SpringPage<any>>(`/api/animals?page=${page}&size=${limit}${search ? `&search=${encodeURIComponent(search)}` : ''}`);
+    
+    console.log('🔍 AnimalService.getAnimals response:', JSON.stringify(response, null, 2));
     
     // Convert Spring Page to PaginatedResponse
     if (response.success && response.data) {
+      console.log('🔍 Backend response data:', response.data);
+      console.log('🔍 Content array:', response.data.content);
+      console.log('🔍 Total elements:', response.data.totalElements);
+      
+      const mappedItems = (response.data.content || []).map(this.mapBackendToAnimalRecord);
+      console.log('🔍 Mapped items:', mappedItems);
+      
       const paginatedResponse: PaginatedResponse<AnimalRecord> = {
-        items: (response.data.content || []).map(this.mapBackendToAnimalRecord),
+        items: mappedItems,
         total: response.data.totalElements,
         page: response.data.number,
         limit: response.data.size,
         totalPages: response.data.totalPages,
       };
-      return { success: true, data: paginatedResponse };
+      
+      console.log('🔍 Final paginated response:', paginatedResponse);
+      
+      return { success: true, data: paginatedResponse, status: response.status };
     }
     
+    console.error('🔍 AnimalService.getAnimals failed:', response);
     return { 
       success: false, 
       data: emptyPage<AnimalRecord>(page, limit), 
@@ -170,9 +191,85 @@ export class AnimalService {
   }
 
   // Create new animal
-  async createAnimal(animal: Omit<Animal, 'id' | 'createdAt' | 'updatedAt'>): Promise<ApiResponse<AnimalRecord>> {
+  async createAnimal(animal: {
+    ownerId: number;
+    name: string;
+    speciesId: number;
+    breedId: number;
+    gender?: string;
+    birthDate?: string;
+    weight?: number;
+    color?: string;
+    microchipNo?: string;
+    allergies?: string;
+    chronicDiseases?: string;
+    notes?: string;
+  }): Promise<ApiResponse<AnimalRecord>> {
     const { apiClient } = await import('../../../services/api');
-    const response = await apiClient.post<AnimalRecord>('/api/animals', animal);
+    
+    // Helper function to convert empty strings to undefined
+    const cleanString = (value?: string): string | undefined => {
+      if (!value || value.trim() === '') return undefined;
+      return value.trim();
+    };
+    
+    // Convert to backend's AnimalCreateRequest format
+    const request: any = {
+      ownerId: animal.ownerId,
+      name: animal.name.trim(),
+      speciesId: animal.speciesId,
+      breedId: animal.breedId,
+    };
+    
+    // Only include optional fields if they have values
+    if (animal.gender && animal.gender.trim() !== '') {
+      request.gender = animal.gender.trim();
+    }
+    
+    if (animal.birthDate && animal.birthDate.trim() !== '') {
+      // Backend LocalDate formatı YYYY-MM-DD bekliyor
+      const dateStr = animal.birthDate.trim();
+      // Date formatını kontrol et
+      const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+      if (dateRegex.test(dateStr)) {
+        const date = new Date(dateStr + 'T00:00:00'); // UTC timezone için
+        if (!isNaN(date.getTime()) && date < new Date()) {
+          request.birthDate = dateStr; // Format: YYYY-MM-DD
+        }
+      }
+    }
+    
+    if (animal.weight !== undefined && animal.weight !== null && animal.weight > 0) {
+      request.weight = Number(animal.weight);
+    }
+    
+    const cleanColor = cleanString(animal.color);
+    if (cleanColor) {
+      request.color = cleanColor;
+    }
+    
+    const cleanMicrochip = cleanString(animal.microchipNo);
+    if (cleanMicrochip) {
+      request.microchipNo = cleanMicrochip;
+    }
+    
+    const cleanAllergies = cleanString(animal.allergies);
+    if (cleanAllergies) {
+      request.allergies = cleanAllergies;
+    }
+    
+    const cleanChronicDiseases = cleanString(animal.chronicDiseases);
+    if (cleanChronicDiseases) {
+      request.chronicDiseases = cleanChronicDiseases;
+    }
+    
+    const cleanNotes = cleanString(animal.notes);
+    if (cleanNotes) {
+      request.notes = cleanNotes;
+    }
+    
+    console.log('Sending animal create request:', request);
+    const response = await apiClient.post<AnimalRecord>('/api/animals', request);
     return response;
   }
 

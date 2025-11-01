@@ -89,55 +89,102 @@ const AnimalList: React.FC<AnimalListProps> = ({ onAddAnimal }) => {
     endDate: ''
   });
 
-  useEffect(() => {
-    const fetchAnimals = async () => {
-      try {
-        startLoading('Hayvan listesi yükleniyor...');
-        console.log('🐶 Animals API çağrısı yapılıyor...');
-        console.log('🐶 OFFLINE_MODE:', process.env.NODE_ENV);
+  const fetchAnimals = React.useCallback(async () => {
+    try {
+      startLoading('Hayvan listesi yükleniyor...');
+      console.log('🐶 Animals API çağrısı yapılıyor...');
+      console.log('🐶 OFFLINE_MODE:', process.env.NODE_ENV);
 
-        const animalService = new AnimalService();
-        const response = await animalService.getAnimals(0, 20);
-        console.log('🐶 Animals API response:', response);
+      const animalService = new AnimalService();
+      
+      // İlk çağrı ile total sayısını öğren
+      const firstResponse = await animalService.getAnimals(0, 20);
+      console.log('🐶 First API response:', firstResponse);
 
-        if (response.success && response.data) {
-          const formattedAnimals = response.data.items.map(mapToAnimalListItem);
-          setAnimals(formattedAnimals);
-          console.log('🐶 Formatted animals:', formattedAnimals);
-          showSuccess('Hayvan listesi başarıyla yüklendi');
-        } else {
-          console.error('🐶 API response failed:', response);
-          addError(
-            'Hayvan listesi alınamadı',
-            'error',
-            response.error || 'API yanıtı başarısız',
-            {
-              label: 'Tekrar Dene',
-              onClick: () => fetchAnimals(),
-            }
-          );
+      if (firstResponse.success && firstResponse.data) {
+        const total = firstResponse.data.total;
+        console.log('🐶 Total animals:', total);
+        
+        if (total === 0) {
+          console.warn('🐶 No animals in database!');
           setAnimals([]);
+          addError('Hayvan bulunamadı', 'warning', 'Veritabanında hayvan kaydı bulunamadı');
+          return;
         }
-      } catch (err) {
-        console.error('🐶 Animals API error:', err);
-        const errorMessage = err instanceof Error ? err.message : 'Bilinmeyen hata';
+
+        // Tüm hayvanları getirmek için tüm sayfaları çek
+        let allAnimals = [...firstResponse.data.items];
+        const totalPages = firstResponse.data.totalPages;
+        
+        console.log(`🐶 Fetching ${totalPages} pages...`);
+        
+        // Eğer birden fazla sayfa varsa, diğer sayfaları da çek
+        if (totalPages > 1) {
+          const remainingPages = [];
+          for (let page = 1; page < totalPages; page++) {
+            remainingPages.push(animalService.getAnimals(page, 20));
+          }
+          
+          const remainingResponses = await Promise.all(remainingPages);
+          remainingResponses.forEach((response) => {
+            if (response.success && response.data && response.data.items) {
+              allAnimals = [...allAnimals, ...response.data.items];
+            }
+          });
+        }
+        
+        console.log('🐶 All animals fetched:', allAnimals.length);
+        console.log('🐶 All animals data:', allAnimals);
+        
+        const formattedAnimals = allAnimals.map(mapToAnimalListItem);
+        console.log('🐶 Formatted animals:', formattedAnimals);
+        setAnimals(formattedAnimals);
+        showSuccess(`${total} hayvan başarıyla yüklendi`);
+      } else {
+        console.error('🐶 First API response failed:', firstResponse);
         addError(
-          'Hayvan listesi alınırken bir hata oluştu',
+          'Hayvan listesi alınamadı',
           'error',
-          errorMessage,
+          firstResponse.error || 'API yanıtı başarısız',
           {
             label: 'Tekrar Dene',
             onClick: () => fetchAnimals(),
           }
         );
         setAnimals([]);
-      } finally {
-        stopLoading();
       }
-    };
-
-    fetchAnimals();
+    } catch (err) {
+      console.error('🐶 Animals API error:', err);
+      const errorMessage = err instanceof Error ? err.message : 'Bilinmeyen hata';
+      addError(
+        'Hayvan listesi alınırken bir hata oluştu',
+        'error',
+        errorMessage,
+        {
+          label: 'Tekrar Dene',
+          onClick: () => fetchAnimals(),
+        }
+      );
+      setAnimals([]);
+    } finally {
+      stopLoading();
+    }
   }, [startLoading, stopLoading, addError, showSuccess]);
+
+  useEffect(() => {
+    fetchAnimals();
+    
+    // Custom event listener - hayvan eklendiğinde listeyi yenile
+    const handleAnimalAdded = () => {
+      fetchAnimals();
+    };
+    
+    window.addEventListener('animalAdded', handleAnimalAdded);
+    
+    return () => {
+      window.removeEventListener('animalAdded', handleAnimalAdded);
+    };
+  }, [fetchAnimals]);
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);

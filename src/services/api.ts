@@ -69,8 +69,20 @@ export class ApiClient {
     this.addResponseInterceptor({
       onFulfilled: (response) => response,
       onRejected: async (error) => {
-        if (error.status === 401 && !this.isRefreshing) {
-          return this.handleTokenRefresh(error);
+        // error bir Response objesi, status kontrolü yapabiliriz
+        if (error && typeof error === 'object' && 'status' in error && (error as any).status === 401 && !this.isRefreshing) {
+          // Refresh token varsa token yenilemeyi dene
+          const refreshToken = this.tokenManager.getRefreshToken();
+          if (refreshToken) {
+            try {
+              return await this.handleTokenRefresh(error);
+            } catch (refreshError) {
+              // Refresh başarısız oldu, hatayı döndür
+              return error;
+            }
+          }
+          // Refresh token yoksa, hatayı normal şekilde döndür (yönlendirme yapma)
+          return error;
         }
         throw error;
       },
@@ -93,8 +105,14 @@ export class ApiClient {
         // Retry original request with new token
         return this.retryRequest(originalError);
       } else {
-        // Refresh failed, redirect to login
-        this.handleAuthFailure();
+        // Refresh failed, redirect to login only if we have a refresh token attempt
+        // Eğer refresh token yoksa, sadece hatayı döndür (yönlendirme yapma)
+        const refreshToken = this.tokenManager.getRefreshToken();
+        if (refreshToken) {
+          // Refresh token var ama refresh başarısız, o zaman yönlendir
+          this.handleAuthFailure();
+        }
+        // Refresh token yoksa sadece hatayı fırlat, yönlendirme yapma
         throw originalError;
       }
     } finally {
@@ -118,7 +136,16 @@ export class ApiClient {
     
     for (let attempt = 0; attempt <= retries; attempt++) {
       try {
-        return await requestFn();
+        const response = await requestFn();
+        // 401 hatası için retry yapma
+        if (response.status === 401) {
+          const refreshToken = this.tokenManager.getRefreshToken();
+          if (!refreshToken) {
+            // Refresh token yoksa direkt response'u döndür, retry yapma
+            return response;
+          }
+        }
+        return response;
       } catch (error: any) {
         lastError = error;
         
@@ -145,7 +172,10 @@ export class ApiClient {
   private handleAuthFailure(): void {
     this.tokenManager.clearAll();
     // Redirect to login page or trigger auth context logout
-    window.location.href = '/login';
+    // Sadece login sayfasında değilsek yönlendir
+    if (!window.location.pathname.includes('/login')) {
+      window.location.href = '/login';
+    }
   }
 
   private async getHeaders(): Promise<HeadersInit> {
@@ -170,6 +200,22 @@ export class ApiClient {
   }
 
   private async handleResponse<T>(response: Response): Promise<ApiResponse<T>> {
+    // 401 hatası için özel işlem - refresh token yoksa önce kontrol et
+    if (!response.ok && response.status === 401) {
+      const refreshToken = this.tokenManager.getRefreshToken();
+      if (!refreshToken) {
+        // Refresh token yoksa, hatayı normal şekilde döndür
+        // Sayfa yönlendirmesi yapma, sadece hata döndür
+        const error = await this.createErrorFromResponse(response);
+        return {
+          success: false,
+          data: {} as T,
+          error: error.message || 'Unauthorized',
+          status: 401,
+        };
+      }
+    }
+
     // Apply response interceptors
     let processedResponse = response;
     for (const interceptor of this.responseInterceptors) {
@@ -179,17 +225,91 @@ export class ApiClient {
     }
 
     if (!processedResponse.ok) {
+      // 401 hatası için tekrar kontrol (interceptor sonrası)
+      if (processedResponse.status === 401) {
+        const refreshToken = this.tokenManager.getRefreshToken();
+        if (!refreshToken) {
+          const error = await this.createErrorFromResponse(processedResponse);
+          return {
+            success: false,
+            data: {} as T,
+            error: error.message || 'Unauthorized',
+            status: 401,
+          };
+        }
+      }
+
       // Apply error interceptors
       for (const interceptor of this.responseInterceptors) {
         if (interceptor.onRejected) {
           try {
-            return await interceptor.onRejected(processedResponse);
+            const result = await interceptor.onRejected(processedResponse);
+            // Eğer interceptor bir ApiResponse döndürdüyse, onu kullan
+            if (result && typeof result === 'object' && 'success' in result) {
+              return result as ApiResponse<T>;
+            }
+            // Eğer interceptor Response objesi döndürdüyse (refresh token yoksa), onu ApiResponse'a çevir
+            if (result && result instanceof Response) {
+              const error = await this.createErrorFromResponse(result);
+              return {
+                success: false,
+                data: {} as T,
+                error: error.message || 'Request failed',
+                status: result.status,
+              };
+            }
+            // Eğer interceptor Response döndürdüyse ve 401 ise, özel işlem yap
+            if (result === processedResponse && processedResponse.status === 401) {
+              const refreshToken = this.tokenManager.getRefreshToken();
+              if (!refreshToken) {
+                const error = await this.createErrorFromResponse(processedResponse);
+                return {
+                  success: false,
+                  data: {} as T,
+                  error: error.message || 'Unauthorized',
+                  status: 401,
+                };
+              }
+            }
           } catch (error) {
             // If interceptor handles the error, continue with normal flow
             if (error !== processedResponse) {
               throw error;
             }
           }
+        }
+      }
+
+      // 401 hatası için son kontrol - hala throw edilmediyse
+      if (processedResponse.status === 401) {
+        const refreshToken = this.tokenManager.getRefreshToken();
+        if (!refreshToken) {
+          const error = await this.createErrorFromResponse(processedResponse);
+          return {
+            success: false,
+            data: {} as T,
+            error: error.message || 'Unauthorized',
+            status: 401,
+          };
+        }
+      }
+
+      // 400 validation hatası için özel işlem - detaylı hata mesajı göster
+      if (processedResponse.status === 400) {
+        try {
+          const errorData = await processedResponse.clone().json();
+          if (errorData.validationErrors) {
+            // Validation hatalarını formatla
+            const validationMessages = Object.entries(errorData.validationErrors)
+              .map(([field, message]) => `${field}: ${message}`)
+              .join(', ');
+            const error = new Error(`Validation Failed: ${validationMessages}`);
+            (error as any).status = 400;
+            (error as any).payload = errorData;
+            throw error;
+          }
+        } catch (parseError) {
+          // JSON parse edilemezse normal hata olarak işle
         }
       }
 
@@ -267,10 +387,33 @@ export class ApiClient {
         retries
       );
       
-      console.log('API GET response:', response.status, response.statusText);
-      return await this.handleResponse<T>(response);
-    } catch (error) {
+      // 401 hatası için console.log'u gizle (sessiz hata)
+      if (response.status !== 401) {
+        console.log('API GET response:', response.status, response.statusText);
+      }
+      
+      // handleResponse'ı çağır - 401 için özel işlem yapılacak
+      const apiResponse = await this.handleResponse<T>(response);
+      
+      // handleResponse her zaman ApiResponse döndürmeli (throw etmemeli)
+      // Eğer 401 ve refresh token yoksa, success: false olan bir ApiResponse döndürmeli
+      return apiResponse;
+    } catch (error: any) {
       console.error('API GET error:', error);
+      
+      // 401 hatası için özel işlem - refresh token yoksa sadece hata döndür
+      if (error?.status === 401) {
+        const refreshToken = this.tokenManager.getRefreshToken();
+        if (!refreshToken) {
+          return {
+            success: false,
+            data: {} as T,
+            error: error.message || 'Unauthorized',
+            status: 401,
+          };
+        }
+      }
+      
       throw error;
     }
   }
@@ -285,6 +428,12 @@ export class ApiClient {
       });
     }
     const headers = await this.getHeaders();
+    
+    // Log request data for debugging
+    if (data) {
+      console.log('API POST request to:', `${API_BASE_URL}${endpoint}`, 'Data:', JSON.stringify(data, null, 2));
+    }
+    
     const response = await this.executeWithRetry(
       () => fetch(`${API_BASE_URL}${endpoint}`, {
         method: 'POST',
@@ -293,6 +442,19 @@ export class ApiClient {
       }),
       retries
     );
+    
+    // 400 hatası için daha detaylı hata mesajı göster
+    if (response.status === 400) {
+      try {
+        const errorData = await response.clone().json();
+        console.error('Validation error details:', errorData);
+      } catch (e) {
+        // JSON parse edilemezse text olarak oku
+        const errorText = await response.clone().text();
+        console.error('Validation error text:', errorText);
+      }
+    }
+    
     return this.handleResponse<T>(response);
   }
 
