@@ -98,16 +98,14 @@ steps:
         set -euo pipefail
         echo "📊 Deployment logu gönderiliyor..."
         
-        # Create JSON payload file
-        cat > /tmp/deployment-payload.json << EOF
-{
-          "service": "hss-frontend",
-          "environment": "${_ENVIRONMENT}",
-          "commit_sha": "${SHORT_SHA}",
-          "backend_url": "${_BACKEND_URL}",
-          "deployment_time": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-        }
-EOF
+        # Create JSON payload file using echo to avoid YAML parsing issues
+        echo '{' > /tmp/deployment-payload.json
+        echo '  "service": "hss-frontend",' >> /tmp/deployment-payload.json
+        echo "  \"environment\": \"${_ENVIRONMENT}\"," >> /tmp/deployment-payload.json
+        echo "  \"commit_sha\": \"${SHORT_SHA}\"," >> /tmp/deployment-payload.json
+        echo "  \"backend_url\": \"${_BACKEND_URL}\"," >> /tmp/deployment-payload.json
+        echo "  \"deployment_time\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" >> /tmp/deployment-payload.json
+        echo '}' >> /tmp/deployment-payload.json
         
         gcloud logging write hss-frontend-deployment \
           "Frontend deployment completed successfully" \
