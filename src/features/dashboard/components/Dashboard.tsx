@@ -8,6 +8,8 @@ import { useLoading } from '../../../hooks/useLoading';
 import LoadingSpinner from '../../../components/LoadingSpinner';
 import '../styles/Dashboard.css';
 import QuickAppointmentModal from './QuickAppointmentModal';
+import AddAnimalDialog from '../../animals/components/AddAnimalDialog';
+import { useAnimals } from '../../animals/hooks/useAnimals';
 
 interface DashboardStats {
   totalAnimals: number;
@@ -73,6 +75,7 @@ const Dashboard: React.FC = () => {
   const navigate = useNavigate();
   const { addError, showSuccess } = useError();
   const { loading, startLoading, stopLoading } = useLoading();
+  const { createAnimal } = useAnimals({ autoFetch: false });
   
   const [stats, setStats] = useState<DashboardStats>({
     totalAnimals: 0,
@@ -82,6 +85,7 @@ const Dashboard: React.FC = () => {
   const [hospitalizedPatients, setHospitalizedPatients] = useState<HospitalizedPatient[]>([]);
   const [recentActivities, setRecentActivities] = useState<ActivityItem[]>([]);
   const [isQuickModalOpen, setIsQuickModalOpen] = useState(false);
+  const [isAddAnimalOpen, setIsAddAnimalOpen] = useState(false);
   const [calendarRefreshKey, setCalendarRefreshKey] = useState(0);
 
   const loadTodayAppointments = useCallback(async (): Promise<AppointmentRecord[]> => {
@@ -259,6 +263,79 @@ const Dashboard: React.FC = () => {
     navigate(`/animals/${animalId}`);
   };
 
+  const handleAddAnimal = async (form: {
+    ownerId: number;
+    name: string;
+    speciesId: number;
+    breedId: number;
+    gender?: string;
+    birthDate?: string;
+    weight?: number;
+    color?: string;
+    microchipNo?: string;
+    allergies?: string;
+    chronicDiseases?: string;
+    notes?: string;
+  }) => {
+    try {
+      startLoading('Hayvan ekleniyor...');
+      
+      const ok = await createAnimal(form);
+      if (ok) {
+        setIsAddAnimalOpen(false);
+        showSuccess('Hayvan başarıyla eklendi');
+        await fetchDashboardData();
+        
+        // Custom event dispatch et - AnimalList'i yenilemek için
+        window.dispatchEvent(new CustomEvent('animalAdded'));
+        
+        // Hayvan listesine yönlendir ki kullanıcı yeni eklenen hayvanı görebilsin
+        navigate('/animals');
+      } else {
+        // createAnimal false döndüğünde hata zaten gösterilmiş olacak
+        // Dialog açık kalacak
+        console.error('Hayvan eklenemedi');
+      }
+    } catch (err: any) {
+      // Validation hataları için detaylı mesaj göster
+      let msg = err instanceof Error ? err.message : 'Bilinmeyen hata';
+      
+      // 400 validation hatası için payload'dan detaylı mesaj al
+      if (err?.status === 400 && err?.payload?.validationErrors) {
+        const validationErrors = err.payload.validationErrors;
+        const errorDetails = Object.entries(validationErrors)
+          .map(([field, message]) => {
+            // Field adını Türkçe'ye çevir
+            const fieldNames: { [key: string]: string } = {
+              'ownerId': 'Sahip ID',
+              'name': 'İsim',
+              'speciesId': 'Tür ID',
+              'breedId': 'Irk ID',
+              'gender': 'Cinsiyet',
+              'birthDate': 'Doğum Tarihi',
+              'weight': 'Ağırlık',
+              'color': 'Renk',
+              'microchipNo': 'Çip Numarası',
+              'allergies': 'Alerjiler',
+              'chronicDiseases': 'Kronik Hastalıklar',
+              'notes': 'Notlar'
+            };
+            const fieldName = fieldNames[field] || field;
+            return `${fieldName}: ${message}`;
+          })
+          .join(', ');
+        msg = `Doğrulama Hatası: ${errorDetails}`;
+      }
+      
+      console.error('Hayvan ekleme hatası:', err);
+      addError('Yeni hasta kaydı başarısız', 'error', msg);
+      // Hata durumunda dialog açık kalacak
+      throw err; // AddAnimalDialog'a hata bildirmek için
+    } finally {
+      stopLoading();
+    }
+  };
+
   return (
     <div className="dashboard">
       <LoadingSpinner 
@@ -279,7 +356,7 @@ const Dashboard: React.FC = () => {
           <span className="icon icon-plus"></span>
           Yeni Randevu
         </button>
-        <button className="ui-button">
+        <button className="ui-button" onClick={() => setIsAddAnimalOpen(true)}>
           <span className="icon icon-plus"></span>
           Yeni Hasta Kaydı
         </button>
@@ -487,6 +564,12 @@ const Dashboard: React.FC = () => {
         isOpen={isQuickModalOpen}
         onClose={() => setIsQuickModalOpen(false)}
         onCreated={handleQuickAppointmentCreated}
+      />
+
+      <AddAnimalDialog
+        open={isAddAnimalOpen}
+        onClose={() => setIsAddAnimalOpen(false)}
+        onAdd={handleAddAnimal}
       />
 
     </div>

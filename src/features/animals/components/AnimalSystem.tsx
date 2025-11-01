@@ -4,23 +4,46 @@ import type { JSX } from 'react';
 import { Box, Button } from '@mui/material';
 import AnimalList from './AnimalList';
 import AddAnimalDialog from './AddAnimalDialog';
+import { useAnimals } from '../hooks/useAnimals';
+import { useError } from '../../../context/ErrorContext';
 import '../styles/AnimalSystem.css';
 
 function AnimalSystem(): React.ReactElement {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const { createAnimal } = useAnimals({ autoFetch: false });
+  const { addError, showSuccess } = useError();
 
-  const handleAddAnimal = (animal: {
+  const handleAddAnimal = async (animal: {
+    ownerId: number;
     name: string;
-    species: string;
-    breed: string;
-    health: string;
-    lastCheckup: string;
-    owner: string;
-    nextVaccine: string;
+    speciesId: number;
+    breedId: number;
+    gender?: string;
+    birthDate?: string;
+    weight?: number;
+    color?: string;
+    microchipNo?: string;
+    allergies?: string;
+    chronicDiseases?: string;
+    notes?: string;
   }) => {
-    // Yeni hayvan eklendi, dialog'u kapat
-    setIsAddDialogOpen(false);
-    console.log('Yeni hayvan eklendi:', animal);
+    try {
+      const ok = await createAnimal(animal);
+      if (ok) {
+        setIsAddDialogOpen(false);
+        showSuccess('Hayvan başarıyla eklendi');
+        
+        // Custom event dispatch et - AnimalList'i yenilemek için
+        window.dispatchEvent(new CustomEvent('animalAdded'));
+      } else {
+        // Hata zaten gösterilmiş, dialog açık kalacak
+        console.error('Hayvan eklenemedi');
+      }
+    } catch (err) {
+      console.error('Hayvan ekleme hatası:', err);
+      addError('Hayvan eklenirken bir hata oluştu', 'error', err instanceof Error ? err.message : 'Bilinmeyen hata');
+      throw err; // AddAnimalDialog'a hata bildirmek için
+    }
   };
 
   return (

@@ -87,8 +87,37 @@ export const useAnimals = (initialOptions: UseAnimalsOptions = {}): UseAnimalsRe
         addError('Hayvan Ekleme Hatası', 'error', errorMessage);
         return false;
       }
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Bilinmeyen hata';
+    } catch (err: any) {
+      // Validation hataları için detaylı mesaj göster
+      let errorMessage = err instanceof Error ? err.message : 'Bilinmeyen hata';
+      
+      // 400 validation hatası için payload'dan detaylı mesaj al
+      if (err?.status === 400 && err?.payload?.validationErrors) {
+        const validationErrors = err.payload.validationErrors;
+        const errorDetails = Object.entries(validationErrors)
+          .map(([field, message]) => {
+            // Field adını Türkçe'ye çevir
+            const fieldNames: { [key: string]: string } = {
+              'ownerId': 'Sahip ID',
+              'name': 'İsim',
+              'speciesId': 'Tür ID',
+              'breedId': 'Irk ID',
+              'gender': 'Cinsiyet',
+              'birthDate': 'Doğum Tarihi',
+              'weight': 'Ağırlık',
+              'color': 'Renk',
+              'microchipNo': 'Çip Numarası',
+              'allergies': 'Alerjiler',
+              'chronicDiseases': 'Kronik Hastalıklar',
+              'notes': 'Notlar'
+            };
+            const fieldName = fieldNames[field] || field;
+            return `${fieldName}: ${message}`;
+          })
+          .join('\n');
+        errorMessage = `Doğrulama Hatası:\n${errorDetails}`;
+      }
+      
       setError(errorMessage);
       addError('Hayvan Ekleme Hatası', 'error', errorMessage);
       return false;
