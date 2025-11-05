@@ -35,6 +35,7 @@ export class ApiClient {
   private refreshPromise: Promise<string | null> | null = null;
   private defaultMaxRetries = 3;
   private defaultRetryDelay = 1000;
+  private tokenFetchPromise: Promise<void> | null = null;
 
   constructor() {
     this.tokenManager = TokenManager.getInstance();
@@ -178,10 +179,52 @@ export class ApiClient {
     }
   }
 
+  private async ensureToken(): Promise<void> {
+    // Token yoksa test token al
+    const token = this.tokenManager.getAccessToken();
+    if (!token) {
+      // Eğer zaten token alınıyorsa, o promise'i bekle
+      if (this.tokenFetchPromise) {
+        await this.tokenFetchPromise;
+        return;
+      }
+      
+      // Yeni token alımı başlat
+      this.tokenFetchPromise = (async () => {
+        try {
+          console.log('🔑 Token bulunamadı, test token alınıyor...');
+          const response = await fetch(`${API_BASE_URL}/api/public/test-token`);
+          if (response.ok) {
+            const data = await response.json();
+            if (data.token) {
+              const tokenData = {
+                accessToken: data.token,
+                refreshToken: data.token, // Test için refresh token = access token
+                expiresAt: Date.now() + (data.expiresIn || 3600) * 1000,
+                tokenType: data.tokenType || 'Bearer',
+              };
+              this.tokenManager.setTokens(tokenData);
+              console.log('✅ Test token alındı ve kaydedildi');
+            }
+          }
+        } catch (error) {
+          console.warn('⚠️ Test token alınamadı:', error);
+        } finally {
+          this.tokenFetchPromise = null;
+        }
+      })();
+      
+      await this.tokenFetchPromise;
+    }
+  }
+
   private async getHeaders(): Promise<HeadersInit> {
     const headers: HeadersInit = {
       'Content-Type': 'application/json',
     };
+
+    // Token yoksa test token al
+    await this.ensureToken();
 
     // Apply request interceptors
     let config: RequestConfig = {
