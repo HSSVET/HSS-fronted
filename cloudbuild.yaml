@@ -299,7 +299,7 @@ substitutions:
 # Options (optimized for performance)
 options:
   logging: CLOUD_LOGGING_ONLY
-  machineType: 'E2_HIGHCPU_4'  # 4 vCPU, 4GB RAM - optimal for npm + Firebase
+  machineType: 'E2_HIGHCPU_8'  # 8 vCPU, 8GB RAM - optimal for npm + Firebase
   diskSizeGb: 50  # Sufficient for node_modules and build artifacts
   substitution_option: 'ALLOW_LOOSE'
   dynamic_substitutions: true
