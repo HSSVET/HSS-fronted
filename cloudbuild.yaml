@@ -244,16 +244,15 @@ steps:
           
           DEPLOYED_AT=$(date -u +%Y-%m-%dT%H:%M:%SZ)
           BUILD_SIZE=$(du -sh build 2>/dev/null | cut -f1 || echo 'unknown')
-          cat > manifest.json << MANIFEST_EOF
-{
-  "version": "${MY_VERSION}",
-  "environment": "production",
-  "deployed_at": "${DEPLOYED_AT}",
-  "commit_sha": "${SHORT_SHA}",
-  "service": "hss-frontend",
-  "build_size": "${BUILD_SIZE}"
-}
-MANIFEST_EOF
+          # JSON manifest oluştur (echo kullanarak YAML indentation sorununu önle)
+          echo "{" > manifest.json
+          echo "  \"version\": \"${MY_VERSION}\"," >> manifest.json
+          echo "  \"environment\": \"production\"," >> manifest.json
+          echo "  \"deployed_at\": \"${DEPLOYED_AT}\"," >> manifest.json
+          echo "  \"commit_sha\": \"${SHORT_SHA}\"," >> manifest.json
+          echo "  \"service\": \"hss-frontend\"," >> manifest.json
+          echo "  \"build_size\": \"${BUILD_SIZE}\"" >> manifest.json
+          echo "}" >> manifest.json
           
           # Manifest'i yükle
           gsutil -m cp manifest.json "${MY_BUCKET}/releases/${MY_VERSION}/frontend/manifest.json"
