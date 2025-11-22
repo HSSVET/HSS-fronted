@@ -101,10 +101,9 @@ steps:
         fi
         
         # .env.production dosyası oluştur (React build için)
-        cat > .env.production << EOF
-REACT_APP_API_URL=${BACKEND_API_URL}
-REACT_APP_FIREBASE_PROJECT_ID=${_FIREBASE_PROJECT_ID:-hss-cloud-473511}
-EOF
+        FIREBASE_PROJECT_ID="${_FIREBASE_PROJECT_ID:-hss-cloud-473511}"
+        echo "REACT_APP_API_URL=${BACKEND_API_URL}" > .env.production
+        echo "REACT_APP_FIREBASE_PROJECT_ID=${FIREBASE_PROJECT_ID}" >> .env.production
         
         echo "📝 .env.production dosyası oluşturuldu:"
         cat .env.production | sed 's/REACT_APP_API_URL=.*/REACT_APP_API_URL=***/' | sed 's/REACT_APP_FIREBASE_PROJECT_ID=.*/REACT_APP_FIREBASE_PROJECT_ID=***/'
@@ -243,16 +242,18 @@ EOF
           MY_VERSION="${_TAG_NAME}"
           MY_BUCKET="gs://hss-releases-${PROJECT_ID}"
           
-          cat > manifest.json << EOF
-        {
-          "version": "${MY_VERSION}",
-          "environment": "production",
-          "deployed_at": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
-          "commit_sha": "${SHORT_SHA}",
-          "service": "hss-frontend",
-          "build_size": "$(du -sh build 2>/dev/null | cut -f1 || echo 'unknown')"
-        }
-        EOF
+          DEPLOYED_AT=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+          BUILD_SIZE=$(du -sh build 2>/dev/null | cut -f1 || echo 'unknown')
+          cat > manifest.json << MANIFEST_EOF
+{
+  "version": "${MY_VERSION}",
+  "environment": "production",
+  "deployed_at": "${DEPLOYED_AT}",
+  "commit_sha": "${SHORT_SHA}",
+  "service": "hss-frontend",
+  "build_size": "${BUILD_SIZE}"
+}
+MANIFEST_EOF
           
           # Manifest'i yükle
           gsutil -m cp manifest.json "${MY_BUCKET}/releases/${MY_VERSION}/frontend/manifest.json"
