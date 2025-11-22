@@ -28,9 +28,9 @@ steps:
         mkdir -p /workspace/.npm
         export NPM_CONFIG_CACHE=/workspace/.npm
         
-        # Dependencies'leri indir ve cache'le
-        # npm ci, package-lock.json'a sadık kalır ve daha hızlıdır
-        npm ci --prefer-offline --no-audit
+        # Dependencies'leri yükle
+        # npm install kullanıyoruz çünkü npm ci bazen devDependencies'i atlayabiliyor
+        npm install --prefer-offline --no-audit
         
         echo "✅ Dependencies hazır!"
 
