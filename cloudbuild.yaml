@@ -91,25 +91,25 @@ steps:
           export REACT_APP_ENV=production
           # Production backend URL
           BACKEND_API_URL="${_BACKEND_URL_PROD:-https://hss-backend-2ez5rneaua-ey.a.run.app}"
-          echo "🔗 Production backend URL: ${BACKEND_API_URL}"
+          echo "🔗 Production backend URL: $BACKEND_API_URL"
         else
           export NODE_ENV=development
           export REACT_APP_ENV=development
           # Development/Staging backend URL
           BACKEND_API_URL="${_BACKEND_URL:-https://hss-backend-dev-296268886725.europe-west3.run.app}"
-          echo "🔗 Development backend URL: ${BACKEND_API_URL}"
+          echo "🔗 Development backend URL: $BACKEND_API_URL"
         fi
         
         # .env.production dosyası oluştur (React build için)
         FIREBASE_PROJECT_ID="${_FIREBASE_PROJECT_ID:-hss-cloud-473511}"
-        echo "REACT_APP_API_URL=${BACKEND_API_URL}" > .env.production
-        echo "REACT_APP_FIREBASE_PROJECT_ID=${FIREBASE_PROJECT_ID}" >> .env.production
+        echo "REACT_APP_API_URL=$BACKEND_API_URL" > .env.production
+        echo "REACT_APP_FIREBASE_PROJECT_ID=$FIREBASE_PROJECT_ID" >> .env.production
         
         echo "📝 .env.production dosyası oluşturuldu:"
         cat .env.production | sed 's/REACT_APP_API_URL=.*/REACT_APP_API_URL=***/' | sed 's/REACT_APP_FIREBASE_PROJECT_ID=.*/REACT_APP_FIREBASE_PROJECT_ID=***/'
         
         # Environment variable'ları export et
-        export REACT_APP_API_URL="${BACKEND_API_URL}"
+        export REACT_APP_API_URL="$BACKEND_API_URL"
         export REACT_APP_FIREBASE_PROJECT_ID="${_FIREBASE_PROJECT_ID:-hss-cloud-473511}"
         
         # Build
@@ -248,10 +248,10 @@ steps:
           echo "{" > manifest.json
           echo "  \"version\": \"${MY_VERSION}\"," >> manifest.json
           echo "  \"environment\": \"production\"," >> manifest.json
-          echo "  \"deployed_at\": \"${DEPLOYED_AT}\"," >> manifest.json
+          echo "  \"deployed_at\": \"$DEPLOYED_AT\"," >> manifest.json
           echo "  \"commit_sha\": \"${SHORT_SHA}\"," >> manifest.json
           echo "  \"service\": \"hss-frontend\"," >> manifest.json
-          echo "  \"build_size\": \"${BUILD_SIZE}\"" >> manifest.json
+          echo "  \"build_size\": \"$BUILD_SIZE\"" >> manifest.json
           echo "}" >> manifest.json
           
           # Manifest'i yükle
