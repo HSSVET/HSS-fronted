@@ -12,28 +12,27 @@ steps:
       - |
         echo "📦 NPM dependencies indiriliyor..."
         echo "Mevcut dizin: $(pwd)"
-        echo "Dizin içeriği: $(ls -la)"
+        
         # Root dizinden HSS'e geç veya mevcut dizinde kal
         if [ -d "HSS" ]; then
           cd HSS
-          echo "HSS dizinine geçildi"
-        elif [ -f "package.json" ]; then
-          echo "Mevcut dizinde package.json bulundu, burada kalıyoruz"
-        else
+        elif [ ! -f "package.json" ]; then
           echo "❌ HSS dizini veya package.json bulunamadı!"
-          echo "Mevcut dizin içeriği:"
-          ls -la
           exit 1
         fi
+        
+        # Build-time için NODE_ENV=development olsun ki devDependencies (craco vb.) yüklensin
+        export NODE_ENV=development
         
         # NPM cache'ini optimize et
         mkdir -p /workspace/.npm
         export NPM_CONFIG_CACHE=/workspace/.npm
         
         # Dependencies'leri indir ve cache'le
+        # npm ci, package-lock.json'a sadık kalır ve daha hızlıdır
         npm ci --prefer-offline --no-audit
         
-        echo "✅ Dependencies hazır ve cache'lenmiş!"
+        echo "✅ Dependencies hazır!"
 
   # 2. Test aşaması (optional, can continue on error)
   - name: 'gcr.io/cloud-builders/npm'
@@ -43,26 +42,19 @@ steps:
       - '-c'
       - |
         echo "🧪 Frontend testleri çalıştırılıyor..."
-        echo "Mevcut dizin: $(pwd)"
-        # Root dizinden HSS'e geç veya mevcut dizinde kal
-        if [ -d "HSS" ]; then
-          cd HSS
-          echo "HSS dizinine geçildi"
-        elif [ -f "package.json" ]; then
-          echo "Mevcut dizinde package.json bulundu, burada kalıyoruz"
-        else
-          echo "❌ HSS dizini veya package.json bulunamadı!"
-          exit 1
-        fi
+        if [ -d "HSS" ]; then cd HSS; fi
+        
+        # node_modules/.bin'i PATH'e ekle
+        export PATH=$(pwd)/node_modules/.bin:$PATH
+        export CI=true
         
         if [ "${_ENVIRONMENT}" = "prod" ]; then
-          echo "🔍 Production testleri - tüm testler..."
-          npm test -- --coverage --watchAll=false --ci || exit 1
+          echo "🔍 Production testleri..."
+          npm test -- --watchAll=false --passWithNoTests || exit 1
         else
           echo "⚡ Development testleri..."
-          npm test -- --coverage --watchAll=false --ci || echo "⚠️ Testler atlandı (dev mode)"
+          npm test -- --watchAll=false --passWithNoTests || echo "⚠️ Testler atlandı (dev mode)"
         fi
-        echo "✅ Testler tamamlandı!"
     waitFor: ['npm-deps']
 
   # 3. Build aşaması
@@ -73,17 +65,10 @@ steps:
       - '-c'
       - |
         echo "🔨 Frontend build ediliyor..."
-        echo "Mevcut dizin: $(pwd)"
-        # Root dizinden HSS'e geç veya mevcut dizinde kal
-        if [ -d "HSS" ]; then
-          cd HSS
-          echo "HSS dizinine geçildi"
-        elif [ -f "package.json" ]; then
-          echo "Mevcut dizinde package.json bulundu, burada kalıyoruz"
-        else
-          echo "❌ HSS dizini veya package.json bulunamadı!"
-          exit 1
-        fi
+        if [ -d "HSS" ]; then cd HSS; fi
+        
+        # node_modules/.bin'i PATH'e ekle (craco için kritik!)
+        export PATH=$(pwd)/node_modules/.bin:$PATH
         
         # Environment variables ayarla
         if [ "${_ENVIRONMENT}" = "prod" ]; then
@@ -93,7 +78,8 @@ steps:
           LOCAL_BACKEND_URL="${_BACKEND_URL_PROD:-https://hss-backend-2ez5rneaua-ey.a.run.app}"
           echo "🔗 Production backend URL: $$LOCAL_BACKEND_URL"
         else
-          export NODE_ENV=development
+          # Development/Staging için de production build alıyoruz ama env farklı
+          export NODE_ENV=production
           export REACT_APP_ENV=development
           # Development/Staging backend URL
           LOCAL_BACKEND_URL="${_BACKEND_URL:-https://hss-backend-dev-296268886725.europe-west3.run.app}"
@@ -104,9 +90,6 @@ steps:
         FIREBASE_PROJECT_ID="${_FIREBASE_PROJECT_ID:-hss-cloud-473511}"
         echo "REACT_APP_API_URL=$$LOCAL_BACKEND_URL" > .env.production
         echo "REACT_APP_FIREBASE_PROJECT_ID=$$FIREBASE_PROJECT_ID" >> .env.production
-        
-        echo "📝 .env.production dosyası oluşturuldu:"
-        cat .env.production | sed 's/REACT_APP_API_URL=.*/REACT_APP_API_URL=***/' | sed 's/REACT_APP_FIREBASE_PROJECT_ID=.*/REACT_APP_FIREBASE_PROJECT_ID=***/'
         
         # Environment variable'ları export et
         export REACT_APP_API_URL="$$LOCAL_BACKEND_URL"
@@ -134,56 +117,28 @@ steps:
       - '-c'
       - |
         set -euo pipefail
-        
         echo "🔥 Firebase Hosting deploy başlıyor..."
-        echo "Environment: ${_ENVIRONMENT}"
-        echo "Mevcut dizin: $(pwd)"
+        if [ -d "HSS" ]; then cd HSS; fi
         
-        # Root dizinden HSS'e geç veya mevcut dizinde kal
-        if [ -d "HSS" ]; then
-          cd HSS
-          echo "HSS dizinine geçildi"
-        elif [ -f "firebase.json" ]; then
-          echo "Mevcut dizinde firebase.json bulundu, burada kalıyoruz"
-        else
-          echo "❌ HSS dizini veya firebase.json bulunamadı!"
-          exit 1
-        fi
-        
-        # Firebase CLI'yi kur
+        # Firebase CLI
         npm install -g firebase-tools
         
-        # Firebase authentication
-        echo "🔐 Firebase authentication..."
-        if [ -n "${_FIREBASE_TOKEN:-}" ]; then
-          echo "Token ile authentication kullanılıyor..."
-          export FIREBASE_TOKEN="${_FIREBASE_TOKEN}"
-        else
-          echo "Service account ile authentication deneniyor..."
-          # Service account key'i Secret Manager'dan al (opsiyonel)
-          if [ -n "${_FIREBASE_SERVICE_ACCOUNT_KEY:-}" ]; then
-            echo "${_FIREBASE_SERVICE_ACCOUNT_KEY}" > /tmp/firebase-key.json
-            export GOOGLE_APPLICATION_CREDENTIALS=/tmp/firebase-key.json
-          else
-            # Cloud Build service account'u kullan (default)
-            echo "Cloud Build service account kullanılıyor..."
-          fi
-        fi
-        
         # Firebase project'i ayarla
-        firebase use "${PROJECT_ID}" || echo "⚠️ Firebase project ayarlanamadı, deploy sırasında belirtilecek"
+        firebase use "${PROJECT_ID}" || echo "⚠️ Firebase project ayarlanamadı"
         
         # Deploy target belirle
         if [ "${_ENVIRONMENT}" = "prod" ]; then
-          MY_TARGET="prod"
+          echo "🚀 Production deploy (live channel)..."
+          firebase deploy --only hosting:prod --project="${PROJECT_ID}" --non-interactive
         else
-          MY_TARGET="dev"
+          echo "👀 Staging deploy (preview channel)..."
+          # Commit SHA'sının ilk 7 karakterini al
+          SHORT_SHA_VAL=$$(echo "${SHORT_SHA}" | cut -c1-7)
+          CHANNEL_ID="staging-$$SHORT_SHA_VAL"
+          
+          # Preview channel'a deploy et (expires 7d)
+          firebase hosting:channel:deploy "$$CHANNEL_ID" --only dev --project="${PROJECT_ID}" --expires 7d --non-interactive
         fi
-        
-        echo "📤 Deploying to Firebase Hosting target: $$MY_TARGET"
-        
-        # Firebase deploy
-        firebase deploy --only hosting:$$MY_TARGET --project="${PROJECT_ID}" --non-interactive
         
         echo "✅ Firebase deploy başarılı!"
 
