@@ -45,7 +45,7 @@ steps:
         if [ -d "HSS" ]; then cd HSS; fi
         
         # node_modules/.bin'i PATH'e ekle
-        export PATH=$(pwd)/node_modules/.bin:$PATH
+        export PATH=$(pwd)/node_modules/.bin:$$PATH
         export CI=true
         
         if [ "${_ENVIRONMENT}" = "prod" ]; then
@@ -68,7 +68,7 @@ steps:
         if [ -d "HSS" ]; then cd HSS; fi
         
         # node_modules/.bin'i PATH'e ekle (craco için kritik!)
-        export PATH=$(pwd)/node_modules/.bin:$PATH
+        export PATH=$(pwd)/node_modules/.bin:$$PATH
         
         # Environment variables ayarla
         if [ "${_ENVIRONMENT}" = "prod" ]; then
