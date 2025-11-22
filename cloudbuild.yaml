@@ -29,46 +29,17 @@ steps:
       - |
         set -euo pipefail
         echo "🔨 Frontend build..."
-        echo "Environment: ${_ENVIRONMENT}"
+        echo "Backend URL: ${_BACKEND_URL}"
         echo "Firebase Project: ${_FIREBASE_PROJECT}"
         pwd
         if [ -d "HSS" ]; then
           cd HSS
         fi
         
-        # Determine backend URL based on environment
-        if [ "${_ENVIRONMENT}" = "production" ] || [ "${_ENVIRONMENT}" = "prod" ]; then
-          # Production backend URL - use substitution variable or fallback to hardcoded
-          if [ -n "${_BACKEND_URL_PROD:-}" ]; then
-            BACKEND_API_URL="${_BACKEND_URL_PROD}"
-          else
-            # Fallback to production backend URL if not set in trigger
-            BACKEND_API_URL="https://hss-backend-2ez5rneaua-ey.a.run.app"
-          fi
-          echo "Using PRODUCTION backend: ${BACKEND_API_URL}"
-        else
-          # Staging/DEV backend URL
-          if [ -n "${_BACKEND_URL:-}" ]; then
-            BACKEND_API_URL="${_BACKEND_URL}"
-          else
-            # Fallback to dev backend URL if not set
-            BACKEND_API_URL="https://hss-backend-dev-296268886725.europe-west3.run.app"
-          fi
-          echo "Using DEV backend: ${BACKEND_API_URL}"
-        fi
-        
-        # Determine Firebase project ID
-        if [ -n "${_FIREBASE_PROJECT:-}" ]; then
-          FIREBASE_PROJECT_ID="${_FIREBASE_PROJECT}"
-        else
-          # Fallback to default project ID
-          FIREBASE_PROJECT_ID="hss-cloud-473511"
-        fi
-        
         # Create .env.production with all required environment variables
         {
-          echo "REACT_APP_API_URL=${BACKEND_API_URL}"
-          echo "REACT_APP_FIREBASE_PROJECT_ID=${FIREBASE_PROJECT_ID}"
+          echo "REACT_APP_API_URL=${_BACKEND_URL}"
+          echo "REACT_APP_FIREBASE_PROJECT_ID=${_FIREBASE_PROJECT}"
           if [ -n "${_FIREBASE_API_KEY:-}" ]; then
             echo "REACT_APP_FIREBASE_API_KEY=${_FIREBASE_API_KEY}"
           fi
@@ -130,14 +101,11 @@ steps:
             --non-interactive \
             --only hosting
         else
-          echo "📤 Staging deploy (normal deploy for fixed URL)"
-          # Normal deploy for staging to have fixed URL (staging.hssvet.com)
-          # Custom domain will be verified and connected to this site
-          firebase hosting:deploy \
+          echo "📤 Staging channel deploy (channel:deploy staging)"
+          # Note: channel:deploy does not support --site or --only parameters
+          firebase hosting:channel:deploy staging \
             --project ${_FIREBASE_PROJECT} \
-            --site ${_HOSTING_SITE} \
-            --non-interactive \
-            --only hosting
+            --non-interactive
         fi
 
         echo "✅ Deploy başarılı!"
@@ -169,8 +137,7 @@ steps:
 
 # Substitutions
 substitutions:
-  _BACKEND_URL: 'https://hss-backend-dev-296268886725.europe-west3.run.app'  # DEV: staging build için
-  _BACKEND_URL_PROD: 'https://hss-backend-2ez5rneaua-ey.a.run.app'  # PROD: production build için
+  _BACKEND_URL: 'https://hss-backend-dev-296268886725.europe-west3.run.app'
   _FIREBASE_PROJECT: 'hss-cloud-473511'
   _ENVIRONMENT: 'staging'  # staging | production
   _MACHINE_TYPE: 'E2_HIGHCPU_8'
