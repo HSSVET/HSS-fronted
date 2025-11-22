@@ -111,7 +111,7 @@ steps:
     waitFor: ['npm-deps']
 
   # 4. Firebase Hosting deploy
-  - name: 'gcr.io/cloud-builders/npm'
+  - name: 'node:20'
     id: 'firebase-deploy'
     entrypoint: 'bash'
     args:
