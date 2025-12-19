@@ -1,6 +1,7 @@
 import { OFFLINE_MODE } from '../config/offline';
 import type { ApiResponse } from '../types/common';
 import TokenManager from './tokenManager';
+import { apiCache } from './apiCache';
 
 // Base API URL
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8090';
@@ -36,10 +37,38 @@ export class ApiClient {
   private defaultMaxRetries = 3;
   private defaultRetryDelay = 1000;
   private tokenFetchPromise: Promise<void> | null = null;
+  private useCache: boolean = true;
 
-  constructor() {
+  constructor(useCache: boolean = true) {
     this.tokenManager = TokenManager.getInstance();
+    this.useCache = useCache;
     this.setupDefaultInterceptors();
+    
+    // Cleanup expired cache entries every 5 minutes
+    setInterval(() => {
+      apiCache.cleanup();
+    }, 5 * 60 * 1000);
+  }
+  
+  /**
+   * Enable or disable caching
+   */
+  setCacheEnabled(enabled: boolean): void {
+    this.useCache = enabled;
+  }
+  
+  /**
+   * Clear cache for specific endpoint
+   */
+  clearCache(endpoint: string): void {
+    apiCache.clearPattern(endpoint);
+  }
+  
+  /**
+   * Clear all cache
+   */
+  clearAllCache(): void {
+    apiCache.clearAll();
   }
 
   // Interceptor Management
@@ -55,12 +84,23 @@ export class ApiClient {
     // Request interceptor for authentication
     this.addRequestInterceptor({
       onFulfilled: async (config) => {
+        // Token geçersizse veya yoksa yeniden al
+        if (!this.tokenManager.isTokenValid()) {
+          try {
+            await this.ensureToken();
+          } catch (error) {
+            console.warn('⚠️ Token yenileme başarısız:', error);
+          }
+        }
+        
         const authHeader = this.tokenManager.getAuthHeader();
         if (authHeader) {
           config.headers = {
             ...config.headers,
             'Authorization': authHeader,
           };
+        } else {
+          console.warn('⚠️ Authorization header eklenemedi - token yok');
         }
         return config;
       },
@@ -180,41 +220,66 @@ export class ApiClient {
   }
 
   private async ensureToken(): Promise<void> {
-    // Token yoksa test token al
+    // Token yoksa veya geçersizse test token al
     const token = this.tokenManager.getAccessToken();
-    if (!token) {
+    const isTokenValid = this.tokenManager.isTokenValid();
+    
+    if (!token || !isTokenValid) {
       // Eğer zaten token alınıyorsa, o promise'i bekle
       if (this.tokenFetchPromise) {
         await this.tokenFetchPromise;
+        // Token alındıktan sonra tekrar kontrol et
+        const newToken = this.tokenManager.getAccessToken();
+        if (!newToken) {
+          throw new Error('Token alınamadı. Lütfen tekrar deneyin.');
+        }
         return;
       }
       
       // Yeni token alımı başlat
       this.tokenFetchPromise = (async () => {
         try {
-          console.log('🔑 Token bulunamadı, test token alınıyor...');
+          console.log('🔑 Token bulunamadı veya geçersiz, test token alınıyor...');
           const response = await fetch(`${API_BASE_URL}/api/public/test-token`);
-          if (response.ok) {
-            const data = await response.json();
-            if (data.token) {
-              const tokenData = {
-                accessToken: data.token,
-                refreshToken: data.token, // Test için refresh token = access token
-                expiresAt: Date.now() + (data.expiresIn || 3600) * 1000,
-                tokenType: data.tokenType || 'Bearer',
-              };
-              this.tokenManager.setTokens(tokenData);
-              console.log('✅ Test token alındı ve kaydedildi');
-            }
+          
+          if (!response.ok) {
+            const errorText = await response.text();
+            console.error('❌ Test token alınamadı:', response.status, errorText);
+            throw new Error(`Test token alınamadı: ${response.status} ${response.statusText}`);
+          }
+          
+          const data = await response.json();
+          if (data.token) {
+            const tokenData = {
+              accessToken: data.token,
+              refreshToken: data.token, // Test için refresh token = access token
+              expiresAt: Date.now() + (data.expiresIn || 3600) * 1000,
+              tokenType: data.tokenType || 'Bearer',
+            };
+            this.tokenManager.setTokens(tokenData);
+            console.log('✅ Test token alındı ve kaydedildi');
+          } else {
+            console.error('❌ Test token response\'da token bulunamadı:', data);
+            throw new Error('Test token response\'da token bulunamadı');
           }
         } catch (error) {
-          console.warn('⚠️ Test token alınamadı:', error);
-        } finally {
+          console.error('❌ Test token alınamadı:', error);
           this.tokenFetchPromise = null;
+          throw error;
+        } finally {
+          if (this.tokenFetchPromise) {
+            this.tokenFetchPromise = null;
+          }
         }
       })();
       
       await this.tokenFetchPromise;
+      
+      // Token alındıktan sonra tekrar kontrol et
+      const finalToken = this.tokenManager.getAccessToken();
+      if (!finalToken) {
+        throw new Error('Token alındı ama kaydedilemedi. Lütfen tekrar deneyin.');
+      }
     }
   }
 
@@ -223,8 +288,14 @@ export class ApiClient {
       'Content-Type': 'application/json',
     };
 
-    // Token yoksa test token al
-    await this.ensureToken();
+    // Token yoksa veya geçersizse test token al
+    try {
+      await this.ensureToken();
+    } catch (error) {
+      console.error('❌ Token alınamadı:', error);
+      // Token alınamazsa da devam et, bazı endpoint'ler public olabilir
+      // Ama request interceptor token'ı ekleyemeyecek
+    }
 
     // Apply request interceptors
     let config: RequestConfig = {
@@ -239,23 +310,42 @@ export class ApiClient {
       }
     }
 
+    // Token yoksa uyarı ver
+    const authHeader = this.tokenManager.getAuthHeader();
+    if (!authHeader) {
+      console.warn('⚠️ Authorization header eklenemedi - token bulunamadı');
+    }
+
     return config.headers;
   }
 
   private async handleResponse<T>(response: Response): Promise<ApiResponse<T>> {
-    // 401 hatası için özel işlem - refresh token yoksa önce kontrol et
+    // 401 hatası için özel işlem - refresh token yoksa test token almayı dene
     if (!response.ok && response.status === 401) {
       const refreshToken = this.tokenManager.getRefreshToken();
       if (!refreshToken) {
-        // Refresh token yoksa, hatayı normal şekilde döndür
-        // Sayfa yönlendirmesi yapma, sadece hata döndür
-        const error = await this.createErrorFromResponse(response);
-        return {
-          success: false,
-          data: {} as T,
-          error: error.message || 'Unauthorized',
-          status: 401,
-        };
+        // Refresh token yoksa, test token almayı dene
+        try {
+          console.log('🔑 401 hatası - test token alınmaya çalışılıyor...');
+          await this.ensureToken();
+          // Token alındıysa, isteği tekrar dene (bu durumda sadece hata döndür)
+          const error = await this.createErrorFromResponse(response);
+          return {
+            success: false,
+            data: {} as T,
+            error: error.message || 'Unauthorized - Token yenilendi, lütfen tekrar deneyin',
+            status: 401,
+          };
+        } catch (tokenError) {
+          // Token alınamazsa, hatayı normal şekilde döndür
+          const error = await this.createErrorFromResponse(response);
+          return {
+            success: false,
+            data: {} as T,
+            error: error.message || 'Unauthorized',
+            status: 401,
+          };
+        }
       }
     }
 
@@ -407,7 +497,7 @@ export class ApiClient {
     return error;
   }
 
-  async get<T>(endpoint: string, retries?: number): Promise<ApiResponse<T>> {
+  async get<T>(endpoint: string, retries?: number, useCache: boolean = true): Promise<ApiResponse<T>> {
     if (OFFLINE_MODE) {
       console.log('API GET çağrısı OFFLINE_MODE nedeniyle atlandı:', endpoint);
       return Promise.resolve({
@@ -418,8 +508,31 @@ export class ApiClient {
       });
     }
     
+    // Check cache first
+    if (useCache && this.useCache) {
+      const cachedData = apiCache.get<T>(endpoint);
+      if (cachedData !== null) {
+        console.log('✅ Cache hit:', endpoint);
+        return {
+          success: true,
+          data: cachedData,
+          status: 200,
+        };
+      }
+    }
+    
     try {
       console.log('API GET çağrısı:', `${API_BASE_URL}${endpoint}`);
+      
+      // Token'ın geçerli olduğundan emin ol
+      if (!this.tokenManager.isTokenValid()) {
+        try {
+          await this.ensureToken();
+        } catch (tokenError) {
+          console.warn('⚠️ Token alınamadı, istek token olmadan gönderiliyor:', tokenError);
+        }
+      }
+      
       const headers = await this.getHeaders();
       
       const response = await this.executeWithRetry(
@@ -430,6 +543,30 @@ export class ApiClient {
         retries
       );
       
+      // 401 hatası geldiyse ve token yoksa, token almayı dene
+      if (response.status === 401) {
+        const refreshToken = this.tokenManager.getRefreshToken();
+        if (!refreshToken) {
+          try {
+            console.log('🔑 401 hatası - test token alınmaya çalışılıyor...');
+            await this.ensureToken();
+            // Token alındı, isteği tekrar et
+            const newHeaders = await this.getHeaders();
+            const retryResponse = await fetch(`${API_BASE_URL}${endpoint}`, {
+              method: 'GET',
+              headers: newHeaders,
+            });
+            
+            if (retryResponse.status !== 401) {
+              console.log('✅ Token yenilendi, istek tekrar edildi - başarılı');
+              return await this.handleResponse<T>(retryResponse);
+            }
+          } catch (tokenError) {
+            console.error('❌ Token yenileme başarısız:', tokenError);
+          }
+        }
+      }
+      
       // 401 hatası için console.log'u gizle (sessiz hata)
       if (response.status !== 401) {
         console.log('API GET response:', response.status, response.statusText);
@@ -437,6 +574,11 @@ export class ApiClient {
       
       // handleResponse'ı çağır - 401 için özel işlem yapılacak
       const apiResponse = await this.handleResponse<T>(response);
+      
+      // Cache successful responses
+      if (useCache && this.useCache && apiResponse.success && apiResponse.data) {
+        apiCache.set(endpoint, apiResponse.data);
+      }
       
       // handleResponse her zaman ApiResponse döndürmeli (throw etmemeli)
       // Eğer 401 ve refresh token yoksa, success: false olan bir ApiResponse döndürmeli

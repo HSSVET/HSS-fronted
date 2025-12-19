@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import Sidebar from './Sidebar';
 import '../styles/components/Layout.css';
 
@@ -10,21 +10,28 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
   const [sidebarHovered, setSidebarHovered] = useState(false);
 
-  const toggleSidebar = () => {
-    setSidebarCollapsed(!sidebarCollapsed);
-  };
+  // useCallback ile fonksiyonları memoize et
+  const toggleSidebar = useCallback(() => {
+    setSidebarCollapsed(prev => !prev);
+  }, []);
 
-  const handleSidebarMouseEnter = () => {
-    if (sidebarCollapsed) {
-      setSidebarHovered(true);
-    }
-  };
+  const handleSidebarMouseEnter = useCallback(() => {
+    setSidebarHovered(prev => {
+      if (sidebarCollapsed && !prev) {
+        return true;
+      }
+      return prev;
+    });
+  }, [sidebarCollapsed]);
 
-  const handleSidebarMouseLeave = () => {
-    if (sidebarCollapsed) {
-      setSidebarHovered(false);
-    }
-  };
+  const handleSidebarMouseLeave = useCallback(() => {
+    setSidebarHovered(prev => {
+      if (sidebarCollapsed && prev) {
+        return false;
+      }
+      return prev;
+    });
+  }, [sidebarCollapsed]);
 
   // Sidebar görünümünü belirle: hover olduğunda açık, değilse ve collapsed ise kapalı
   const isSidebarOpen = sidebarHovered || !sidebarCollapsed;

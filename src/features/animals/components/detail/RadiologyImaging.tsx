@@ -153,6 +153,7 @@ const RadiologyImaging: React.FC = () => {
               <img
                 src={record.imageUrl}
                 alt={`${record.type} görüntüsü`}
+                loading="lazy"
                 style={{
                   width: '100%',
                   maxWidth: 300,

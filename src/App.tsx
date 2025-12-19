@@ -1,27 +1,52 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { ThemeProvider, CssBaseline, createTheme } from '@mui/material';
+import { ThemeProvider, CssBaseline, createTheme, CircularProgress, Box } from '@mui/material';
 import { AuthProvider } from './context/AuthContext';
 import { AppProvider } from './context/AppContext';
 import { ErrorProvider } from './context/ErrorContext';
 import { Layout } from './shared';
-import { Dashboard } from './features/dashboard';
-import { AnimalPage, AnimalDetailPage } from './features/animals';
-import { AppointmentPage } from './features/appointments';
-import { LabDashboard, LabTestTypes } from './features/laboratory';
-import { Billing } from './features/billing';
-import { DocumentPage } from './features/documents';
 import Toast from './components/Toast';
-
-// Error Boundaries
 import {
   GlobalErrorBoundary,
   PageErrorBoundary,
   ComponentErrorBoundary
 } from './components/common/ErrorBoundary';
-
-
 import './shared/styles/App.css';
+
+// Code Splitting: Route bazlı lazy loading
+// Code Splitting: Route bazlı lazy loading
+/* eslint-disable import/first */
+const Dashboard = lazy(() => import('./features/dashboard').then(module => ({ default: module.Dashboard })));
+const AnimalPage = lazy(() => import('./features/animals').then(module => ({ default: module.AnimalPage })));
+const AnimalDetailPage = lazy(() => import('./features/animals').then(module => ({ default: module.AnimalDetailPage })));
+const AppointmentPage = lazy(() => import('./features/appointments').then(module => ({ default: module.AppointmentPage })));
+const LabDashboard = lazy(() => import('./features/laboratory').then(module => ({ default: module.LabDashboard })));
+const LabTestTypes = lazy(() => import('./features/laboratory').then(module => ({ default: module.LabTestTypes })));
+const Billing = lazy(() => import('./features/billing').then(module => ({ default: module.Billing })));
+const DocumentPage = lazy(() => import('./features/documents').then(module => ({ default: module.DocumentPage })));
+/* eslint-enable import/first */
+
+// ============================================================================
+// Loading Fallback Component for Suspense
+// ============================================================================
+
+const SuspenseFallback = () => (
+  <Box
+    sx={{
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      minHeight: '400px',
+      flexDirection: 'column',
+      gap: 2,
+    }}
+  >
+    <CircularProgress size={40} />
+    <Box sx={{ fontSize: '14px', color: 'text.secondary' }}>
+      Sayfa yükleniyor...
+    </Box>
+  </Box>
+);
 
 // ============================================================================
 // Theme Configuration
@@ -118,7 +143,9 @@ function App() {
                 element={
                   <Layout>
                     <PageErrorBoundary pageName="Dashboard">
-                      <Dashboard />
+                      <Suspense fallback={<SuspenseFallback />}>
+                        <Dashboard />
+                      </Suspense>
                     </PageErrorBoundary>
                   </Layout>
                 }
@@ -129,7 +156,9 @@ function App() {
                 element={
                   <Layout>
                     <PageErrorBoundary pageName="Dashboard">
-                      <Dashboard />
+                      <Suspense fallback={<SuspenseFallback />}>
+                        <Dashboard />
+                      </Suspense>
                     </PageErrorBoundary>
                   </Layout>
                 }
@@ -141,7 +170,9 @@ function App() {
                 element={
                   <Layout>
                     <PageErrorBoundary pageName="Animals">
-                      <AnimalPage />
+                      <Suspense fallback={<SuspenseFallback />}>
+                        <AnimalPage />
+                      </Suspense>
                     </PageErrorBoundary>
                   </Layout>
                 }
@@ -152,7 +183,9 @@ function App() {
                 element={
                   <Layout>
                     <PageErrorBoundary pageName="Animal Details">
-                      <AnimalDetailPage />
+                      <Suspense fallback={<SuspenseFallback />}>
+                        <AnimalDetailPage />
+                      </Suspense>
                     </PageErrorBoundary>
                   </Layout>
                 }
@@ -164,7 +197,9 @@ function App() {
                 element={
                   <Layout>
                     <PageErrorBoundary pageName="Appointments">
-                      <AppointmentPage />
+                      <Suspense fallback={<SuspenseFallback />}>
+                        <AppointmentPage />
+                      </Suspense>
                     </PageErrorBoundary>
                   </Layout>
                 }
@@ -176,7 +211,9 @@ function App() {
                 element={
                   <Layout>
                     <PageErrorBoundary pageName="Laboratory">
-                      <LabDashboard />
+                      <Suspense fallback={<SuspenseFallback />}>
+                        <LabDashboard />
+                      </Suspense>
                     </PageErrorBoundary>
                   </Layout>
                 }
@@ -187,7 +224,9 @@ function App() {
                 element={
                   <Layout>
                     <PageErrorBoundary pageName="Lab Test Types">
-                      <LabTestTypes />
+                      <Suspense fallback={<SuspenseFallback />}>
+                        <LabTestTypes />
+                      </Suspense>
                     </PageErrorBoundary>
                   </Layout>
                 }
@@ -199,7 +238,9 @@ function App() {
                 element={
                   <Layout>
                     <PageErrorBoundary pageName="Billing">
-                      <Billing />
+                      <Suspense fallback={<SuspenseFallback />}>
+                        <Billing />
+                      </Suspense>
                     </PageErrorBoundary>
                   </Layout>
                 }
@@ -235,7 +276,9 @@ function App() {
                 element={
                   <Layout>
                     <PageErrorBoundary pageName="Documents">
-                      <DocumentPage />
+                      <Suspense fallback={<SuspenseFallback />}>
+                        <DocumentPage />
+                      </Suspense>
                     </PageErrorBoundary>
                   </Layout>
                 }

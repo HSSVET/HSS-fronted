@@ -16,7 +16,7 @@ interface LoadingSpinnerProps {
   size?: number;
 }
 
-const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
+const LoadingSpinner: React.FC<LoadingSpinnerProps> = React.memo(({
   isLoading,
   message,
   progress,
@@ -105,6 +105,8 @@ const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
         </Box>
       );
   }
-};
+});
+
+LoadingSpinner.displayName = 'LoadingSpinner';
 
 export default LoadingSpinner;

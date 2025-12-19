@@ -23,7 +23,7 @@ interface CalendarWidgetProps {
   refreshKey?: number;
 }
 
-const CalendarWidget: React.FC<CalendarWidgetProps> = ({ refreshKey }) => {
+const CalendarWidget: React.FC<CalendarWidgetProps> = React.memo(({ refreshKey }) => {
   const { addError, showSuccess } = useError();
   const { loading, startLoading, stopLoading } = useLoading();
   
@@ -322,6 +322,8 @@ const CalendarWidget: React.FC<CalendarWidgetProps> = ({ refreshKey }) => {
       </div>
     </div>
   );
-};
+});
+
+CalendarWidget.displayName = 'CalendarWidget';
 
 export default CalendarWidget; 

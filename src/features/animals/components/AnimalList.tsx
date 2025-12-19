@@ -16,8 +16,9 @@ import {
   TextField,
   Typography
 } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { List } from 'react-window';
 import { AnimalService, type AnimalRecord } from '../services/animalService';
 import { useError } from '../../../context/ErrorContext';
 import { useLoading } from '../../../hooks/useLoading';
@@ -70,6 +71,71 @@ const mapToAnimalListItem = (animal: AnimalRecord): AnimalListItem => {
     owner: animal.owner?.fullName || animal.owner?.name || 'Bilinmiyor',
     nextVaccine: animal.nextVaccinationDate || formatDateValue(animal.birthDate),
   };
+};
+
+// Memoized Animal Row Component for Virtualization (react-window 2.x API)
+interface AnimalRowProps {
+  index: number;
+  style: React.CSSProperties;
+  animals: AnimalListItem[];
+  onAnimalClick: (id: string) => void;
+  getHealthChipClass: (health: string) => string;
+}
+
+// Props that will be passed via rowProps (index and style are added automatically by react-window)
+type AnimalRowCustomProps = Omit<AnimalRowProps, 'index' | 'style'>;
+
+const AnimalRowComponent = React.memo<AnimalRowProps>(({ index, style, animals, onAnimalClick, getHealthChipClass }) => {
+  const animal = animals[index];
+
+  if (!animal) {
+    return <div style={style} />;
+  }
+
+  return (
+    <div style={style}>
+      <div className="animal-table-row" onClick={() => onAnimalClick(animal.id)} style={{ cursor: 'pointer' }}>
+        <div className="animal-table-cell id">#{animal.id}</div>
+        <div className="animal-table-cell name">{animal.name}</div>
+        <div className="animal-table-cell species">
+          <div className="species-info">
+            <div className="species-name">{animal.species}</div>
+            <div className="breed-name">{animal.breed}</div>
+          </div>
+        </div>
+        <div className="animal-table-cell owner">{animal.owner}</div>
+        <div className="animal-table-cell health">
+          <span className={`badge ${getHealthChipClass(animal.health).includes('good') ? 'badge--ok' : getHealthChipClass(animal.health).includes('treatment') ? 'badge--danger' : 'badge--warning'}`}>
+            {animal.health}
+          </span>
+        </div>
+        <div className="animal-table-cell date">{formatDisplayDate(animal.lastCheckup)}</div>
+        <div className="animal-table-cell date">
+          <span className="vaccine-chip">
+            {formatDisplayDate(animal.nextVaccine)}
+          </span>
+        </div>
+        <div className="animal-table-cell actions" onClick={(e) => e.stopPropagation()}>
+          <IconButton size="small" className="action-icon-button">
+            <EventIcon />
+          </IconButton>
+          <IconButton size="small" className="action-icon-button">
+            <EditIcon />
+          </IconButton>
+          <IconButton size="small" className="action-icon-button" onClick={() => onAnimalClick(animal.id)}>
+            <DescriptionIcon />
+          </IconButton>
+        </div>
+      </div>
+    </div>
+  );
+});
+
+AnimalRowComponent.displayName = 'AnimalRow';
+
+// Wrapper function for react-window compatibility
+const AnimalRow = (props: AnimalRowProps): React.ReactElement => {
+  return <AnimalRowComponent {...props} />;
 };
 
 const AnimalList: React.FC<AnimalListProps> = ({ onAddAnimal }) => {
@@ -275,13 +341,25 @@ const AnimalList: React.FC<AnimalListProps> = ({ onAddAnimal }) => {
     });
   };
 
-  const filteredAndSortedAnimals = sortAnimals(filterAnimals(animals));
+  const filteredAndSortedAnimals = useMemo(
+    () => sortAnimals(filterAnimals(animals)),
+    [animals, sortBy, searchTerm, filters]
+  );
 
-  const uniqueSpecies = Array.from(new Set(animals.map(a => a.species)));
-  const uniqueBreeds = Array.from(new Set(animals.map(a => a.breed).filter(Boolean))) as string[];
-  const uniqueHealth = Array.from(new Set(animals.map(a => a.health)));
+  const uniqueSpecies = useMemo(
+    () => Array.from(new Set(animals.map(a => a.species))),
+    [animals]
+  );
+  const uniqueBreeds = useMemo(
+    () => Array.from(new Set(animals.map(a => a.breed).filter(Boolean))) as string[],
+    [animals]
+  );
+  const uniqueHealth = useMemo(
+    () => Array.from(new Set(animals.map(a => a.health))),
+    [animals]
+  );
 
-  const getHealthChipClass = (health: string) => {
+  const getHealthChipClass = useCallback((health: string) => {
     switch (health) {
       case 'İyi':
         return 'health-chip good';
@@ -292,11 +370,11 @@ const AnimalList: React.FC<AnimalListProps> = ({ onAddAnimal }) => {
       default:
         return 'health-chip';
     }
-  };
+  }, []);
 
-  const handleAnimalClick = (animalId: string) => {
+  const handleAnimalClick = useCallback((animalId: string) => {
     navigate(`/animals/${animalId}`);
-  };
+  }, [navigate]);
 
   if (loading.isLoading) {
     return (
@@ -494,41 +572,24 @@ const AnimalList: React.FC<AnimalListProps> = ({ onAddAnimal }) => {
             <div className="animal-table-cell date">Sonraki Aşı</div>
             <div className="animal-table-cell actions">İşlemler</div>
           </div>
-          {filteredAndSortedAnimals.map((animal) => (
-            <div key={animal.id} className="animal-table-row" onClick={() => handleAnimalClick(animal.id)} style={{ cursor: 'pointer' }}>
-              <div className="animal-table-cell id">#{animal.id}</div>
-              <div className="animal-table-cell name">{animal.name}</div>
-              <div className="animal-table-cell species">
-                <div className="species-info">
-                  <div className="species-name">{animal.species}</div>
-                  <div className="breed-name">{animal.breed}</div>
-                </div>
-              </div>
-              <div className="animal-table-cell owner">{animal.owner}</div>
-              <div className="animal-table-cell health">
-                <span className={`badge ${getHealthChipClass(animal.health).includes('good') ? 'badge--ok' : getHealthChipClass(animal.health).includes('treatment') ? 'badge--danger' : 'badge--warning'}`}>
-                  {animal.health}
-                </span>
-              </div>
-              <div className="animal-table-cell date">{formatDisplayDate(animal.lastCheckup)}</div>
-              <div className="animal-table-cell date">
-                <span className="vaccine-chip">
-                  {formatDisplayDate(animal.nextVaccine)}
-                </span>
-              </div>
-              <div className="animal-table-cell actions" onClick={(e) => e.stopPropagation()}>
-                <IconButton size="small" className="action-icon-button">
-                  <EventIcon />
-                </IconButton>
-                <IconButton size="small" className="action-icon-button">
-                  <EditIcon />
-                </IconButton>
-                <IconButton size="small" className="action-icon-button" onClick={() => handleAnimalClick(animal.id)}>
-                  <DescriptionIcon />
-                </IconButton>
-              </div>
+          {filteredAndSortedAnimals.length > 0 ? (
+            <List<AnimalRowCustomProps>
+              rowCount={filteredAndSortedAnimals.length}
+              rowHeight={60}
+              defaultHeight={Math.min(600, filteredAndSortedAnimals.length * 60)}
+              style={{ height: Math.min(600, filteredAndSortedAnimals.length * 60), width: '100%' }}
+              rowComponent={AnimalRow}
+              rowProps={{
+                animals: filteredAndSortedAnimals,
+                onAnimalClick: handleAnimalClick,
+                getHealthChipClass: getHealthChipClass,
+              }}
+            />
+          ) : (
+            <div style={{ padding: '20px', textAlign: 'center', color: 'text.secondary' }}>
+              Hayvan bulunamadı
             </div>
-          ))}
+          )}
         </Paper>
       </div>
     </div>
