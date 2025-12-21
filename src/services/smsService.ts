@@ -1,5 +1,6 @@
 import { apiClient } from './api';
 import { API_ENDPOINTS } from '../constants';
+import type { ApiResponse } from '../types/common';
 
 // Backend DTO eşleştirmeleri
 export type SmsProvider = 'TWILIO' | 'NETGSM' | 'AUTO';
@@ -57,12 +58,12 @@ export interface SmsResponseDto {
 
 export class SmsService {
     // Genel SMS gönderimi (POST /api/sms/send)
-    static async sendSms(payload: SmsMessageDto): Promise<SmsResponseDto> {
+    static async sendSms(payload: SmsMessageDto): Promise<ApiResponse<SmsResponseDto>> {
         return apiClient.post<SmsResponseDto>(`${API_ENDPOINTS.SMS}/send`, payload);
     }
 
     // Toplu SMS (POST /api/sms/send/bulk)
-    static async sendBulk(payload: SmsMessageDto[]): Promise<SmsResponseDto[]> {
+    static async sendBulk(payload: SmsMessageDto[]): Promise<ApiResponse<SmsResponseDto[]>> {
         return apiClient.post<SmsResponseDto[]>(`${API_ENDPOINTS.SMS}/send/bulk`, payload);
     }
 
@@ -72,47 +73,47 @@ export class SmsService {
         patientName: string;
         appointmentDate: string;
         clinicName: string;
-    }): Promise<SmsResponseDto> {
+    }): Promise<ApiResponse<SmsResponseDto>> {
         const params = new URLSearchParams(args as Record<string, string>);
         return apiClient.post<SmsResponseDto>(`${API_ENDPOINTS.SMS}/reminder/appointment?${params.toString()}`);
     }
 
     // Doğrulama kodu (POST /api/sms/verification)
-    static async sendVerificationCode(args: { phoneNumber: string; verificationCode: string }): Promise<SmsResponseDto> {
+    static async sendVerificationCode(args: { phoneNumber: string; verificationCode: string }): Promise<ApiResponse<SmsResponseDto>> {
         const params = new URLSearchParams(args as Record<string, string>);
         return apiClient.post<SmsResponseDto>(`${API_ENDPOINTS.SMS}/verification?${params.toString()}`);
     }
 
     // Alarm (POST /api/sms/alert)
-    static async sendAlert(args: { phoneNumber: string; alertMessage: string }): Promise<SmsResponseDto> {
+    static async sendAlert(args: { phoneNumber: string; alertMessage: string }): Promise<ApiResponse<SmsResponseDto>> {
         const params = new URLSearchParams(args as Record<string, string>);
         return apiClient.post<SmsResponseDto>(`${API_ENDPOINTS.SMS}/alert?${params.toString()}`);
     }
 
     // Sağlık durumu (GET /api/sms/health)
-    static async health(): Promise<{ smsServiceHealthy: boolean; availableProviders: string[]; providerHealth: Record<string, boolean>; timestamp: string; }> {
+    static async health(): Promise<ApiResponse<{ smsServiceHealthy: boolean; availableProviders: string[]; providerHealth: Record<string, boolean>; timestamp: string; }>> {
         return apiClient.get(`${API_ENDPOINTS.SMS}/health`);
     }
 
     // Sağlayıcılar (GET /api/sms/providers)
-    static async providers(): Promise<{ availableProviders: string[]; providerHealth: Record<string, boolean>; hasAvailableProvider: boolean; timestamp: string; }> {
+    static async providers(): Promise<ApiResponse<{ availableProviders: string[]; providerHealth: Record<string, boolean>; hasAvailableProvider: boolean; timestamp: string; }>> {
         return apiClient.get(`${API_ENDPOINTS.SMS}/providers`);
     }
 
     // Sağlayıcı test (POST /api/sms/test/{provider})
-    static async testProvider(provider: 'twilio' | 'netgsm', phoneNumber: string): Promise<Record<string, unknown>> {
+    static async testProvider(provider: 'twilio' | 'netgsm', phoneNumber: string): Promise<ApiResponse<Record<string, unknown>>> {
         const params = new URLSearchParams({ phoneNumber });
         return apiClient.post(`${API_ENDPOINTS.SMS}/test/${provider}?${params.toString()}`);
     }
 
     // Konfigürasyon testi (POST /api/sms/test/configuration)
-    static async testConfiguration(phoneNumber: string): Promise<Record<string, unknown>> {
+    static async testConfiguration(phoneNumber: string): Promise<ApiResponse<Record<string, unknown>>> {
         const params = new URLSearchParams({ phoneNumber });
         return apiClient.post(`${API_ENDPOINTS.SMS}/test/configuration?${params.toString()}`);
     }
 
     // Teslimat durumu (GET /api/sms/status/{providerMessageId}?provider=...)
-    static async getDeliveryStatus(providerMessageId: string, provider: 'twilio' | 'netgsm'): Promise<SmsResponseDto> {
+    static async getDeliveryStatus(providerMessageId: string, provider: 'twilio' | 'netgsm'): Promise<ApiResponse<SmsResponseDto>> {
         const params = new URLSearchParams({ provider });
         return apiClient.get(`${API_ENDPOINTS.SMS}/status/${encodeURIComponent(providerMessageId)}?${params.toString()}`);
     }

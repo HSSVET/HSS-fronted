@@ -24,7 +24,11 @@ const SmsPage: React.FC = () => {
         setResponse(null);
         try {
             const res = await SmsService.sendSms({ to, message, provider });
-            setResponse(res);
+            if (res.success && res.data) {
+                setResponse(res.data);
+            } else {
+                throw new Error(res.error || 'Gönderim başarısız');
+            }
         } catch (e: any) {
             setError(e?.message || 'Gönderim sırasında bir hata oluştu');
         } finally {
@@ -38,7 +42,11 @@ const SmsPage: React.FC = () => {
         setCheckingHealth(true);
         try {
             const res = await SmsService.health();
-            setHealth(res);
+            if (res.success && res.data) {
+                setHealth(res.data);
+            } else {
+                setHealth({ smsServiceHealthy: false });
+            }
         } catch (e) {
             setHealth({ smsServiceHealthy: false });
         } finally {
@@ -55,7 +63,11 @@ const SmsPage: React.FC = () => {
         setTestResult(null);
         try {
             const res = await SmsService.testProvider(testProvider, testPhone);
-            setTestResult(res);
+            if (res.success && res.data) {
+                setTestResult({ ...res.data, success: true });
+            } else {
+                setTestResult({ success: false, error: res.error });
+            }
         } catch (e: any) {
             setTestResult({ success: false, error: e?.message });
         } finally {
