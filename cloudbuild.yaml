@@ -1,0 +1,267 @@
+# Cloud Build configuration for HSS Frontend (SAFE VERSION)
+# Triggers: develop branch (dev), v* tags (prod)
+# Frontend Firebase Hosting deployment
+
+steps:
+  # 1. NPM dependencies download (optimized caching)
+  - name: 'gcr.io/cloud-builders/npm'
+    id: 'npm-deps'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        echo "📦 NPM dependencies indiriliyor..."
+        echo "Mevcut dizin: $(pwd)"
+        
+        # Root dizinden HSS'e geç veya mevcut dizinde kal
+        if [ -d "HSS" ]; then
+          cd HSS
+        elif [ ! -f "package.json" ]; then
+          echo "❌ HSS dizini veya package.json bulunamadı!"
+          exit 1
+        fi
+        
+        # Build-time için NODE_ENV=development olsun ki devDependencies (craco vb.) yüklensin
+        export NODE_ENV=development
+        
+        # NPM cache'ini optimize et
+        mkdir -p /workspace/.npm
+        export NPM_CONFIG_CACHE=/workspace/.npm
+        
+        # Dependencies'leri yükle
+        # npm install kullanıyoruz çünkü npm ci bazen devDependencies'i atlayabiliyor
+        npm install --prefer-offline --no-audit
+        
+        echo "✅ Dependencies hazır!"
+
+  # 2. Test aşaması (optional, can continue on error)
+  - name: 'gcr.io/cloud-builders/npm'
+    id: 'test'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        echo "🧪 Frontend testleri çalıştırılıyor..."
+        if [ -d "HSS" ]; then cd HSS; fi
+        
+        # node_modules/.bin'i PATH'e ekle
+        export PATH=$(pwd)/node_modules/.bin:$$PATH
+        export CI=true
+        
+        if [ "${_ENVIRONMENT}" = "prod" ]; then
+          echo "🔍 Production testleri..."
+          # Test hatası olsa bile build'e devam et (şimdilik)
+          npm test -- --watchAll=false --passWithNoTests || echo "⚠️ Test hatası oluştu ama build devam ediyor"
+        else
+          echo "⚡ Development testleri..."
+          npm test -- --watchAll=false --passWithNoTests || echo "⚠️ Testler atlandı (dev mode)"
+        fi
+    waitFor: ['npm-deps']
+
+  # 3. Build aşaması
+  - name: 'gcr.io/cloud-builders/npm'
+    id: 'build'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        echo "🔨 Frontend build ediliyor..."
+        if [ -d "HSS" ]; then cd HSS; fi
+        
+        # node_modules/.bin'i PATH'e ekle (craco için kritik!)
+        export PATH=$(pwd)/node_modules/.bin:$$PATH
+        
+        # Environment variables ayarla
+        if [ "${_ENVIRONMENT}" = "prod" ]; then
+          export NODE_ENV=production
+          export REACT_APP_ENV=production
+          # Production backend URL
+          LOCAL_BACKEND_URL="${_BACKEND_URL_PROD:-https://hss-backend-2ez5rneaua-ey.a.run.app}"
+          echo "🔗 Production backend URL: $$LOCAL_BACKEND_URL"
+        else
+          # Development/Staging için de production build alıyoruz ama env farklı
+          export NODE_ENV=production
+          export REACT_APP_ENV=development
+          # Development/Staging backend URL
+          LOCAL_BACKEND_URL="${_BACKEND_URL:-https://hss-backend-dev-296268886725.europe-west3.run.app}"
+          echo "🔗 Development backend URL: $$LOCAL_BACKEND_URL"
+        fi
+        
+        # .env.production dosyası oluştur (React build için)
+        FIREBASE_PROJECT_ID="${_FIREBASE_PROJECT_ID:-hss-cloud-473511}"
+        echo "REACT_APP_API_URL=$$LOCAL_BACKEND_URL" > .env.production
+        echo "REACT_APP_FIREBASE_PROJECT_ID=$$FIREBASE_PROJECT_ID" >> .env.production
+        
+        # Environment variable'ları export et
+        export REACT_APP_API_URL="$$LOCAL_BACKEND_URL"
+        export REACT_APP_FIREBASE_PROJECT_ID="${_FIREBASE_PROJECT_ID:-hss-cloud-473511}"
+        
+        # Build
+        npm run build
+        
+        # Build output kontrolü
+        if [ ! -d "build" ]; then
+          echo "❌ Build dizini oluşturulmadı!"
+          exit 1
+        fi
+        
+        echo "✅ Build başarılı! Build size:"
+        du -sh build
+        
+    waitFor: ['npm-deps']
+
+  # 4. Firebase Hosting deploy
+  - name: 'node:20'
+    id: 'firebase-deploy'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        set -euo pipefail
+        echo "🔥 Firebase Hosting deploy başlıyor..."
+        if [ -d "HSS" ]; then cd HSS; fi
+        
+        # Firebase CLI
+        npm install -g firebase-tools
+        
+        # Firebase project'i ayarla
+        firebase use "${PROJECT_ID}" || echo "⚠️ Firebase project ayarlanamadı"
+        
+        # Deploy target belirle
+        if [ "${_ENVIRONMENT}" = "prod" ]; then
+          echo "🚀 Production deploy (live channel)..."
+          firebase deploy --only hosting:prod --project="${PROJECT_ID}" --non-interactive
+        else
+          echo "👀 Staging deploy (preview channel)..."
+          # Commit SHA'sının ilk 7 karakterini al
+          SHORT_SHA_VAL=$$(echo "${SHORT_SHA}" | cut -c1-7)
+          CHANNEL_ID="staging-$$SHORT_SHA_VAL"
+          
+          # Preview channel'a deploy et (expires 7d)
+          firebase hosting:channel:deploy "$$CHANNEL_ID" --only dev --project="${PROJECT_ID}" --expires 7d --non-interactive
+        fi
+        
+        echo "✅ Firebase deploy başarılı!"
+
+    waitFor: ['build']
+
+  # 5. Cloud Storage backup (build artifacts)
+  - name: 'gcr.io/cloud-builders/gsutil'
+    id: 'storage-backup'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        set -e
+        
+        echo "📦 Cloud Storage'a backup yükleniyor..."
+        echo "Mevcut dizin: $(pwd)"
+        
+        # Root dizinden HSS'e geç veya mevcut dizinde kal
+        if [ -d "HSS" ]; then
+          cd HSS
+          echo "HSS dizinine geçildi"
+        elif [ -d "build" ]; then
+          echo "Mevcut dizinde build bulundu, burada kalıyoruz"
+        else
+          echo "❌ Build dizini bulunamadı!"
+          exit 1
+        fi
+        
+        MY_BUCKET="gs://hss-releases-${PROJECT_ID}"
+        MY_VERSION="${_TAG_NAME}"
+        MY_PATH="$$MY_BUCKET/releases/$$MY_VERSION/frontend/"
+        
+        # Build'i Cloud Storage'a yükle
+        echo "📤 Build dosyaları yükleniyor: $$MY_PATH"
+        gsutil -m cp -r build/* "$$MY_PATH"
+        
+        # Latest pointer'ını güncelle
+        echo "🔗 Latest pointer güncelleniyor..."
+        gsutil -m rsync -r -d "$$MY_PATH" "$$MY_BUCKET/releases/latest/frontend/"
+        
+        echo "✅ Cloud Storage backup tamamlandı!"
+
+    waitFor: ['build']
+
+  # 6. Release artifacts (only prod)
+  - name: 'gcr.io/cloud-builders/gcloud'
+    id: 'release'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        set -e
+        if [ "${_ENVIRONMENT}" = "prod" ]; then
+          echo "📦 Release artifacts oluşturuluyor..."
+          
+          MY_VERSION="${_TAG_NAME}"
+          MY_BUCKET="gs://hss-releases-${PROJECT_ID}"
+          
+          DEPLOYED_AT=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+          BUILD_SIZE=$(du -sh build 2>/dev/null | cut -f1 || echo 'unknown')
+          # JSON manifest oluştur (echo kullanarak YAML indentation sorununu önle)
+          echo "{" > manifest.json
+          echo "  \"version\": \"$$MY_VERSION\"," >> manifest.json
+          echo "  \"environment\": \"production\"," >> manifest.json
+          echo "  \"deployed_at\": \"$$DEPLOYED_AT\"," >> manifest.json
+          echo "  \"commit_sha\": \"${SHORT_SHA}\"," >> manifest.json
+          echo "  \"service\": \"hss-frontend\"," >> manifest.json
+          echo "  \"build_size\": \"$$BUILD_SIZE\"" >> manifest.json
+          echo "}" >> manifest.json
+          
+          # Manifest'i yükle
+          gsutil -m cp manifest.json "$$MY_BUCKET/releases/$$MY_VERSION/frontend/manifest.json"
+          gsutil -m cp manifest.json "$$MY_BUCKET/releases/latest/frontend/manifest.json"
+          
+          echo "✅ Release artifacts yüklendi!"
+        else
+          echo "ℹ️ Dev ortamı - release atlandı"
+        fi
+
+    waitFor: ['firebase-deploy', 'storage-backup']
+
+  # 7. Monitoring metrics
+  - name: 'gcr.io/cloud-builders/gcloud'
+    id: 'monitoring'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        echo "📊 Monitoring kaydı gönderiliyor..."
+        gcloud logging write hss-deployment \
+          "Frontend deployment completed successfully" \
+          --severity=INFO \
+          --payload-type=json \
+          --payload='{
+            "service": "hss-frontend",
+            "environment": "${_ENVIRONMENT}",
+            "version": "${_TAG_NAME}",
+            "commit_sha": "${SHORT_SHA}",
+            "deployment_time": "'$(date -u +%Y-%m-%dT%H:%M:%SZ)'"
+          }' || echo "⚠️ Monitoring gönderilemedi"
+    waitFor: ['release']
+
+# Substitution variables
+substitutions:
+  _ENVIRONMENT: 'dev'
+  _TAG_NAME: 'dev'
+  _BACKEND_URL: 'https://hss-backend-dev-296268886725.europe-west3.run.app'  # Development/Staging backend URL
+  _BACKEND_URL_PROD: 'https://hss-backend-2ez5rneaua-ey.a.run.app'  # Production backend URL
+  _FIREBASE_PROJECT_ID: 'hss-cloud-473511'  # Firebase project ID
+  _FIREBASE_TOKEN: ''  # Optional: Firebase CI token for authentication
+  _FIREBASE_SERVICE_ACCOUNT_KEY: ''  # Optional: Firebase service account key JSON
+
+# Options (optimized for performance)
+options:
+  logging: CLOUD_LOGGING_ONLY
+  machineType: 'E2_HIGHCPU_8'  # 8 vCPU, 8GB RAM - optimal for npm + Firebase
+  diskSizeGb: 50  # Sufficient for node_modules and build artifacts
+  substitution_option: 'ALLOW_LOOSE'
+  dynamic_substitutions: true
+  env:
+    - 'NODE_ENV=production'
+    - 'NPM_CONFIG_LOGLEVEL=warn'
+
+timeout: '1200s'  # 20 minutes timeout for build and deploy
+

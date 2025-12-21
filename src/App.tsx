@@ -5,6 +5,8 @@ import { AuthProvider } from './context/AuthContext';
 import { AppProvider } from './context/AppContext';
 import { ErrorProvider } from './context/ErrorContext';
 import { Layout } from './shared';
+import LoginPage from './components/auth/LoginPage';
+import ProtectedRoute from './components/auth/ProtectedRoute';
 import Toast from './components/Toast';
 import {
   GlobalErrorBoundary,
@@ -127,7 +129,7 @@ const theme = createTheme({
 
 function App() {
   console.log('🏠 App starting without authentication');
-  
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -136,203 +138,237 @@ function App() {
           <AuthProvider>
             <AppProvider>
               <Router>
-            <Routes>
-              {/* Main Dashboard Route */}
-              <Route
-                path="/"
-                element={
-                  <Layout>
-                    <PageErrorBoundary pageName="Dashboard">
-                      <Suspense fallback={<SuspenseFallback />}>
-                        <Dashboard />
-                      </Suspense>
-                    </PageErrorBoundary>
-                  </Layout>
-                }
-              />
+                <Routes>
+                  {/* Login Route - Public */}
+                  <Route
+                    path="/login"
+                    element={<LoginPage />}
+                  />
 
-              <Route
-                path="/dashboard"
-                element={
-                  <Layout>
-                    <PageErrorBoundary pageName="Dashboard">
-                      <Suspense fallback={<SuspenseFallback />}>
-                        <Dashboard />
-                      </Suspense>
-                    </PageErrorBoundary>
-                  </Layout>
-                }
-              />
+                  {/* Main Dashboard Route - Protected */}
+                  <Route
+                    path="/"
+                    element={
+                      <ProtectedRoute>
+                        <Layout>
+                          <PageErrorBoundary pageName="Dashboard">
+                            <Suspense fallback={<SuspenseFallback />}>
+                              <Dashboard />
+                            </Suspense>
+                          </PageErrorBoundary>
+                        </Layout>
+                      </ProtectedRoute>
+                    }
+                  />
 
-              {/* Animals */}
-              <Route
-                path="/animals"
-                element={
-                  <Layout>
-                    <PageErrorBoundary pageName="Animals">
-                      <Suspense fallback={<SuspenseFallback />}>
-                        <AnimalPage />
-                      </Suspense>
-                    </PageErrorBoundary>
-                  </Layout>
-                }
-              />
+                  <Route
+                    path="/dashboard"
+                    element={
+                      <ProtectedRoute>
+                        <Layout>
+                          <PageErrorBoundary pageName="Dashboard">
+                            <Suspense fallback={<SuspenseFallback />}>
+                              <Dashboard />
+                            </Suspense>
+                          </PageErrorBoundary>
+                        </Layout>
+                      </ProtectedRoute>
+                    }
+                  />
 
-              <Route
-                path="/animals/:id"
-                element={
-                  <Layout>
-                    <PageErrorBoundary pageName="Animal Details">
-                      <Suspense fallback={<SuspenseFallback />}>
-                        <AnimalDetailPage />
-                      </Suspense>
-                    </PageErrorBoundary>
-                  </Layout>
-                }
-              />
+                  {/* Animals - Protected */}
+                  <Route
+                    path="/animals"
+                    element={
+                      <ProtectedRoute>
+                        <Layout>
+                          <PageErrorBoundary pageName="Animals">
+                            <Suspense fallback={<SuspenseFallback />}>
+                              <AnimalPage />
+                            </Suspense>
+                          </PageErrorBoundary>
+                        </Layout>
+                      </ProtectedRoute>
+                    }
+                  />
 
-              {/* Appointments */}
-              <Route
-                path="/appointments"
-                element={
-                  <Layout>
-                    <PageErrorBoundary pageName="Appointments">
-                      <Suspense fallback={<SuspenseFallback />}>
-                        <AppointmentPage />
-                      </Suspense>
-                    </PageErrorBoundary>
-                  </Layout>
-                }
-              />
+                  <Route
+                    path="/animals/:id"
+                    element={
+                      <ProtectedRoute>
+                        <Layout>
+                          <PageErrorBoundary pageName="Animal Details">
+                            <Suspense fallback={<SuspenseFallback />}>
+                              <AnimalDetailPage />
+                            </Suspense>
+                          </PageErrorBoundary>
+                        </Layout>
+                      </ProtectedRoute>
+                    }
+                  />
 
-              {/* Laboratory */}
-              <Route
-                path="/laboratory"
-                element={
-                  <Layout>
-                    <PageErrorBoundary pageName="Laboratory">
-                      <Suspense fallback={<SuspenseFallback />}>
-                        <LabDashboard />
-                      </Suspense>
-                    </PageErrorBoundary>
-                  </Layout>
-                }
-              />
+                  {/* Appointments - Protected */}
+                  <Route
+                    path="/appointments"
+                    element={
+                      <ProtectedRoute>
+                        <Layout>
+                          <PageErrorBoundary pageName="Appointments">
+                            <Suspense fallback={<SuspenseFallback />}>
+                              <AppointmentPage />
+                            </Suspense>
+                          </PageErrorBoundary>
+                        </Layout>
+                      </ProtectedRoute>
+                    }
+                  />
 
-              <Route
-                path="/laboratory/test-types"
-                element={
-                  <Layout>
-                    <PageErrorBoundary pageName="Lab Test Types">
-                      <Suspense fallback={<SuspenseFallback />}>
-                        <LabTestTypes />
-                      </Suspense>
-                    </PageErrorBoundary>
-                  </Layout>
-                }
-              />
+                  {/* Laboratory - Protected */}
+                  <Route
+                    path="/laboratory"
+                    element={
+                      <ProtectedRoute>
+                        <Layout>
+                          <PageErrorBoundary pageName="Laboratory">
+                            <Suspense fallback={<SuspenseFallback />}>
+                              <LabDashboard />
+                            </Suspense>
+                          </PageErrorBoundary>
+                        </Layout>
+                      </ProtectedRoute>
+                    }
+                  />
 
-              {/* Billing */}
-              <Route
-                path="/billing"
-                element={
-                  <Layout>
-                    <PageErrorBoundary pageName="Billing">
-                      <Suspense fallback={<SuspenseFallback />}>
-                        <Billing />
-                      </Suspense>
-                    </PageErrorBoundary>
-                  </Layout>
-                }
-              />
+                  <Route
+                    path="/laboratory/test-types"
+                    element={
+                      <ProtectedRoute>
+                        <Layout>
+                          <PageErrorBoundary pageName="Lab Test Types">
+                            <Suspense fallback={<SuspenseFallback />}>
+                              <LabTestTypes />
+                            </Suspense>
+                          </PageErrorBoundary>
+                        </Layout>
+                      </ProtectedRoute>
+                    }
+                  />
 
-              {/* Inventory */}
-              <Route
-                path="/inventory"
-                element={
-                  <Layout>
-                    <PageErrorBoundary pageName="Inventory">
-                      <div>Envanter/Stok Sayfası (Yakında)</div>
-                    </PageErrorBoundary>
-                  </Layout>
-                }
-              />
+                  {/* Billing - Protected */}
+                  <Route
+                    path="/billing"
+                    element={
+                      <ProtectedRoute>
+                        <Layout>
+                          <PageErrorBoundary pageName="Billing">
+                            <Suspense fallback={<SuspenseFallback />}>
+                              <Billing />
+                            </Suspense>
+                          </PageErrorBoundary>
+                        </Layout>
+                      </ProtectedRoute>
+                    }
+                  />
 
-              {/* Reports */}
-              <Route
-                path="/reports"
-                element={
-                  <Layout>
-                    <PageErrorBoundary pageName="Reports">
-                      <div>Raporlar Sayfası (Yakında)</div>
-                    </PageErrorBoundary>
-                  </Layout>
-                }
-              />
+                  {/* Inventory - Protected */}
+                  <Route
+                    path="/inventory"
+                    element={
+                      <ProtectedRoute>
+                        <Layout>
+                          <PageErrorBoundary pageName="Inventory">
+                            <div>Envanter/Stok Sayfası (Yakında)</div>
+                          </PageErrorBoundary>
+                        </Layout>
+                      </ProtectedRoute>
+                    }
+                  />
 
-              {/* Documents */}
-              <Route
-                path="/documents"
-                element={
-                  <Layout>
-                    <PageErrorBoundary pageName="Documents">
-                      <Suspense fallback={<SuspenseFallback />}>
-                        <DocumentPage />
-                      </Suspense>
-                    </PageErrorBoundary>
-                  </Layout>
-                }
-              />
+                  {/* Reports - Protected */}
+                  <Route
+                    path="/reports"
+                    element={
+                      <ProtectedRoute>
+                        <Layout>
+                          <PageErrorBoundary pageName="Reports">
+                            <div>Raporlar Sayfası (Yakında)</div>
+                          </PageErrorBoundary>
+                        </Layout>
+                      </ProtectedRoute>
+                    }
+                  />
 
-              {/* Settings */}
-              <Route
-                path="/settings"
-                element={
-                  <Layout>
-                    <PageErrorBoundary pageName="Settings">
-                      <div>Ayarlar Sayfası (Yakında)</div>
-                    </PageErrorBoundary>
-                  </Layout>
-                }
-              />
+                  {/* Documents - Protected */}
+                  <Route
+                    path="/documents"
+                    element={
+                      <ProtectedRoute>
+                        <Layout>
+                          <PageErrorBoundary pageName="Documents">
+                            <Suspense fallback={<SuspenseFallback />}>
+                              <DocumentPage />
+                            </Suspense>
+                          </PageErrorBoundary>
+                        </Layout>
+                      </ProtectedRoute>
+                    }
+                  />
 
-              {/* User Management */}
-              <Route
-                path="/users"
-                element={
-                  <Layout>
-                    <PageErrorBoundary pageName="User Management">
-                      <div>Kullanıcı Yönetimi (Yakında)</div>
-                    </PageErrorBoundary>
-                  </Layout>
-                }
-              />
+                  {/* Settings - Protected */}
+                  <Route
+                    path="/settings"
+                    element={
+                      <ProtectedRoute>
+                        <Layout>
+                          <PageErrorBoundary pageName="Settings">
+                            <div>Ayarlar Sayfası (Yakında)</div>
+                          </PageErrorBoundary>
+                        </Layout>
+                      </ProtectedRoute>
+                    }
+                  />
 
-              {/* Audit Logs */}
-              <Route
-                path="/audit"
-                element={
-                  <Layout>
-                    <PageErrorBoundary pageName="Audit Logs">
-                      <div>Denetim Günlükleri (Yakında)</div>
-                    </PageErrorBoundary>
-                  </Layout>
-                }
-              />
+                  {/* User Management - Protected */}
+                  <Route
+                    path="/users"
+                    element={
+                      <ProtectedRoute>
+                        <Layout>
+                          <PageErrorBoundary pageName="User Management">
+                            <div>Kullanıcı Yönetimi (Yakında)</div>
+                          </PageErrorBoundary>
+                        </Layout>
+                      </ProtectedRoute>
+                    }
+                  />
 
-              {/* Fallback - Redirect to dashboard */}
-              <Route
-                path="*"
-                element={<Navigate to="/" replace />}
-              />
-            </Routes>
-            </Router>
-            <Toast />
-          </AppProvider>
-        </AuthProvider>
-      </ErrorProvider>
-    </GlobalErrorBoundary>
-  </ThemeProvider>
+                  {/* Audit Logs - Protected */}
+                  <Route
+                    path="/audit"
+                    element={
+                      <ProtectedRoute>
+                        <Layout>
+                          <PageErrorBoundary pageName="Audit Logs">
+                            <div>Denetim Günlükleri (Yakında)</div>
+                          </PageErrorBoundary>
+                        </Layout>
+                      </ProtectedRoute>
+                    }
+                  />
+
+                  {/* Fallback - Redirect to login or dashboard based on auth */}
+                  <Route
+                    path="*"
+                    element={<Navigate to="/login" replace />}
+                  />
+                </Routes>
+              </Router>
+              <Toast />
+            </AppProvider>
+          </AuthProvider>
+        </ErrorProvider>
+      </GlobalErrorBoundary>
+    </ThemeProvider>
   );
 }
 

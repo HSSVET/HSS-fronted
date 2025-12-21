@@ -67,8 +67,6 @@ const emptyPage = <T>(page: number, limit: number): PaginatedResponse<T> => ({
 
 export class AnimalService {
   private mapBackendToAnimalRecord = (backend: any): AnimalRecord => {
-    console.log('🔍 Mapping backend animal:', backend);
-    
     const mapped = {
       id: backend.animalId ?? backend.id ?? 0,
       name: backend.name || 'İsimsiz',
@@ -97,7 +95,6 @@ export class AnimalService {
       nextVaccinationDate: backend.nextVaccinationDate ? (typeof backend.nextVaccinationDate === 'string' ? backend.nextVaccinationDate : backend.nextVaccinationDate.toString()) : undefined,
     };
     
-    console.log('🔍 Mapped result:', mapped);
     return mapped;
   };
   // Get all animals
@@ -129,16 +126,9 @@ export class AnimalService {
     // Spring Boot Pageable uses 'size' not 'limit'
     const response = await apiClient.get<SpringPage<any>>(`/api/animals?page=${page}&size=${limit}${search ? `&search=${encodeURIComponent(search)}` : ''}`);
     
-    console.log('🔍 AnimalService.getAnimals response:', JSON.stringify(response, null, 2));
-    
     // Convert Spring Page to PaginatedResponse
     if (response.success && response.data) {
-      console.log('🔍 Backend response data:', response.data);
-      console.log('🔍 Content array:', response.data.content);
-      console.log('🔍 Total elements:', response.data.totalElements);
-      
       const mappedItems = (response.data.content || []).map(this.mapBackendToAnimalRecord);
-      console.log('🔍 Mapped items:', mappedItems);
       
       const paginatedResponse: PaginatedResponse<AnimalRecord> = {
         items: mappedItems,
@@ -148,12 +138,8 @@ export class AnimalService {
         totalPages: response.data.totalPages,
       };
       
-      console.log('🔍 Final paginated response:', paginatedResponse);
-      
       return { success: true, data: paginatedResponse, status: response.status };
     }
-    
-    console.error('🔍 AnimalService.getAnimals failed:', response);
     return { 
       success: false, 
       data: emptyPage<AnimalRecord>(page, limit), 

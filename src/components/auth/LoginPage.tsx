@@ -54,6 +54,7 @@ import {
   Analytics
 } from '@mui/icons-material';
 import { keyframes } from '@mui/system';
+import LoginForm from './LoginForm';
 
 // ============================================================================
 // Types & Interfaces
@@ -177,7 +178,8 @@ const LoginPage: React.FC<LoginPageProps> = ({
   // State Management
   // ============================================================================
 
-  const [loginStep, setLoginStep] = useState<'initial' | 'password' | 'mfa' | 'success'>('initial');
+  // Default to password login (Firebase Auth)
+  const [loginStep, setLoginStep] = useState<'initial' | 'password' | 'mfa' | 'success'>('password');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
@@ -444,35 +446,8 @@ const LoginPage: React.FC<LoginPageProps> = ({
       <Box sx={{ mb: 3 }}>
 
 
-        {loginMethods.includes('sso') && (
-          <Slide in={animationStep >= 1} direction="up" timeout={800}>
-            <Button
-              fullWidth
-              variant="contained"
-              size="large"
-              onClick={handleSSOLogin}
-              disabled={loading}
-              startIcon={loading ? <CircularProgress size={20} /> : <SecurityIcon />}
-              sx={{
-                mb: 2,
-                py: 1.5,
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                boxShadow: '0 4px 20px rgba(102, 126, 234, 0.3)',
-                '&:hover': {
-                  background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
-                  transform: 'translateY(-2px)',
-                  boxShadow: '0 6px 25px rgba(102, 126, 234, 0.4)',
-                },
-                '&:disabled': {
-                  background: 'rgba(102, 126, 234, 0.3)',
-                },
-                transition: 'all 0.3s ease'
-              }}
-            >
-              {loading ? 'Giriş Yapılıyor...' : 'Keycloak ile Giriş Yap'}
-            </Button>
-          </Slide>
-        )}
+        {/* SSO method removed - Using Firebase Auth instead */}
+        {/* Password login is now the primary method */}
 
         {loginMethods.includes('password') && (
           <Slide in={animationStep >= 1} direction="up" timeout={1000}>
@@ -496,7 +471,7 @@ const LoginPage: React.FC<LoginPageProps> = ({
                 transition: 'all 0.3s ease'
               }}
             >
-              Kullanıcı Adı ve Şifre ile Giriş
+              Email ve Şifre ile Giriş
             </Button>
           </Slide>
         )}
@@ -531,85 +506,27 @@ const LoginPage: React.FC<LoginPageProps> = ({
   const renderPasswordForm = () => (
     <Fade in={loginStep === 'password'} timeout={600}>
       <Box sx={{ mb: 3 }}>
-        <TextField
-          fullWidth
-          label="Kullanıcı Adı"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          margin="normal"
-          required
-          disabled={loading}
-          InputProps={{
-            startAdornment: <Person sx={{ color: 'text.secondary', mr: 1 }} />,
+        <LoginForm
+          onSuccess={(idToken) => {
+            console.log('✅ LoginForm: Login successful, token received');
+            setLoading(false);
+            // AuthContext'teki onAuthStateChanged listener otomatik olarak yönlendirme yapacak
           }}
-        />
-        <TextField
-          fullWidth
-          type={showPassword ? 'text' : 'password'}
-          label="Şifre"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          margin="normal"
-          required
-          disabled={loading}
-          InputProps={{
-            startAdornment: <Lock sx={{ color: 'text.secondary', mr: 1 }} />,
-            endAdornment: (
-              <IconButton
-                onClick={() => setShowPassword(!showPassword)}
-                edge="end"
-                disabled={loading}
-              >
-                {showPassword ? <VisibilityOff /> : <Visibility />}
-              </IconButton>
-            ),
-          }}
-        />
-        
-        {allowRememberMe && (
-          <FormControlLabel
-            control={
-              <Switch
-                checked={rememberMe}
-                onChange={(e) => setRememberMe(e.target.checked)}
-                disabled={loading}
-              />
+          onError={(errorMsg) => {
+            setError(errorMsg);
+            setLoading(false);
+            if (onError) {
+              onError(errorMsg);
             }
-            label="Beni Hatırla"
-            sx={{ mt: 1, mb: 2 }}
-          />
-        )}
-
-        <Button
-          fullWidth
-          variant="contained"
-          size="large"
-          onClick={handlePasswordLogin}
-          disabled={loading || !isFormValid}
-          startIcon={loading ? <CircularProgress size={20} /> : <ArrowForward />}
-          sx={{
-            mb: 2,
-            py: 1.5,
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            '&:hover': {
-              background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
-              transform: 'translateY(-2px)',
-            },
-            '&:disabled': {
-              background: 'rgba(102, 126, 234, 0.3)',
-            },
-            transition: 'all 0.3s ease'
           }}
-        >
-          {loading ? 'Giriş Yapılıyor...' : 'Giriş Yap'}
-        </Button>
+        />
 
         <Button
           fullWidth
           variant="text"
           onClick={() => setLoginStep('initial')}
           disabled={loading}
-          sx={{ color: 'text.secondary' }}
+          sx={{ mt: 2, color: 'text.secondary' }}
         >
           Geri Dön
         </Button>

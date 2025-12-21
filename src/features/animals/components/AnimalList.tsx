@@ -158,21 +158,16 @@ const AnimalList: React.FC<AnimalListProps> = ({ onAddAnimal }) => {
   const fetchAnimals = React.useCallback(async () => {
     try {
       startLoading('Hayvan listesi yükleniyor...');
-      console.log('🐶 Animals API çağrısı yapılıyor...');
-      console.log('🐶 OFFLINE_MODE:', process.env.NODE_ENV);
 
       const animalService = new AnimalService();
       
       // İlk çağrı ile total sayısını öğren
       const firstResponse = await animalService.getAnimals(0, 20);
-      console.log('🐶 First API response:', firstResponse);
 
       if (firstResponse.success && firstResponse.data) {
         const total = firstResponse.data.total;
-        console.log('🐶 Total animals:', total);
         
         if (total === 0) {
-          console.warn('🐶 No animals in database!');
           setAnimals([]);
           addError('Hayvan bulunamadı', 'warning', 'Veritabanında hayvan kaydı bulunamadı');
           return;
@@ -181,8 +176,6 @@ const AnimalList: React.FC<AnimalListProps> = ({ onAddAnimal }) => {
         // Tüm hayvanları getirmek için tüm sayfaları çek
         let allAnimals = [...firstResponse.data.items];
         const totalPages = firstResponse.data.totalPages;
-        
-        console.log(`🐶 Fetching ${totalPages} pages...`);
         
         // Eğer birden fazla sayfa varsa, diğer sayfaları da çek
         if (totalPages > 1) {
@@ -199,11 +192,7 @@ const AnimalList: React.FC<AnimalListProps> = ({ onAddAnimal }) => {
           });
         }
         
-        console.log('🐶 All animals fetched:', allAnimals.length);
-        console.log('🐶 All animals data:', allAnimals);
-        
         const formattedAnimals = allAnimals.map(mapToAnimalListItem);
-        console.log('🐶 Formatted animals:', formattedAnimals);
         setAnimals(formattedAnimals);
         showSuccess(`${total} hayvan başarıyla yüklendi`);
       } else {
