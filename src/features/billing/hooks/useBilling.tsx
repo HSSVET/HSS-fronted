@@ -84,15 +84,9 @@ const useProvideBilling = (): BillingContextValue => {
     setLoading(true);
     setError(null);
     try {
-<<<<<<< HEAD:src/features/billing/hooks/useBilling.ts
       const response = await billingService.updateInvoice(id, updates);
       setInvoices(prev => prev.map(inv => inv.id === id ? response.data : inv));
       return response.data;
-=======
-      const updatedInvoice = await billingService.updateInvoice(id, updates);
-      setInvoices(prev => prev.map(inv => (inv.id === id ? updatedInvoice : inv)));
-      return updatedInvoice;
->>>>>>> 7dd163e (Envanter sayfası ve aşı sayfası için router bağlantıları yapıldı.):src/features/billing/hooks/useBilling.tsx
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Fatura guncellenirken hata olustu');
       throw err;
@@ -105,20 +99,13 @@ const useProvideBilling = (): BillingContextValue => {
     setLoading(true);
     setError(null);
     try {
-<<<<<<< HEAD:src/features/billing/hooks/useBilling.ts
       const response = await billingService.createPayment(paymentData);
       setPayments(prev => [response.data, ...prev]);
       // Update invoice status in local state
-      setInvoices(prev => prev.map(inv => 
-        inv.id === paymentData.invoiceId 
+      setInvoices(prev => prev.map(inv =>
+        inv.id === paymentData.invoiceId
           ? { ...inv, status: 'paid' as const }
           : inv
-=======
-      const newPayment = await billingService.createPayment(paymentData);
-      setPayments(prev => [newPayment, ...prev]);
-      setInvoices(prev => prev.map(inv =>
-        inv.id === paymentData.invoiceId ? { ...inv, status: 'paid' } : inv
->>>>>>> 7dd163e (Envanter sayfası ve aşı sayfası için router bağlantıları yapıldı.):src/features/billing/hooks/useBilling.tsx
       ));
       return response.data;
     } catch (err) {

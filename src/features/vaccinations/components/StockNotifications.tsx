@@ -9,15 +9,9 @@ const StockNotifications: React.FC = () => {
     useEffect(() => {
         const fetchAlerts = async () => {
             try {
-<<<<<<< HEAD
-            setLoading(true);
-            const response = await vaccinationService.getStockAlerts();
-            setAlerts(response.data);
-=======
                 setLoading(true);
-                const alertData = await vaccinationService.getVaccineStockAlerts();
-                setAlerts(alertData);
->>>>>>> 7dd163e (Envanter sayfası ve aşı sayfası için router bağlantıları yapıldı.)
+                const response = await vaccinationService.getStockAlerts();
+                setAlerts(response.data);
             } catch (error) {
                 console.error('Stok uyarıları yüklenirken hata:', error);
             } finally {

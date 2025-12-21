@@ -21,16 +21,11 @@ const VaccinationDashboard: React.FC = () => {
                 setLoading(true);
                 const [statsData, alertsData] = await Promise.all([
                     vaccinationService.getVaccinationStats(),
-                    vaccinationService.getVaccineStockAlerts()
+                    vaccinationService.getStockAlerts()
                 ]);
 
-<<<<<<< HEAD
                 setStats(statsData.data);
-                setStockAlerts(alertsData.data);
-=======
-                setStats(statsData);
-                setVaccineStockAlerts(alertsData);
->>>>>>> 7dd163e (Envanter sayfası ve aşı sayfası için router bağlantıları yapıldı.)
+                setVaccineStockAlerts(alertsData.data);
             } catch (error) {
                 console.error('Veri yüklenirken hata:', error);
             } finally {
