@@ -5,6 +5,7 @@ import { AuthProvider } from './context/AuthContext';
 import { AppProvider } from './context/AppContext';
 import { ErrorProvider } from './context/ErrorContext';
 import { Layout } from './shared';
+
 // Auth Components
 import LoginPage from './components/auth/LoginPage';
 import ProtectedRoute, {
@@ -14,14 +15,18 @@ import ProtectedRoute, {
   VeterinarianRoute
 } from './components/auth/ProtectedRoute';
 import AccessDenied from './components/common/AccessDenied';
-import AuthButton from './components/auth/AuthButton';
-import ApiTestComponent from './components/auth/ApiTestComponent';
-import Toast from './components/Toast';
+
+// Error Boundaries
 import {
   GlobalErrorBoundary,
   PageErrorBoundary,
   ComponentErrorBoundary
 } from './components/common/ErrorBoundary';
+
+// Test Components
+import AuthButton from './components/auth/AuthButton';
+import ApiTestComponent from './components/auth/ApiTestComponent';
+import Toast from './components/Toast';
 import './shared/styles/App.css';
 
 // Code Splitting: Route bazlı lazy loading
@@ -169,14 +174,16 @@ function App() {
                     }
                   />
 
-                  {/* Protected Routes */}
+                  {/* Main Dashboard Route - Protected */}
                   <Route
                     path="/"
                     element={
                       <ProtectedRoute>
                         <Layout>
                           <PageErrorBoundary pageName="Dashboard">
-                            <Dashboard />
+                            <Suspense fallback={<SuspenseFallback />}>
+                              <Dashboard />
+                            </Suspense>
                           </PageErrorBoundary>
                         </Layout>
                       </ProtectedRoute>
@@ -189,21 +196,25 @@ function App() {
                       <ProtectedRoute>
                         <Layout>
                           <PageErrorBoundary pageName="Dashboard">
-                            <Dashboard />
+                            <Suspense fallback={<SuspenseFallback />}>
+                              <Dashboard />
+                            </Suspense>
                           </PageErrorBoundary>
                         </Layout>
                       </ProtectedRoute>
                     }
                   />
 
-                  {/* Animals - Role-based access */}
+                  {/* Animals - Protected & Role Based */}
                   <Route
                     path="/animals"
                     element={
                       <ProtectedRoute requiredPermissions={['animals:read']}>
                         <Layout>
                           <PageErrorBoundary pageName="Animals">
-                            <AnimalPage />
+                            <Suspense fallback={<SuspenseFallback />}>
+                              <AnimalPage />
+                            </Suspense>
                           </PageErrorBoundary>
                         </Layout>
                       </ProtectedRoute>
@@ -216,35 +227,41 @@ function App() {
                       <ProtectedRoute requiredPermissions={['animals:read']}>
                         <Layout>
                           <PageErrorBoundary pageName="Animal Details">
-                            <AnimalDetailPage />
+                            <Suspense fallback={<SuspenseFallback />}>
+                              <AnimalDetailPage />
+                            </Suspense>
                           </PageErrorBoundary>
                         </Layout>
                       </ProtectedRoute>
                     }
                   />
 
-                  {/* Appointments - Role-based access */}
+                  {/* Appointments - Protected & Role Based */}
                   <Route
                     path="/appointments"
                     element={
                       <ProtectedRoute requiredPermissions={['appointments:read']}>
                         <Layout>
                           <PageErrorBoundary pageName="Appointments">
-                            <AppointmentPage />
+                            <Suspense fallback={<SuspenseFallback />}>
+                              <AppointmentPage />
+                            </Suspense>
                           </PageErrorBoundary>
                         </Layout>
                       </ProtectedRoute>
                     }
                   />
 
-                  {/* Laboratory - Role-based access */}
+                  {/* Laboratory - Protected & Role Based */}
                   <Route
                     path="/laboratory"
                     element={
                       <ProtectedRoute requiredPermissions={['laboratory:read']}>
                         <Layout>
                           <PageErrorBoundary pageName="Laboratory">
-                            <LabDashboard />
+                            <Suspense fallback={<SuspenseFallback />}>
+                              <LabDashboard />
+                            </Suspense>
                           </PageErrorBoundary>
                         </Layout>
                       </ProtectedRoute>
@@ -257,42 +274,64 @@ function App() {
                       <ProtectedRoute requiredPermissions={['laboratory:read']}>
                         <Layout>
                           <PageErrorBoundary pageName="Lab Test Types">
-                            <LabTestTypes />
+                            <Suspense fallback={<SuspenseFallback />}>
+                              <LabTestTypes />
+                            </Suspense>
                           </PageErrorBoundary>
                         </Layout>
                       </ProtectedRoute>
                     }
                   />
 
-                  {/* Billing - Role-based access */}
+                  {/* Billing - Protected & Role Based */}
                   <Route
                     path="/billing"
                     element={
                       <ProtectedRoute requiredPermissions={['billing:read']}>
                         <Layout>
                           <PageErrorBoundary pageName="Billing">
-                            <Billing />
+                            <Suspense fallback={<SuspenseFallback />}>
+                              <Billing />
+                            </Suspense>
                           </PageErrorBoundary>
                         </Layout>
                       </ProtectedRoute>
                     }
                   />
 
-                  {/* SMS - Role-based access */}
+                  {/* SMS - Protected & Role Based (NEW) */}
                   <Route
                     path="/sms"
                     element={
                       <ProtectedRoute requiredPermissions={['sms:read']}>
                         <Layout>
                           <PageErrorBoundary pageName="SMS">
-                            <SmsPage />
+                            <Suspense fallback={<SuspenseFallback />}>
+                              <SmsPage />
+                            </Suspense>
                           </PageErrorBoundary>
                         </Layout>
                       </ProtectedRoute>
                     }
                   />
 
-                  {/* Inventory - Admin/Veterinarian only */}
+                  {/* Reminders - Admin/Veterinarian only (NEW) */}
+                  <Route
+                    path="/reminders"
+                    element={
+                      <VeterinarianRoute>
+                        <Layout>
+                          <PageErrorBoundary pageName="Reminders">
+                            <Suspense fallback={<SuspenseFallback />}>
+                              <RemindersPage />
+                            </Suspense>
+                          </PageErrorBoundary>
+                        </Layout>
+                      </VeterinarianRoute>
+                    }
+                  />
+
+                  {/* Inventory - Admin/Veterinarian only (NEW - Placeholder) */}
                   <Route
                     path="/inventory"
                     element={
@@ -306,7 +345,7 @@ function App() {
                     }
                   />
 
-                  {/* Reports - Admin/Veterinarian only */}
+                  {/* Reports - Protected & Role Based */}
                   <Route
                     path="/reports"
                     element={
@@ -314,6 +353,22 @@ function App() {
                         <Layout>
                           <PageErrorBoundary pageName="Reports">
                             <div>Raporlar Sayfası (Yakında)</div>
+                          </PageErrorBoundary>
+                        </Layout>
+                      </ProtectedRoute>
+                    }
+                  />
+
+                  {/* Documents - Protected */}
+                  <Route
+                    path="/documents"
+                    element={
+                      <ProtectedRoute>
+                        <Layout>
+                          <PageErrorBoundary pageName="Documents">
+                            <Suspense fallback={<SuspenseFallback />}>
+                              <DocumentPage />
+                            </Suspense>
                           </PageErrorBoundary>
                         </Layout>
                       </ProtectedRoute>
@@ -415,6 +470,7 @@ function App() {
                   />
                 </Routes>
               </Router>
+              <Toast />
             </AppProvider>
           </AuthProvider>
         </ErrorProvider>

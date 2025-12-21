@@ -15,6 +15,8 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, toggleSidebar }) => {
   const { hasPermission } = usePermissions();
   const { user, logout } = useAuth();
 
+
+
   React.useEffect(() => {
     if (collapsed) {
       document.body.classList.remove('sidebar-expanded');
@@ -35,7 +37,10 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, toggleSidebar }) => {
     { icon: 'icon-lab', text: 'Laboratuvar', path: '/laboratory', permission: 'laboratory:read' },
     { icon: 'icon-syringe', text: 'Aşı Yönetimi', path: '/vaccinations', permission: 'vaccinations:read' },
     { icon: 'icon-billing', text: 'Ödeme & Fatura', path: '/billing', permission: 'billing:read' },
+
     { icon: 'icon-bell', text: 'Hatırlatmalar', path: '/reminders', permission: 'reminders:read' },
+
+
     { icon: 'icon-message', text: 'SMS', path: '/sms', permission: 'sms:read' },
     { icon: 'icon-box', text: 'Envanter/Stok', path: '/inventory', permission: 'inventory:read' },
     { icon: 'icon-document', text: 'Belgeler/Kontratlar', path: '/documents', permission: 'documents:read' },
