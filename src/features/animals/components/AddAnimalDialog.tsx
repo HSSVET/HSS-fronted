@@ -22,7 +22,7 @@ import AddIcon from '@mui/icons-material/Add';
 import { speciesService, type Species } from '../../../services/speciesService';
 import { breedService, type Breed } from '../../../services/breedService';
 import { ownerService, type Owner, type OwnerCreateRequest } from '../../../services/ownerService';
-import { useError } from '../../../context/ErrorContext';
+import { useNotifications } from '../../../hooks/useNotifications';
 import { useLoading } from '../../../hooks/useLoading';
 import '../styles/AddAnimalDialog.css';
 
@@ -46,9 +46,9 @@ interface AddAnimalDialogProps {
 }
 
 const AddAnimalDialog: React.FC<AddAnimalDialogProps> = ({ open, onClose, onAdd }) => {
-  const { addError, showSuccess } = useError();
+  const { addError, showSuccess, showError } = useNotifications();
   const { startLoading, stopLoading } = useLoading();
-  
+
   const [formData, setFormData] = useState({
     ownerId: '',
     name: '',
@@ -248,9 +248,9 @@ const AddAnimalDialog: React.FC<AddAnimalDialogProps> = ({ open, onClose, onAdd 
     try {
       await onAdd(animalData);
       // Başarılı olduğunda formu sıfırla ve dialog'u kapat
-    setFormData({
+      setFormData({
         ownerId: '',
-      name: '',
+        name: '',
         speciesId: '',
         breedId: '',
         gender: '',
@@ -283,10 +283,10 @@ const AddAnimalDialog: React.FC<AddAnimalDialogProps> = ({ open, onClose, onAdd 
   };
 
   return (
-    <Dialog 
-      open={open} 
-      onClose={handleClose} 
-      maxWidth="md" 
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      maxWidth="md"
       fullWidth
       className="add-animal-dialog"
     >
@@ -309,11 +309,11 @@ const AddAnimalDialog: React.FC<AddAnimalDialogProps> = ({ open, onClose, onAdd 
                     label="Sahip *"
                     required
                     helperText={
-                      ownerList.length === 0 && !showOwnerForm 
+                      ownerList.length === 0 && !showOwnerForm
                         ? 'Sahipler yüklenemedi. Lütfen yeni sahip ekleyiniz (butona tıklayın).'
-                        : formData.ownerId 
-                        ? '' 
-                        : 'Sahip seçiniz veya yeni sahip ekleyiniz'
+                        : formData.ownerId
+                          ? ''
+                          : 'Sahip seçiniz veya yeni sahip ekleyiniz'
                     }
                   />
                 )}
@@ -393,13 +393,13 @@ const AddAnimalDialog: React.FC<AddAnimalDialogProps> = ({ open, onClose, onAdd 
 
             {/* Animal Name and Species */}
             <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-          <TextField
+              <TextField
                 label="Hayvan Adı *"
-            value={formData.name}
-            onChange={handleTextChange('name')}
+                value={formData.name}
+                onChange={handleTextChange('name')}
                 sx={{ flex: '1 1 200px', minWidth: '200px' }}
-            required
-          />
+                required
+              />
               <FormControl sx={{ flex: '1 1 200px', minWidth: '200px' }} required error={speciesList.length === 0}>
                 <InputLabel>Tür *</InputLabel>
                 <Select
@@ -430,7 +430,7 @@ const AddAnimalDialog: React.FC<AddAnimalDialogProps> = ({ open, onClose, onAdd 
             <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
               <FormControl sx={{ flex: '1 1 200px', minWidth: '200px' }} required>
                 <InputLabel>Irk *</InputLabel>
-            <Select
+                <Select
                   value={formData.breedId}
                   label="Irk *"
                   onChange={handleSelectChange('breedId')}
@@ -441,8 +441,8 @@ const AddAnimalDialog: React.FC<AddAnimalDialogProps> = ({ open, onClose, onAdd 
                       {breed.name}
                     </MenuItem>
                   ))}
-            </Select>
-          </FormControl>
+                </Select>
+              </FormControl>
               <FormControl sx={{ flex: '1 1 200px', minWidth: '200px' }}>
                 <InputLabel>Cinsiyet</InputLabel>
                 <Select
@@ -454,21 +454,21 @@ const AddAnimalDialog: React.FC<AddAnimalDialogProps> = ({ open, onClose, onAdd 
                   <MenuItem value="MALE">Erkek</MenuItem>
                   <MenuItem value="FEMALE">Dişi</MenuItem>
                   <MenuItem value="UNKNOWN">Bilinmiyor</MenuItem>
-            </Select>
-          </FormControl>
+                </Select>
+              </FormControl>
             </Box>
 
             {/* Birth Date and Weight */}
             <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-          <TextField
+              <TextField
                 label="Doğum Tarihi"
-            type="date"
+                type="date"
                 value={formData.birthDate}
                 onChange={handleTextChange('birthDate')}
                 sx={{ flex: '1 1 200px', minWidth: '200px' }}
-            InputLabelProps={{ shrink: true }}
-          />
-          <TextField
+                InputLabelProps={{ shrink: true }}
+              />
+              <TextField
                 label="Ağırlık (kg)"
                 type="number"
                 value={formData.weight}
@@ -485,8 +485,8 @@ const AddAnimalDialog: React.FC<AddAnimalDialogProps> = ({ open, onClose, onAdd 
                 value={formData.color}
                 onChange={handleTextChange('color')}
                 sx={{ flex: '1 1 200px', minWidth: '200px' }}
-          />
-          <TextField
+              />
+              <TextField
                 label="Çip Numarası"
                 value={formData.microchipNo}
                 onChange={handleTextChange('microchipNo')}
@@ -519,16 +519,16 @@ const AddAnimalDialog: React.FC<AddAnimalDialogProps> = ({ open, onClose, onAdd 
               label="Notlar"
               value={formData.notes}
               onChange={handleTextChange('notes')}
-            fullWidth
+              fullWidth
               multiline
               rows={3}
-          />
+            />
           </Stack>
         </Box>
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>İptal</Button>
-        <Button 
+        <Button
           onClick={handleSubmit}
           variant="contained"
           disabled={!formData.ownerId || !formData.name || !formData.speciesId || !formData.breedId}

@@ -2,10 +2,8 @@ import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { ThemeProvider, CssBaseline, createTheme, Box, CircularProgress } from '@mui/material';
 import { AuthProvider, useAuth } from './context/AuthContext';
-import { AppProvider } from './context/AppContext';
-import { ErrorProvider } from './context/ErrorContext';
+import { QueryProvider } from './lib/react-query';
 import { Layout } from './shared';
-// Import CustomerLayout with default if missing (handled by creating file)
 import CustomerLayout from './shared/components/CustomerLayout';
 import { Dashboard } from './features/dashboard';
 import CustomerDashboard from './features/dashboard/components/CustomerDashboard';
@@ -30,7 +28,6 @@ import {
 
 import './shared/styles/App.css';
 
-// ... Theme definition ...
 const theme = createTheme({
   palette: {
     primary: {
@@ -97,10 +94,6 @@ const RootRedirect = () => {
     if (!state.isInitialized) return;
 
     if (!state.isAuthenticated) {
-      // If not authenticated and not already at login, redirect to login
-      // ProtectedRoute handles this usually, but this is root level
-      // navigate('/login', { replace: true }); 
-      // We let <Navigate to="/login" /> handle this in routes usually
       return;
     }
 
@@ -120,7 +113,6 @@ const RootRedirect = () => {
         } else if (userType === 'STAFF' && state.user.clinicSlug) {
           navigate(`/clinic/${state.user.clinicSlug}/dashboard`, { replace: true });
         } else if (userType === 'OWNER') {
-          // If Owner has no clinicId, redirect to generic portal or '0'
           const targetClinicId = clinicId || '0';
           navigate(`/portal/${targetClinicId}/dashboard`, { replace: true });
         }
@@ -136,7 +128,6 @@ const RootRedirect = () => {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  // Fallback if authenticated but no redirect happened (e.g. unknown role)
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: '100vh', gap: 2 }}>
       <CircularProgress />
@@ -152,134 +143,132 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <GlobalErrorBoundary>
-        <ErrorProvider>
+      <QueryProvider enablePersistence={true}>
+        <GlobalErrorBoundary>
           <AuthProvider>
-            <AppProvider>
-              <Router>
-                <Routes>
-                  <Route path="/login" element={<LoginPage />} />
+            <Router>
+              <Routes>
+                <Route path="/login" element={<LoginPage />} />
 
-                  {/* Root Redirector */}
-                  <Route path="/" element={<RootRedirect />} />
+                {/* Root Redirector */}
+                <Route path="/" element={<RootRedirect />} />
 
-                  {/* ========================================================= */}
-                  {/* SUPER ADMIN ROUTES */}
-                  {/* ========================================================= */}
-                  <Route
-                    path="/super-admin/*"
-                    element={
-                      <ProtectedRoute requiredRoles={['SUPER_ADMIN']}>
-                        <SuperAdminLayout />
-                      </ProtectedRoute>
-                    }
-                  >
-                    <Route path="clinics" element={<ClinicsPage />} />
-                    <Route index element={<Navigate to="clinics" replace />} />
-                  </Route>
+                {/* ========================================================= */}
+                {/* SUPER ADMIN ROUTES */}
+                {/* ========================================================= */}
+                <Route
+                  path="/super-admin/*"
+                  element={
+                    <ProtectedRoute requiredRoles={['SUPER_ADMIN']}>
+                      <SuperAdminLayout />
+                    </ProtectedRoute>
+                  }
+                >
+                  <Route path="clinics" element={<ClinicsPage />} />
+                  <Route index element={<Navigate to="clinics" replace />} />
+                </Route>
 
-                  {/* ========================================================= */}
-                  {/* CLINIC STAFF ROUTES */}
-                  {/* ========================================================= */}
-                  <Route
-                    path="/clinic/:slug/*"
-                    element={
-                      <ProtectedRoute requiredRoles={['ADMIN', 'VETERINER', 'STAFF', 'SEKRETER', 'TEKNISYEN']}>
-                        <Layout>
-                          <Routes>
-                            <Route path="dashboard" element={
-                              <PageErrorBoundary pageName="Dashboard">
-                                <Dashboard />
-                              </PageErrorBoundary>
-                            } />
+                {/* ========================================================= */}
+                {/* CLINIC STAFF ROUTES */}
+                {/* ========================================================= */}
+                <Route
+                  path="/clinic/:slug/*"
+                  element={
+                    <ProtectedRoute requiredRoles={['ADMIN', 'VETERINER', 'STAFF', 'SEKRETER', 'TEKNISYEN']}>
+                      <Layout>
+                        <Routes>
+                          <Route path="dashboard" element={
+                            <PageErrorBoundary pageName="Dashboard">
+                              <Dashboard />
+                            </PageErrorBoundary>
+                          } />
 
-                            <Route path="animals/*" element={
-                              <PageErrorBoundary pageName="Animals">
-                                <Routes>
-                                  <Route index element={<AnimalPage />} />
-                                  <Route path=":id" element={<AnimalDetailPage />} />
-                                </Routes>
-                              </PageErrorBoundary>
-                            } />
+                          <Route path="animals/*" element={
+                            <PageErrorBoundary pageName="Animals">
+                              <Routes>
+                                <Route index element={<AnimalPage />} />
+                                <Route path=":id" element={<AnimalDetailPage />} />
+                              </Routes>
+                            </PageErrorBoundary>
+                          } />
 
-                            <Route path="appointments" element={
-                              <PageErrorBoundary pageName="Appointments">
-                                <AppointmentPage />
-                              </PageErrorBoundary>
-                            } />
+                          <Route path="appointments" element={
+                            <PageErrorBoundary pageName="Appointments">
+                              <AppointmentPage />
+                            </PageErrorBoundary>
+                          } />
 
-                            <Route path="laboratory/*" element={
-                              <PageErrorBoundary pageName="Laboratory">
-                                <Routes>
-                                  <Route index element={<LabDashboard />} />
-                                  <Route path="test-types" element={<LabTestTypes />} />
-                                </Routes>
-                              </PageErrorBoundary>
-                            } />
+                          <Route path="laboratory/*" element={
+                            <PageErrorBoundary pageName="Laboratory">
+                              <Routes>
+                                <Route index element={<LabDashboard />} />
+                                <Route path="test-types" element={<LabTestTypes />} />
+                              </Routes>
+                            </PageErrorBoundary>
+                          } />
 
-                            <Route path="billing" element={
-                              <PageErrorBoundary pageName="Billing">
-                                <Billing />
-                              </PageErrorBoundary>
-                            } />
+                          <Route path="billing" element={
+                            <PageErrorBoundary pageName="Billing">
+                              <Billing />
+                            </PageErrorBoundary>
+                          } />
 
-                            <Route path="documents" element={
-                              <PageErrorBoundary pageName="Documents">
-                                <DocumentPage />
-                              </PageErrorBoundary>
-                            } />
+                          <Route path="documents" element={
+                            <PageErrorBoundary pageName="Documents">
+                              <DocumentPage />
+                            </PageErrorBoundary>
+                          } />
 
-                            <Route path="surgeries/:id" element={
-                              <PageErrorBoundary pageName="SurgeryDetails">
-                                <SurgeryDetails />
-                              </PageErrorBoundary>
-                            } />
+                          <Route path="surgeries/:id" element={
+                            <PageErrorBoundary pageName="SurgeryDetails">
+                              <SurgeryDetails />
+                            </PageErrorBoundary>
+                          } />
 
-                            <Route path="hospitalizations/:id" element={
-                              <PageErrorBoundary pageName="HospitalizationDetails">
-                                <HospitalizationDetails />
-                              </PageErrorBoundary>
-                            } />
+                          <Route path="hospitalizations/:id" element={
+                            <PageErrorBoundary pageName="HospitalizationDetails">
+                              <HospitalizationDetails />
+                            </PageErrorBoundary>
+                          } />
 
-                            {/* Redirect /clinic/:slug to dashboard */}
-                            <Route path="*" element={<Navigate to="dashboard" replace />} />
-                          </Routes>
-                        </Layout>
-                      </ProtectedRoute>
-                    }
-                  />
+                          {/* Redirect /clinic/:slug to dashboard */}
+                          <Route path="*" element={<Navigate to="dashboard" replace />} />
+                        </Routes>
+                      </Layout>
+                    </ProtectedRoute>
+                  }
+                />
 
-                  {/* ========================================================= */}
-                  {/* CUSTOMER PORTAL ROUTES */}
-                  {/* ========================================================= */}
-                  <Route
-                    path="/portal/:clinicId/*"
-                    element={
-                      <ProtectedRoute requiredRoles={['OWNER']}>
-                        <CustomerLayout>
-                          <Routes>
-                            <Route path="dashboard" element={
-                              <PageErrorBoundary pageName="Customer Dashboard">
-                                <CustomerDashboard />
-                              </PageErrorBoundary>
-                            } />
-                            {/* Redirect /portal/:id to dashboard */}
-                            <Route path="*" element={<Navigate to="dashboard" replace />} />
-                          </Routes>
-                        </CustomerLayout>
-                      </ProtectedRoute>
-                    }
-                  />
+                {/* ========================================================= */}
+                {/* CUSTOMER PORTAL ROUTES */}
+                {/* ========================================================= */}
+                <Route
+                  path="/portal/:clinicId/*"
+                  element={
+                    <ProtectedRoute requiredRoles={['OWNER']}>
+                      <CustomerLayout>
+                        <Routes>
+                          <Route path="dashboard" element={
+                            <PageErrorBoundary pageName="Customer Dashboard">
+                              <CustomerDashboard />
+                            </PageErrorBoundary>
+                          } />
+                          {/* Redirect /portal/:id to dashboard */}
+                          <Route path="*" element={<Navigate to="dashboard" replace />} />
+                        </Routes>
+                      </CustomerLayout>
+                    </ProtectedRoute>
+                  }
+                />
 
-                  {/* Fallback */}
-                  <Route path="*" element={<Navigate to="/" replace />} />
-                </Routes>
-              </Router>
-              <Toast />
-            </AppProvider>
+                {/* Fallback */}
+                <Route path="*" element={<Navigate to="/" replace />} />
+              </Routes>
+            </Router>
+            <Toast />
           </AuthProvider>
-        </ErrorProvider>
-      </GlobalErrorBoundary>
+        </GlobalErrorBoundary>
+      </QueryProvider>
     </ThemeProvider>
   );
 }

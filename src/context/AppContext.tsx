@@ -1,3 +1,20 @@
+/**
+ * @deprecated This Context is deprecated. Use useUIStore from '../stores' instead.
+ * This file is kept for backward compatibility only.
+ * 
+ * Migration Guide:
+ * 
+ * Before:
+ * import { useApp } from '../context/AppContext';
+ * const { state: { sidebarOpen }, dispatch } = useApp();
+ * dispatch(appActions.toggleSidebar());
+ * 
+ * After:
+ * import { useUIStore } from '../stores';
+ * const { sidebarOpen, toggleSidebar } = useUIStore();
+ * toggleSidebar();
+ */
+
 import React, { createContext, useContext, useReducer, ReactNode } from 'react';
 import type { User } from '../types/common';
 

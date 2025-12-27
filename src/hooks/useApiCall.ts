@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { useError } from '../context/ErrorContext';
+import { useNotifications } from './useNotifications';
 import type { ApiResponse } from '../types/common';
 
 // Import useLoading as named export
@@ -34,8 +34,8 @@ export function useApiCall<T = any>(
   options: UseApiCallOptions = {}
 ) {
   const { startLoading, stopLoading } = useLoadingHook();
-  const { showSuccess, showError } = useError();
-  
+  const { showSuccess, showError } = useNotifications();
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const [data, setData] = useState<T | null>(null);
@@ -62,11 +62,11 @@ export function useApiCall<T = any>(
 
         if (response.success) {
           setData(response.data);
-          
+
           if (successMessage) {
             showSuccess(successMessage);
           }
-          
+
           if (onSuccess) {
             onSuccess(response.data);
           }
@@ -75,11 +75,11 @@ export function useApiCall<T = any>(
         } else {
           const error = new Error(response.error || 'Bir hata oluştu');
           setError(error);
-          
+
           if (errorMessage || response.error) {
             showError(errorMessage || response.error || 'İşlem başarısız!');
           }
-          
+
           if (onError) {
             onError(error);
           }
@@ -89,11 +89,11 @@ export function useApiCall<T = any>(
       } catch (err) {
         const error = err instanceof Error ? err : new Error('Bilinmeyen bir hata oluştu');
         setError(error);
-        
+
         if (errorMessage || error.message) {
           showError(errorMessage || error.message);
         }
-        
+
         if (onError) {
           onError(error);
         }
