@@ -45,6 +45,18 @@
   letter-spacing: 0.4px;
 }
 
+.logo-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sidebar-logo {
+  height: 32px;
+  width: auto;
+  object-fit: contain;
+}
+
 .toggle-button {
   background: none;
   border: none;

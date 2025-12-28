@@ -60,8 +60,17 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, toggleSidebar }) => {
   return (
     <div className={`sidebar ${collapsed ? 'collapsed' : ''}`}>
       <div className="logo-container">
-        {!collapsed && <h2>VetKlinik</h2>}
-        {collapsed && <h2>VK</h2>}
+        {!collapsed && (
+          <div className="logo-wrapper">
+            <img src="/logo192.png" alt="VetKlinik Logo" className="sidebar-logo" />
+            <h2>VetKlinik</h2>
+          </div>
+        )}
+        {collapsed && (
+          <div className="logo-wrapper" style={{ paddingLeft: '4px' }}>
+            <img src="/logo192.png" alt="VK" className="sidebar-logo" style={{ height: '24px' }} />
+          </div>
+        )}
         <button className="toggle-button" onClick={toggleSidebar}>
           <span className={`icon ${collapsed ? 'icon-chevron-right' : 'icon-chevron-left'}`}></span>
         </button>
