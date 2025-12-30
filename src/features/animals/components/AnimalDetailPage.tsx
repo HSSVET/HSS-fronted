@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
-import { CssBaseline, Container, Paper, Box, Button } from '@mui/material';
+import { CssBaseline, Container, Box, Button, CircularProgress, Typography } from '@mui/material';
 import { ArrowBack } from '@mui/icons-material';
 import ProfileHeader from './detail/ProfileHeader';
 import SidebarMenu from './detail/SidebarMenu';
@@ -14,7 +14,7 @@ import LaboratoryTests from './detail/LaboratoryTests';
 import Prescriptions from './detail/Prescriptions';
 import Vaccinations from './detail/Vaccinations';
 import PathologyFindings from './detail/PathologyFindings';
-import MedicationIcon from '@mui/icons-material/Medication';
+import MaterialMedicationIcon from '@mui/icons-material/Medication';
 import WarningIcon from '@mui/icons-material/Warning';
 import HistoryIcon from '@mui/icons-material/History';
 import MedicalInformationIcon from '@mui/icons-material/MedicalInformation';
@@ -27,7 +27,15 @@ import ScienceIcon from '@mui/icons-material/Science';
 import Allergies from './detail/Allergies';
 import Notes from './detail/Notes';
 import NoteIcon from '@mui/icons-material/Note';
+import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
+import HealingIcon from '@mui/icons-material/Healing';
+import SurgeryList from '../../surgery/components/SurgeryList';
+import SurgeryForm from '../../surgery/components/SurgeryForm';
+import HospitalizationList from '../../hospitalization/components/HospitalizationList';
+import AdmissionForm from '../../hospitalization/components/AdmissionForm';
+import { Dialog, DialogContent, DialogTitle } from '@mui/material';
 import '../styles/AnimalDetail.css';
+import { animalService, AnimalRecord } from '../services/animalService';
 
 const theme = createTheme({
   palette: {
@@ -48,21 +56,56 @@ const theme = createTheme({
   },
 });
 
-// Mock data - gerçek uygulamada API'den gelecek
-const mockAnimalData = {
-  1: { id: 1, name: 'Pamuk', species: 'Kedi', breed: 'Tekir', age: '2 yaş', gender: 'Dişi', height: '25 cm', chip: '123456789012345', neutered: 'Kısırlaştırılmış', weight: '3.2 kg', hospitalStatus: 'Ayaktan', image: '/assets/cat.jpg' },
-  2: { id: 2, name: 'Karabaş', species: 'Köpek', breed: 'Golden Retriever', age: '5 yaş', gender: 'Erkek', height: '65 cm', chip: '987654321098765', neutered: 'Kısırlaştırılmış', weight: '28.5 kg', hospitalStatus: 'Taburcu', image: '/assets/golden-retriever.jpeg' },
-  3: { id: 3, name: 'Boncuk', species: 'Kuş', breed: 'Muhabbet Kuşu', age: '1 yaş', gender: 'Erkek', height: '18 cm', chip: '456789123456789', neutered: 'Uygulanmaz', weight: '0.035 kg', hospitalStatus: 'Ayaktan', image: '/assets/bird.jpg' },
-  4: { id: 4, name: 'Max', species: 'Köpek', breed: 'Labrador', age: '3 yaş', gender: 'Erkek', height: '60 cm', chip: '123456789012345', neutered: 'Kısırlaştırılmış', weight: '32.5 kg', hospitalStatus: 'Taburcu', image: '/assets/golden-retriever.jpeg' },
-};
-
 const AnimalDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [selectedTab, setSelectedTab] = useState(0);
+  const [openSurgeryForm, setOpenSurgeryForm] = useState(false);
+  const [openAdmissionForm, setOpenAdmissionForm] = useState(false);
 
-  const animalId = id ? parseInt(id) : 1;
-  const animalData = mockAnimalData[animalId as keyof typeof mockAnimalData] || mockAnimalData[1];
+  const [animalData, setAnimalData] = useState<any>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchAnimal = async () => {
+      if (!id) return;
+      setLoading(true);
+      try {
+        const response = await animalService.getAnimalById(id);
+        if (response.success && response.data) {
+          // Map backend response to the format expected by ProfileHeader if needed
+          // Currently ProfileHeader likely expects specific fields. 
+          // Let's ensure response.data has what we need or map it.
+          // For now, assume response.data is close enough or extend it.
+          // We might need to fetch active hospitalization to set 'hospitalStatus'.
+
+          const animal = response.data;
+          // Extended data for UI compatibility
+          const detailedAnimal = {
+            ...animal,
+            // Derive display fields if missing in AnimalRecord but used in UI
+            age: animal.ageInYears ? `${animal.ageInYears} yaş` : 'Bilinmiyor',
+            height: 'Unknown', // Backend doesn't have height
+            hospitalStatus: 'Ayaktan', // Default, logic to be improved
+            image: animal.species?.name === 'Kedi' ? '/assets/cat.jpg' : '/assets/golden-retriever.jpeg', // Placeholder logic
+            chip: animal.microchipNumber,
+            neutered: 'Bilinmiyor'
+          };
+          setAnimalData(detailedAnimal);
+        } else {
+          setError('Animal not found');
+        }
+      } catch (err) {
+        setError('Failed to fetch animal details');
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAnimal();
+  }, [id]);
 
   const handleTabChange = (index: number) => {
     setSelectedTab(index);
@@ -102,7 +145,7 @@ const AnimalDetailPage: React.FC = () => {
     {
       id: 'prescriptions',
       label: 'Reçeteler',
-      icon: <MedicationIcon />,
+      icon: <MaterialMedicationIcon />,
     },
     {
       id: 'vaccinations',
@@ -123,6 +166,16 @@ const AnimalDetailPage: React.FC = () => {
       id: 'notes',
       label: 'Notlar',
       icon: <NoteIcon />,
+    },
+    {
+      id: 'surgery',
+      label: 'Ameliyatlar',
+      icon: <HealingIcon />,
+    },
+    {
+      id: 'hospitalization',
+      label: 'Yatış/Hospitalizasyon',
+      icon: <LocalHospitalIcon />,
     },
   ];
 
@@ -161,10 +214,61 @@ const AnimalDetailPage: React.FC = () => {
         />;
       case 10: // Notlar
         return <Notes onAddClick={() => console.log('Add new note')} />;
+      case 11: // Ameliyatlar
+        return (
+          <Box>
+            <Box sx={{ mb: 2, display: 'flex', justifyContent: 'flex-end' }}>
+              <Button variant="contained" startIcon={<HealingIcon />} onClick={() => setOpenSurgeryForm(true)}>
+                Yeni Ameliyat Planla
+              </Button>
+            </Box>
+            <SurgeryList animalId={parseInt(id || '0')} />
+            <Dialog open={openSurgeryForm} onClose={() => setOpenSurgeryForm(false)} maxWidth="sm" fullWidth>
+              <DialogTitle>Yeni Ameliyat Planla</DialogTitle>
+              <DialogContent>
+                <SurgeryForm animalId={parseInt(id || '0')} onSuccess={() => setOpenSurgeryForm(false)} />
+              </DialogContent>
+            </Dialog>
+          </Box>
+        );
+      case 12: // Yatış/Hospitalizasyon
+        return (
+          <Box>
+            <Box sx={{ mb: 2, display: 'flex', justifyContent: 'flex-end' }}>
+              <Button variant="contained" startIcon={<LocalHospitalIcon />} onClick={() => setOpenAdmissionForm(true)}>
+                Hasta Yatışı Yap
+              </Button>
+            </Box>
+            <HospitalizationList animalId={parseInt(id || '0')} />
+            <Dialog open={openAdmissionForm} onClose={() => setOpenAdmissionForm(false)} maxWidth="sm" fullWidth>
+              <DialogTitle>Hasta Yatışı</DialogTitle>
+              <DialogContent>
+                <AdmissionForm animalId={parseInt(id || '0')} onSuccess={() => setOpenAdmissionForm(false)} />
+              </DialogContent>
+            </Dialog>
+          </Box>
+        );
       default:
         return <ImportantAlerts />;
     }
   };
+
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (error || !animalData) {
+    return (
+      <Box sx={{ p: 3 }}>
+        <Typography color="error">{error || 'Animal not found'}</Typography>
+        <Button onClick={() => navigate('/animals')}>Back to List</Button>
+      </Box>
+    );
+  }
 
   return (
     <ThemeProvider theme={theme}>

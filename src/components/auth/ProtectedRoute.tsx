@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { Navigate, useLocation } from 'react-router-dom';
+import { Navigate, useLocation, useParams } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { Box, CircularProgress, Backdrop } from '@mui/material';
 import AccessDenied from '../common/AccessDenied';
@@ -105,6 +105,7 @@ const useAccessControl = (props: ProtectedRouteProps) => {
 
   const { state } = useAuth();
   const location = useLocation();
+  const params = useParams<{ slug?: string; clinicId?: string }>(); // Extract slug or clinicId
 
   const [accessResult, setAccessResult] = useState<AccessResult>({
     level: 'pending',
@@ -118,7 +119,7 @@ const useAccessControl = (props: ProtectedRouteProps) => {
   const validateRoles = useMemo(() => {
     if (!requiredRoles || requiredRoles.length === 0) return true;
 
-    const userRoles = state.roles || [];
+    const userRoles = state.user?.roles || [];
 
     if (requireAllRoles) {
       // User must have ALL required roles
@@ -136,7 +137,7 @@ const useAccessControl = (props: ProtectedRouteProps) => {
   const validatePermissions = useMemo(() => {
     if (!requiredPermissions || requiredPermissions.length === 0) return true;
 
-    const userRoles = state.roles || [];
+    const userRoles = state.user?.roles || [];
 
     if (requireAllPermissions) {
       // User must have ALL required permissions
@@ -207,7 +208,7 @@ const useAccessControl = (props: ProtectedRouteProps) => {
         if (!validateRoles) {
           setAccessResult({
             level: 'denied',
-            reason: `Required roles: ${requiredRoles?.join(', ')}. Your roles: ${state.roles?.join(', ') || 'None'}`,
+            reason: `Required roles: ${requiredRoles?.join(', ')}. Your roles: ${state.user?.roles?.join(', ') || 'None'}`,
             showModal: true
           });
           if (onAccessDenied) {
@@ -220,7 +221,7 @@ const useAccessControl = (props: ProtectedRouteProps) => {
         if (!validatePermissions) {
           setAccessResult({
             level: 'denied',
-            reason: `Required permissions: ${requiredPermissions?.join(', ')}. Your roles: ${state.roles?.join(', ') || 'None'}`,
+            reason: `Required permissions: ${requiredPermissions?.join(', ')}. Your roles: ${state.user?.roles?.join(', ') || 'None'}`,
             showModal: true
           });
           if (onAccessDenied) {
@@ -229,7 +230,36 @@ const useAccessControl = (props: ProtectedRouteProps) => {
           return;
         }
 
-        // Step 6: Custom Validation
+        // Step 6: Clinic Isolation Check (New)
+        // Step 6: Clinic Isolation Check (Semantic URL)
+        if (state.user?.clinicSlug) {
+          const urlSlug = params.slug;
+
+          if (urlSlug && urlSlug !== state.user.clinicSlug) {
+            // Block access if URL slug doesn't match User's clinic slug
+            // Exception: Super Admin might be allowed, but for now we enforce strict isolation
+            if (!state.user.roles.includes('ADMIN')) {
+              setAccessResult({
+                level: 'denied',
+                reason: `Access to Clinic '${urlSlug}' denied. You belong to '${state.user.clinicSlug}'.`,
+                redirect: `/clinic/${state.user.clinicSlug}/dashboard`,
+                showModal: true
+              });
+              return;
+            } else {
+              // Even Admins restricted
+              setAccessResult({
+                level: 'denied',
+                reason: `Access to Clinic '${urlSlug}' denied. You belong to '${state.user.clinicSlug}'.`,
+                redirect: `/clinic/${state.user.clinicSlug}/dashboard`,
+                showModal: true
+              });
+              return;
+            }
+          }
+        }
+
+        // Step 7: Custom Validation
         if (customValidator) {
           const customResult = await customValidator(state.user);
           if (!customResult) {
@@ -274,7 +304,7 @@ const useAccessControl = (props: ProtectedRouteProps) => {
     state.isLoading,
 
     // User roles
-    state.roles,
+    state.user?.roles,
 
     // Route requirements
     requiredRoles,
@@ -284,8 +314,9 @@ const useAccessControl = (props: ProtectedRouteProps) => {
     validateRoles,
     validatePermissions,
 
-    // Location
-    location.pathname
+    // Location & Params
+    location.pathname,
+    JSON.stringify(params) // Re-run if params change
   ]);
 
   return accessResult;

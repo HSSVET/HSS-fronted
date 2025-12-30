@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useParams } from 'react-router-dom';
 import { usePermissions } from '../../hooks/usePermissions';
 import { useAuth } from '../../context/AuthContext';
 import { OFFLINE_MODE } from '../../config/offline';
@@ -12,6 +12,7 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ collapsed, toggleSidebar }) => {
   const location = useLocation();
+  const { slug } = useParams<{ slug?: string }>();
   const { hasPermission } = usePermissions();
   const { user, logout } = useAuth();
 
@@ -48,6 +49,15 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, toggleSidebar }) => {
     { icon: 'icon-settings', text: 'Ayarlar', path: '/settings', permission: 'settings:read' },
   ];
 
+  // Helper to construct path
+  const getFullPath = (path: string) => {
+    if (slug) {
+      return `/clinic/${slug}${path}`;
+    }
+    // Fallback if not in clinic context (though Sidebar is mainly used there)
+    return path;
+  };
+
   // Filter menu items based on user permissions
   const menuItems = allMenuItems.filter(item => hasPermission(item.permission));
 
@@ -77,16 +87,20 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, toggleSidebar }) => {
       </div>
 
       <div className="menu-container">
-        {menuItems.map((item, index) => (
-          <Link
-            key={index}
-            to={item.path}
-            className={`menu-item ${location.pathname === item.path ? 'active' : ''}`}
-          >
-            <span className={`icon ${item.icon}`}></span>
-            {!collapsed && <span className="text">{item.text}</span>}
-          </Link>
-        ))}
+        {menuItems.map((item, index) => {
+          const fullPath = getFullPath(item.path);
+          const isActive = location.pathname.startsWith(fullPath);
+          return (
+            <Link
+              key={index}
+              to={fullPath}
+              className={`menu-item ${isActive ? 'active' : ''}`}
+            >
+              <span className={`icon ${item.icon}`}></span>
+              {!collapsed && <span className="text">{item.text}</span>}
+            </Link>
+          );
+        })}
       </div>
 
       <div className="user-container">
