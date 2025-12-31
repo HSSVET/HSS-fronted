@@ -3,8 +3,6 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import {
   Box,
-  Card,
-  CardContent,
   Typography,
   Button,
   Fade,
@@ -22,39 +20,33 @@ import {
   DialogContent,
   DialogActions,
   TextField,
-  Switch,
-  FormControlLabel,
-  Container,
   Paper,
   Avatar,
+  Container,
   Snackbar
 } from '@mui/material';
 import {
-  Security as SecurityIcon,
-  Visibility,
-  VisibilityOff,
   Info,
   CheckCircle,
-  Error,
   VpnKey,
   Shield,
-  Lock,
   Person,
   Language,
   DarkMode,
   LightMode,
   Close,
-  ArrowForward,
-  Fingerprint,
   Smartphone,
   Email,
   Pets,
   MedicalServices,
   Schedule,
-  Analytics
+  Analytics,
+  Fingerprint,
+  AdminPanelSettings
 } from '@mui/icons-material';
 import { keyframes } from '@mui/system';
 import LoginForm from './LoginForm';
+import { getSubdomainInfo, validateUserSubdomainAccess } from '../../utils/subdomain';
 
 // ============================================================================
 // Types & Interfaces
@@ -103,8 +95,6 @@ const pulseAnimation = keyframes`
   50% { transform: scale(1.05); }
   100% { transform: scale(1); }
 `;
-
-
 
 const gradientAnimation = keyframes`
   0% { background-position: 0% 50%; }
@@ -172,7 +162,13 @@ const LoginPage: React.FC<LoginPageProps> = ({
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { state, login } = useAuth();
+  const { state } = useAuth();
+
+  // ============================================================================
+  // Subdomain Detection
+  // ============================================================================
+  const subdomainInfo = useMemo(() => getSubdomainInfo(), []);
+  const isAdminPortal = subdomainInfo.isAdmin;
 
   // ============================================================================
   // State Management
@@ -182,17 +178,14 @@ const LoginPage: React.FC<LoginPageProps> = ({
   const [loginStep, setLoginStep] = useState<'initial' | 'password' | 'mfa' | 'success'>('password');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
+
   const [selectedMFA, setSelectedMFA] = useState<MFAMethod | null>(null);
   const [mfaCode, setMfaCode] = useState('');
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
   const [showStatsDialog, setShowStatsDialog] = useState(false);
   const [showMFADialog, setShowMFADialog] = useState(false);
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [currentTheme, setCurrentTheme] = useState<'light' | 'dark' | 'system'>('system');
   const [currentLanguage, setCurrentLanguage] = useState<'tr' | 'en'>('tr');
-  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [animationStep, setAnimationStep] = useState(0);
 
   // ============================================================================
@@ -219,27 +212,44 @@ const LoginPage: React.FC<LoginPageProps> = ({
     console.log('🧹 LoginPage: Cleaned up redirect URLs on mount');
   }, []);
 
+  const redirectAttempted = React.useRef(false);
+
   useEffect(() => {
-    console.log('🔄 LoginPage: Auth state change detected');
-    console.log('  - isAuthenticated:', state.isAuthenticated);
-    console.log('  - isInitialized:', state.isInitialized);
-    console.log('  - isLoading:', state.isLoading);
-    console.log('  - error:', state.error);
-    console.log('  - loginStep:', loginStep);
+    // console.log('🔄 LoginPage: Auth state change detected');
 
     // Redirect after successful authentication
-    if (state.isAuthenticated && state.isInitialized && !state.isLoading) {
-      console.log('✅ Authentication successful, redirecting...');
-      const redirectUrl = new URLSearchParams(location.search).get('redirect') || '/dashboard';
-      console.log('🔗 Redirecting to:', redirectUrl);
-      
+    if (state.isAuthenticated && state.isInitialized && !state.isLoading && !redirectAttempted.current) {
+      console.log('✅ Authentication successful, validating subdomain access...');
+      redirectAttempted.current = true; // Prevent multiple redirects
+
+      // Validate user role matches subdomain
+      if (state.user?.roles) {
+        const validation = validateUserSubdomainAccess(state.user.roles);
+
+        if (!validation.isValid && validation.shouldRedirect && validation.redirectUrl) {
+          console.log('⚠️ User role mismatch with subdomain, redirecting to:', validation.redirectUrl);
+          window.location.href = validation.redirectUrl;
+          return;
+        }
+      }
+
+      const params = new URLSearchParams(location.search);
+      const redirectParam = params.get('redirect');
+
+      // If no specific redirect param, go to root '/' and let RootRedirect handle it
+      // This avoids the /dashboard -> * -> / -> RootRedirect loop
+      const targetUrl = redirectParam || '/';
+
+      console.log('🔗 Redirecting to:', targetUrl);
+
       // Set success state and redirect after a short delay
       setLoginStep('success');
+      setShowSuccessMessage(true);
       setTimeout(() => {
-        navigate(redirectUrl, { replace: true });
+        navigate(targetUrl, { replace: true });
       }, 1500);
     }
-  }, [state.isAuthenticated, state.isInitialized, state.isLoading, loginStep, location.search, navigate]);
+  }, [state.isAuthenticated, state.isInitialized, state.isLoading, state.user, location.search, navigate]);
 
   useEffect(() => {
     // Only show error if it's not an initialization error
@@ -254,7 +264,7 @@ const LoginPage: React.FC<LoginPageProps> = ({
     const timer = setTimeout(() => {
       setAnimationStep(1);
     }, 100);
-    
+
     return () => clearTimeout(timer);
   }, []);
 
@@ -262,67 +272,14 @@ const LoginPage: React.FC<LoginPageProps> = ({
   // Handlers
   // ============================================================================
 
-  const handleSSOLogin = useCallback(async () => {
-    try {
-      console.log('🔑 SSO Login started...');
-      setLoading(true);
-      setError(null);
-      
-      const redirectUrl = new URLSearchParams(location.search).get('redirect') || '/dashboard';
-      console.log('🔗 Redirect URL:', redirectUrl);
-      
-      console.log('🚀 Calling login function...');
-      await login(redirectUrl);
-      console.log('✅ Login function completed');
-      
-      if (onLogin) {
-        onLogin();
-      }
-    } catch (error: unknown) {
-      console.error('❌ Login error:', error);
-      const errorMessage = (error as Error)?.message || 'Login failed';
-      setError(errorMessage);
-      if (onError) {
-        onError(errorMessage);
-      }
-    } finally {
-      setLoading(false);
-    }
-  }, [login, location, onLogin, onError]);
-
-  const handlePasswordLogin = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      
-      // Simulate password login
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      if (loginMethods.includes('mfa')) {
-        setLoginStep('mfa');
-        setShowMFADialog(true);
-      } else {
-        setLoginStep('success');
-      }
-    } catch (error: unknown) {
-      const errorMessage = (error as Error)?.message || 'Password login failed';
-      setError(errorMessage);
-      if (onError) {
-        onError(errorMessage);
-      }
-    } finally {
-      setLoading(false);
-    }
-  }, [loginMethods, onError]);
-
   const handleMFAVerification = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
-      
+
       // Simulate MFA verification
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
+
       if (mfaCode.length === 6) {
         setLoginStep('success');
         setShowMFADialog(false);
@@ -358,16 +315,6 @@ const LoginPage: React.FC<LoginPageProps> = ({
     return new URLSearchParams(location.search).get('redirect') || '/dashboard';
   }, [location.search]);
 
-  const isFormValid = useMemo(() => {
-    if (loginStep === 'password') {
-      return username.length > 0 && password.length > 0;
-    }
-    if (loginStep === 'mfa') {
-      return mfaCode.length === 6;
-    }
-    return true;
-  }, [loginStep, username, password, mfaCode]);
-
   // ============================================================================
   // Render Components
   // ============================================================================
@@ -383,17 +330,19 @@ const LoginPage: React.FC<LoginPageProps> = ({
                 height: 80,
                 margin: 'auto',
                 mb: 2,
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                background: isAdminPortal
+                  ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+                  : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                 animation: `${floatAnimation} 3s ease-in-out infinite`,
               }}
             >
-              <Pets sx={{ fontSize: 40 }} />
+              {isAdminPortal ? <AdminPanelSettings sx={{ fontSize: 40 }} /> : <Pets sx={{ fontSize: 40 }} />}
             </Avatar>
           </Zoom>
-          <Typography 
-            variant="h4" 
-            component="h1" 
-            sx={{ 
+          <Typography
+            variant="h4"
+            component="h1"
+            sx={{
               fontWeight: 'bold',
               mb: 1,
               background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
@@ -404,38 +353,57 @@ const LoginPage: React.FC<LoginPageProps> = ({
               backgroundSize: '200% 200%'
             }}
           >
-            {companyName}
+            {isAdminPortal ? 'Admin Portal' : companyName}
           </Typography>
-          <Typography 
-            variant="subtitle1" 
+          <Typography
+            variant="subtitle1"
             color="text.secondary"
             sx={{ mb: 2 }}
           >
-            Veteriner Klinik Yönetim Sistemi
+            {isAdminPortal ? 'Sistem Yönetimi' : 'Veteriner Klinik Yönetim Sistemi'}
           </Typography>
-          <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1, mb: 2 }}>
-            <Chip
-              icon={<MedicalServices />}
-              label="Sağlık"
-              size="small"
-              variant="outlined"
-              color="primary"
-            />
-            <Chip
-              icon={<Schedule />}
-              label="Randevu"
-              size="small"
-              variant="outlined"
-              color="secondary"
-            />
-            <Chip
-              icon={<Analytics />}
-              label="Analiz"
-              size="small"
-              variant="outlined"
-              color="success"
-            />
-          </Box>
+          {isAdminPortal ? (
+            <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1, mb: 2 }}>
+              <Chip
+                icon={<Shield />}
+                label="Güvenli"
+                size="small"
+                variant="outlined"
+                color="primary"
+              />
+              <Chip
+                icon={<AdminPanelSettings />}
+                label="Yönetici"
+                size="small"
+                variant="outlined"
+                color="secondary"
+              />
+            </Box>
+          ) : (
+            <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1, mb: 2 }}>
+              <Chip
+                icon={<MedicalServices />}
+                label="Sağlık"
+                size="small"
+                variant="outlined"
+                color="primary"
+              />
+              <Chip
+                icon={<Schedule />}
+                label="Randevu"
+                size="small"
+                variant="outlined"
+                color="secondary"
+              />
+              <Chip
+                icon={<Analytics />}
+                label="Analiz"
+                size="small"
+                variant="outlined"
+                color="success"
+              />
+            </Box>
+          )}
         </Box>
       </Fade>
     </Box>
@@ -444,11 +412,6 @@ const LoginPage: React.FC<LoginPageProps> = ({
   const renderLoginOptions = () => (
     <Fade in={animationStep >= 1} timeout={1200}>
       <Box sx={{ mb: 3 }}>
-
-
-        {/* SSO method removed - Using Firebase Auth instead */}
-        {/* Password login is now the primary method */}
-
         {loginMethods.includes('password') && (
           <Slide in={animationStep >= 1} direction="up" timeout={1000}>
             <Button
@@ -507,12 +470,11 @@ const LoginPage: React.FC<LoginPageProps> = ({
     <Fade in={loginStep === 'password'} timeout={600}>
       <Box sx={{ mb: 3 }}>
         <LoginForm
-          onSuccess={(idToken) => {
+          onSuccess={(idToken: any) => {
             console.log('✅ LoginForm: Login successful, token received');
             setLoading(false);
-            // AuthContext'teki onAuthStateChanged listener otomatik olarak yönlendirme yapacak
           }}
-          onError={(errorMsg) => {
+          onError={(errorMsg: any) => {
             setError(errorMsg);
             setLoading(false);
             if (onError) {
@@ -535,8 +497,8 @@ const LoginPage: React.FC<LoginPageProps> = ({
   );
 
   const renderMFADialog = () => (
-    <Dialog 
-      open={showMFADialog} 
+    <Dialog
+      open={showMFADialog}
       onClose={() => setShowMFADialog(false)}
       maxWidth="sm"
       fullWidth
@@ -551,7 +513,7 @@ const LoginPage: React.FC<LoginPageProps> = ({
         <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
           Güvenliğiniz için ek doğrulama gereklidir. Lütfen bir doğrulama yöntemi seçin.
         </Typography>
-        
+
         <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2 }}>
           {mockMFAMethods.map((method) => (
             <Paper
@@ -602,8 +564,8 @@ const LoginPage: React.FC<LoginPageProps> = ({
         )}
       </DialogContent>
       <DialogActions>
-        <Button 
-          onClick={() => setShowMFADialog(false)} 
+        <Button
+          onClick={() => setShowMFADialog(false)}
           disabled={loading}
         >
           İptal
@@ -624,12 +586,12 @@ const LoginPage: React.FC<LoginPageProps> = ({
     <Fade in={loginStep === 'success'} timeout={600}>
       <Box sx={{ textAlign: 'center', py: 4 }}>
         <Zoom in={loginStep === 'success'} timeout={800}>
-          <CheckCircle 
-            sx={{ 
-              fontSize: 80, 
+          <CheckCircle
+            sx={{
+              fontSize: 80,
               color: 'success.main',
               animation: `${pulseAnimation} 2s ease-in-out infinite`
-            }} 
+            }}
           />
         </Zoom>
         <Typography variant="h5" sx={{ mt: 2, mb: 1, fontWeight: 'bold' }}>
@@ -638,13 +600,13 @@ const LoginPage: React.FC<LoginPageProps> = ({
         <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
           Yönlendiriliyorsunuz...
         </Typography>
-        <LinearProgress 
-          sx={{ 
+        <LinearProgress
+          sx={{
             mb: 2,
             '& .MuiLinearProgress-bar': {
               background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
             }
-          }} 
+          }}
         />
         <Typography variant="body2" color="text.secondary">
           Hedef: {redirectUrl}
@@ -654,9 +616,9 @@ const LoginPage: React.FC<LoginPageProps> = ({
   );
 
   const renderControls = () => (
-    <Box sx={{ 
-      position: 'absolute', 
-      top: 20, 
+    <Box sx={{
+      position: 'absolute',
+      top: 20,
       right: 20,
       display: 'flex',
       gap: 1,
@@ -664,7 +626,7 @@ const LoginPage: React.FC<LoginPageProps> = ({
     }}>
       {showThemeSelector && (
         <Tooltip title="Tema Değiştir">
-          <IconButton 
+          <IconButton
             onClick={() => handleThemeChange(currentTheme === 'light' ? 'dark' : 'light')}
             sx={{
               backgroundColor: 'background.paper',
@@ -679,10 +641,10 @@ const LoginPage: React.FC<LoginPageProps> = ({
           </IconButton>
         </Tooltip>
       )}
-      
+
       {showLanguageSelector && (
         <Tooltip title="Dil Değiştir">
-          <IconButton 
+          <IconButton
             onClick={() => handleLanguageChange(currentLanguage === 'tr' ? 'en' : 'tr')}
             sx={{
               backgroundColor: 'background.paper',
@@ -697,9 +659,9 @@ const LoginPage: React.FC<LoginPageProps> = ({
           </IconButton>
         </Tooltip>
       )}
-      
+
       <Tooltip title="Sistem İstatistikleri">
-        <IconButton 
+        <IconButton
           onClick={() => setShowStatsDialog(true)}
           sx={{
             backgroundColor: 'background.paper',
@@ -717,8 +679,8 @@ const LoginPage: React.FC<LoginPageProps> = ({
   );
 
   const renderStatsDialog = () => (
-    <Dialog 
-      open={showStatsDialog} 
+    <Dialog
+      open={showStatsDialog}
       onClose={() => setShowStatsDialog(false)}
       maxWidth="sm"
       fullWidth
@@ -776,8 +738,8 @@ const LoginPage: React.FC<LoginPageProps> = ({
 
   const renderErrorAlert = () => (
     <Fade in={!!error} timeout={400}>
-      <Alert 
-        severity="error" 
+      <Alert
+        severity="error"
         sx={{ mb: 3 }}
         action={
           <IconButton
@@ -800,209 +762,98 @@ const LoginPage: React.FC<LoginPageProps> = ({
   // Main Render
   // ============================================================================
 
-  // Show success state for authenticated users while redirecting
-  if (state.isAuthenticated && state.isInitialized) {
-    return (
-      <Container maxWidth="lg" sx={{ minHeight: '100vh', py: 4 }}>
-        <Box sx={{ 
-          display: 'flex', 
-          flexDirection: 'column', 
-          justifyContent: 'center',
-          alignItems: 'center',
-          height: '100vh'
-        }}>
-          <Card elevation={8} sx={{ borderRadius: 4, p: 4, textAlign: 'center' }}>
-            <CardContent>
-              {renderSuccessState()}
-            </CardContent>
-          </Card>
-        </Box>
-      </Container>
-    );
-  }
-
   return (
-    <Container maxWidth="lg" sx={{ minHeight: '100vh', py: 4 }}>
+    <Box
+      sx={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundImage: customBackground || `
+            linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)),
+            url('https://images.unsplash.com/photo-1623366302587-b38b1ddaefd9?q=80&w=2525&auto=format&fit=crop')
+          `,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        position: 'relative',
+        overflow: 'hidden'
+      }}
+    >
       {renderControls()}
-      
-      <Box sx={{ 
-        display: 'grid', 
-        gridTemplateColumns: { xs: '1fr', md: '7fr 5fr' }, 
-        gap: 4, 
-        minHeight: '100vh' 
-      }}>
-        {/* Left Panel - Branding & Info */}
-        <Box sx={{ 
-          display: 'flex', 
-          flexDirection: 'column', 
-          justifyContent: 'center',
-          height: '100%',
-          px: { xs: 2, md: 4 }
-        }}>
-          <Slide in={animationStep >= 1} direction="right" timeout={1000}>
-            <Box>
-              <Typography 
-                variant="h2" 
-                component="h1" 
-                sx={{ 
-                  fontWeight: 'bold',
-                  mb: 2,
-                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                  backgroundClip: 'text',
-                  WebkitBackgroundClip: 'text',
-                  color: 'transparent',
-                  fontSize: { xs: '2.5rem', md: '3.5rem' }
-                }}
-              >
-                Veteriner Klinik
-              </Typography>
-              <Typography 
-                variant="h4" 
-                sx={{ 
-                  mb: 3,
-                  color: 'text.secondary',
-                  fontWeight: 300
-                }}
-              >
-                Yönetim Sistemi
-              </Typography>
-              <Typography 
-                variant="h6" 
-                sx={{ 
-                  mb: 4,
-                  color: 'text.secondary',
-                  lineHeight: 1.6
-                }}
-              >
-                Modern, güvenli ve kullanıcı dostu arayüz ile veteriner klinik süreçlerinizi 
-                dijitalleştirin. Randevu yönetimi, hasta takibi, faturalandırma ve daha fazlası.
-              </Typography>
-              
-              <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-                <Chip
-                  icon={<MedicalServices />}
-                  label="Hasta Yönetimi"
-                  variant="outlined"
-                  size="medium"
-                  sx={{
-                    '&:hover': {
-                      backgroundColor: 'primary.main',
-                      color: 'white',
-                    },
-                    transition: 'all 0.3s ease'
-                  }}
-                />
-                <Chip
-                  icon={<Schedule />}
-                  label="Randevu Sistemi"
-                  variant="outlined"
-                  size="medium"
-                  sx={{
-                    '&:hover': {
-                      backgroundColor: 'primary.main',
-                      color: 'white',
-                    },
-                    transition: 'all 0.3s ease'
-                  }}
-                />
-                <Chip
-                  icon={<Analytics />}
-                  label="Raporlama"
-                  variant="outlined"
-                  size="medium"
-                  sx={{
-                    '&:hover': {
-                      backgroundColor: 'primary.main',
-                      color: 'white',
-                    },
-                    transition: 'all 0.3s ease'
-                  }}
-                />
-                <Chip
-                  icon={<Shield />}
-                  label="Güvenli"
-                  variant="outlined"
-                  size="medium"
-                  sx={{
-                    '&:hover': {
-                      backgroundColor: 'primary.main',
-                      color: 'white',
-                    },
-                    transition: 'all 0.3s ease'
-                  }}
-                />
-              </Box>
-            </Box>
-          </Slide>
-        </Box>
 
-        {/* Right Panel - Login Form */}
-        <Box sx={{ 
-          display: 'flex', 
-          flexDirection: 'column', 
-          justifyContent: 'center',
-          height: '100%',
-          px: { xs: 2, md: 4 }
-        }}>
-          <Box sx={{ 
-            display: 'flex', 
-            flexDirection: 'column', 
-            justifyContent: 'center',
-            height: '100%',
-            px: { xs: 2, md: 4 }
-          }}>
-            <Slide in={animationStep >= 1} direction="left" timeout={1200}>
-              <Card
-                elevation={8}
-                sx={{
-                  borderRadius: 4,
-                  backgroundColor: 'background.paper',
-                  boxShadow: '0 10px 40px rgba(0,0,0,0.1)',
-                  overflow: 'visible',
-                  position: 'relative',
-                  '&::before': {
-                    content: '""',
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    height: 4,
-                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                    borderRadius: '16px 16px 0 0',
-                  }
-                }}
-              >
-                <CardContent sx={{ p: 4 }}>
-                  {loginStep === 'success' ? renderSuccessState() : (
-                    <>
-                      {renderHeader()}
-                      {error && renderErrorAlert()}
-                      {loginStep === 'initial' && renderLoginOptions()}
-                      {loginStep === 'password' && renderPasswordForm()}
-                    </>
-                  )}
-                </CardContent>
-              </Card>
-            </Slide>
-          </Box>
-        </Box>
-      </Box>
+      {/* Decorative Circles */}
+      <Box
+        sx={{
+          position: 'absolute',
+          top: -100,
+          left: -100,
+          width: 300,
+          height: 300,
+          borderRadius: '50%',
+          background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%)',
+          filter: 'blur(50px)',
+          animation: `${pulseAnimation} 4s ease-in-out infinite`
+        }}
+      />
+      <Box
+        sx={{
+          position: 'absolute',
+          bottom: -50,
+          right: -50,
+          width: 200,
+          height: 200,
+          borderRadius: '50%',
+          background: 'linear-gradient(135deg, rgba(118, 75, 162, 0.2) 0%, rgba(102, 126, 234, 0.2) 100%)',
+          filter: 'blur(30px)',
+          animation: `${floatAnimation} 5s ease-in-out infinite`
+        }}
+      />
+
+      <Container maxWidth="xs" sx={{ position: 'relative', zIndex: 1 }}>
+        <Fade in timeout={800}>
+          <Paper
+            elevation={24}
+            sx={{
+              p: { xs: 3, sm: 4 },
+              borderRadius: 4,
+              background: 'rgba(255, 255, 255, 0.8)',
+              backdropFilter: 'blur(20px)',
+              border: '1px solid rgba(255, 255, 255, 0.3)',
+              boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.15)',
+            }}
+          >
+            {renderHeader()}
+            {renderErrorAlert()}
+
+            <Box sx={{ position: 'relative', minHeight: 200 }}>
+              {loginStep === 'initial' && renderLoginOptions()}
+              {loginStep === 'password' && renderPasswordForm()}
+              {loginStep === 'success' && renderSuccessState()}
+            </Box>
+
+            <Box sx={{ mt: 3, textAlign: 'center' }}>
+              <Typography variant="caption" color="text.secondary">
+                &copy; {new Date().getFullYear()} {companyName}. Tüm hakları saklıdır.
+              </Typography>
+            </Box>
+          </Paper>
+        </Fade>
+      </Container>
 
       {renderMFADialog()}
       {renderStatsDialog()}
-      
+
       <Snackbar
         open={showSuccessMessage}
-        autoHideDuration={3000}
+        autoHideDuration={6000}
         onClose={() => setShowSuccessMessage(false)}
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
-        <Alert severity="success" sx={{ width: '100%' }}>
-          Giriş başarılı! Yönlendiriliyorsunuz...
+        <Alert onClose={() => setShowSuccessMessage(false)} severity="success" sx={{ width: '100%' }}>
+          İşlem başarılı!
         </Alert>
       </Snackbar>
-    </Container>
+    </Box>
   );
 };
 
-export default LoginPage; 
+export default LoginPage;

@@ -7,19 +7,19 @@ export class BillingService {
   // Invoice operations
   static async getInvoices(filters?: InvoiceFilters): Promise<ApiResponse<Invoice[]>> {
     const params = new URLSearchParams();
-    
+
     if (filters?.status) {
       params.append('status', filters.status);
     }
-    
+
     if (filters?.search) {
       params.append('search', filters.search);
     }
-    
+
     if (filters?.startDate) {
       params.append('startDate', filters.startDate.toISOString());
     }
-    
+
     if (filters?.endDate) {
       params.append('endDate', filters.endDate.toISOString());
     }
@@ -43,30 +43,38 @@ export class BillingService {
     return apiClient.delete(`${API_ENDPOINTS.INVOICES}/${id}`);
   }
 
+  static async createFromSurgery(surgeryId: number | string): Promise<ApiResponse<Invoice>> {
+    return apiClient.post(`${API_ENDPOINTS.INVOICES}/surgery/${surgeryId}`);
+  }
+
+  static async createFromHospitalization(hospitalizationId: number | string): Promise<ApiResponse<Invoice>> {
+    return apiClient.post(`${API_ENDPOINTS.INVOICES}/hospitalization/${hospitalizationId}`);
+  }
+
   // Payment operations
   static async getPayments(filters?: PaymentFilters): Promise<ApiResponse<Payment[]>> {
     const params = new URLSearchParams();
-    
+
     if (filters?.paymentMethod) {
       params.append('paymentMethod', filters.paymentMethod);
     }
-    
+
     if (filters?.status) {
       params.append('status', filters.status);
     }
-    
+
     if (filters?.posTerminalId) {
       params.append('posTerminalId', filters.posTerminalId);
     }
-    
+
     if (filters?.search) {
       params.append('search', filters.search);
     }
-    
+
     if (filters?.startDate) {
       params.append('startDate', filters.startDate.toISOString());
     }
-    
+
     if (filters?.endDate) {
       params.append('endDate', filters.endDate.toISOString());
     }
@@ -113,10 +121,10 @@ export class BillingService {
 
   // Payment plans
   static async getPaymentPlans(invoiceId?: number): Promise<ApiResponse<PaymentPlan[]>> {
-    const endpoint = invoiceId 
+    const endpoint = invoiceId
       ? `${API_ENDPOINTS.INVOICES}/${invoiceId}/payment-plans`
       : `${API_ENDPOINTS.INVOICES}/payment-plans`;
-    
+
     return apiClient.get(endpoint);
   }
 
@@ -155,7 +163,7 @@ export class BillingService {
       startDate: startDate.toISOString(),
       endDate: endDate.toISOString()
     });
-    
+
     return apiClient.get(`${API_ENDPOINTS.INVOICES}/reports/custom?${params.toString()}`);
   }
 }

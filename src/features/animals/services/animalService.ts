@@ -94,7 +94,7 @@ export class AnimalService {
       lastVisitDate: backend.lastVisitDate ? (typeof backend.lastVisitDate === 'string' ? backend.lastVisitDate : backend.lastVisitDate.toString()) : undefined,
       nextVaccinationDate: backend.nextVaccinationDate ? (typeof backend.nextVaccinationDate === 'string' ? backend.nextVaccinationDate : backend.nextVaccinationDate.toString()) : undefined,
     };
-    
+
     return mapped;
   };
   // Get all animals
@@ -107,11 +107,11 @@ export class AnimalService {
       const items = (response.data.content || []).map(this.mapBackendToAnimalRecord);
       return { success: true, data: items, status: response.status } as ApiResponse<AnimalRecord[]>;
     }
-    return { 
-      success: false, 
-      data: [], 
+    return {
+      success: false,
+      data: [],
       error: response.error || 'Failed to fetch animals',
-      status: response.status 
+      status: response.status
     };
   }
 
@@ -125,11 +125,11 @@ export class AnimalService {
     const { apiClient } = await import('../../../services/api');
     // Spring Boot Pageable uses 'size' not 'limit'
     const response = await apiClient.get<SpringPage<any>>(`/api/animals?page=${page}&size=${limit}${search ? `&search=${encodeURIComponent(search)}` : ''}`);
-    
+
     // Convert Spring Page to PaginatedResponse
     if (response.success && response.data) {
       const mappedItems = (response.data.content || []).map(this.mapBackendToAnimalRecord);
-      
+
       const paginatedResponse: PaginatedResponse<AnimalRecord> = {
         items: mappedItems,
         total: response.data.totalElements,
@@ -137,14 +137,14 @@ export class AnimalService {
         limit: response.data.size,
         totalPages: response.data.totalPages,
       };
-      
+
       return { success: true, data: paginatedResponse, status: response.status };
     }
-    return { 
-      success: false, 
-      data: emptyPage<AnimalRecord>(page, limit), 
+    return {
+      success: false,
+      data: emptyPage<AnimalRecord>(page, limit),
       error: response.error || 'Failed to fetch animals',
-      status: response.status 
+      status: response.status
     };
   }
 
@@ -153,7 +153,7 @@ export class AnimalService {
     // Use the main animals endpoint and transform the data
     const { apiClient } = await import('../../../services/api');
     const response = await apiClient.get<SpringPage<any>>('/api/animals?page=0&limit=1000');
-    
+
     if (response.success && response.data) {
       const basicAnimals: BasicAnimalRecord[] = (response.data.content || []).map(a => ({
         id: a.animalId ?? a.id ?? 0,
@@ -165,7 +165,7 @@ export class AnimalService {
       }));
       return { success: true, data: basicAnimals };
     }
-    
+
     return { success: false, data: [], error: 'Failed to fetch basic animals' };
   }
 
@@ -192,13 +192,13 @@ export class AnimalService {
     notes?: string;
   }): Promise<ApiResponse<AnimalRecord>> {
     const { apiClient } = await import('../../../services/api');
-    
+
     // Helper function to convert empty strings to undefined
     const cleanString = (value?: string): string | undefined => {
       if (!value || value.trim() === '') return undefined;
       return value.trim();
     };
-    
+
     // Convert to backend's AnimalCreateRequest format
     const request: any = {
       ownerId: animal.ownerId,
@@ -206,12 +206,12 @@ export class AnimalService {
       speciesId: animal.speciesId,
       breedId: animal.breedId,
     };
-    
+
     // Only include optional fields if they have values
     if (animal.gender && animal.gender.trim() !== '') {
       request.gender = animal.gender.trim();
     }
-    
+
     if (animal.birthDate && animal.birthDate.trim() !== '') {
       // Backend LocalDate formatı YYYY-MM-DD bekliyor
       const dateStr = animal.birthDate.trim();
@@ -224,36 +224,36 @@ export class AnimalService {
         }
       }
     }
-    
+
     if (animal.weight !== undefined && animal.weight !== null && animal.weight > 0) {
       request.weight = Number(animal.weight);
     }
-    
+
     const cleanColor = cleanString(animal.color);
     if (cleanColor) {
       request.color = cleanColor;
     }
-    
+
     const cleanMicrochip = cleanString(animal.microchipNo);
     if (cleanMicrochip) {
       request.microchipNo = cleanMicrochip;
     }
-    
+
     const cleanAllergies = cleanString(animal.allergies);
     if (cleanAllergies) {
       request.allergies = cleanAllergies;
     }
-    
+
     const cleanChronicDiseases = cleanString(animal.chronicDiseases);
     if (cleanChronicDiseases) {
       request.chronicDiseases = cleanChronicDiseases;
     }
-    
+
     const cleanNotes = cleanString(animal.notes);
     if (cleanNotes) {
       request.notes = cleanNotes;
     }
-    
+
     console.log('Sending animal create request:', request);
     const response = await apiClient.post<AnimalRecord>('/api/animals', request);
     return response;
@@ -385,6 +385,5 @@ export class AnimalService {
   }
 }
 
-// Legacy export for compatibility
-export const animalService = AnimalService;
-export default AnimalService;
+export const animalService = new AnimalService();
+export default animalService;

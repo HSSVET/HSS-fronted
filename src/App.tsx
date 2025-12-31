@@ -1,80 +1,36 @@
-import React, { Suspense, lazy } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { ThemeProvider, CssBaseline, createTheme, CircularProgress, Box } from '@mui/material';
-import { AuthProvider } from './context/AuthContext';
+import React, { useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { ThemeProvider, CssBaseline, createTheme, Box, CircularProgress } from '@mui/material';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import { AppProvider } from './context/AppContext';
 import { ErrorProvider } from './context/ErrorContext';
 import { Layout } from './shared';
-
-// Auth Components
+// Import CustomerLayout with default if missing (handled by creating file)
+import CustomerLayout from './shared/components/CustomerLayout';
+import { Dashboard } from './features/dashboard';
+import CustomerDashboard from './features/dashboard/components/CustomerDashboard';
+import { AnimalPage, AnimalDetailPage } from './features/animals';
+import { AppointmentPage } from './features/appointments';
+import { LabDashboard, LabTestTypes } from './features/laboratory';
+import { Billing } from './features/billing';
+import { DocumentPage } from './features/documents';
+import SurgeryDetails from './features/surgery/components/SurgeryDetails';
+import HospitalizationDetails from './features/hospitalization/components/HospitalizationDetails';
+import SuperAdminLayout from './shared/components/SuperAdminLayout';
+import ClinicsPage from './features/super-admin/ClinicsPage';
 import LoginPage from './components/auth/LoginPage';
-import ProtectedRoute, {
-  RoleBasedRoute,
-  PermissionBasedRoute,
-  AdminRoute,
-  VeterinarianRoute
-} from './components/auth/ProtectedRoute';
-import AccessDenied from './components/common/AccessDenied';
+import ProtectedRoute from './components/auth/ProtectedRoute';
+import Toast from './components/Toast';
 
 // Error Boundaries
 import {
   GlobalErrorBoundary,
   PageErrorBoundary,
-  ComponentErrorBoundary
 } from './components/common/ErrorBoundary';
 
-// Test Components
-import AuthButton from './components/auth/AuthButton';
-import ApiTestComponent from './components/auth/ApiTestComponent';
-import Toast from './components/Toast';
 import './shared/styles/App.css';
 
-// Code Splitting: Route bazlı lazy loading
-/* eslint-disable import/first */
-const Dashboard = lazy(() => import('./features/dashboard').then(module => ({ default: module.Dashboard })));
-const AnimalPage = lazy(() => import('./features/animals').then(module => ({ default: module.AnimalPage })));
-const AnimalDetailPage = lazy(() => import('./features/animals').then(module => ({ default: module.AnimalDetailPage })));
-const AppointmentPage = lazy(() => import('./features/appointments').then(module => ({ default: module.AppointmentPage })));
-const LabDashboard = lazy(() => import('./features/laboratory').then(module => ({ default: module.LabDashboard })));
-const LabTestTypes = lazy(() => import('./features/laboratory').then(module => ({ default: module.LabTestTypes })));
-const Billing = lazy(() => import('./features/billing').then(module => ({ default: module.Billing })));
-const DocumentPage = lazy(() => import('./features/documents').then(module => ({ default: module.DocumentPage })));
-const RemindersPage = lazy(() => import('./features/reminders').then(module => ({ default: module.RemindersPage })));
-const SmsPage = lazy(() => import('./features/sms').then(module => ({ default: module.SmsPage })));
-const StockSystem = lazy(() => import('./features/stock').then(module => ({ default: module.StockSystem })));
-const VaccinationDashboard = lazy(() => import('./features/vaccinations').then(module => ({ default: module.VaccinationDashboard })));
-const ReportsPage = lazy(() => import('./features/reports').then(module => ({ default: module.ReportsPage })));
-const AnimalReports = lazy(() => import('./features/reports').then(module => ({ default: module.AnimalReports })));
-const AppointmentReports = lazy(() => import('./features/reports').then(module => ({ default: module.AppointmentReports })));
-const FinancialReports = lazy(() => import('./features/reports').then(module => ({ default: module.FinancialReports })));
-/* eslint-enable import/first */
-
-// ============================================================================
-// Loading Fallback Component for Suspense
-// ============================================================================
-
-const SuspenseFallback = () => (
-  <Box
-    sx={{
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      minHeight: '400px',
-      flexDirection: 'column',
-      gap: 2,
-    }}
-  >
-    <CircularProgress size={40} />
-    <Box sx={{ fontSize: '14px', color: 'text.secondary' }}>
-      Sayfa yükleniyor...
-    </Box>
-  </Box>
-);
-
-// ============================================================================
-// Theme Configuration
-// ============================================================================
-
+// ... Theme definition ...
 const theme = createTheme({
   palette: {
     primary: {
@@ -98,24 +54,12 @@ const theme = createTheme({
   },
   typography: {
     fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif',
-    h1: {
-      fontWeight: 600,
-    },
-    h2: {
-      fontWeight: 600,
-    },
-    h3: {
-      fontWeight: 600,
-    },
-    h4: {
-      fontWeight: 600,
-    },
-    h5: {
-      fontWeight: 600,
-    },
-    h6: {
-      fontWeight: 600,
-    },
+    h1: { fontWeight: 600 },
+    h2: { fontWeight: 600 },
+    h3: { fontWeight: 600 },
+    h4: { fontWeight: 600 },
+    h5: { fontWeight: 600 },
+    h6: { fontWeight: 600 },
   },
   components: {
     MuiButton: {
@@ -144,13 +88,67 @@ const theme = createTheme({
   },
 });
 
-// ============================================================================
-// Main App Component
-// ============================================================================
+const RootRedirect = () => {
+  const { state } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    if (!state.isInitialized) return;
+
+    if (!state.isAuthenticated) {
+      // If not authenticated and not already at login, redirect to login
+      // ProtectedRoute handles this usually, but this is root level
+      // navigate('/login', { replace: true }); 
+      // We let <Navigate to="/login" /> handle this in routes usually
+      return;
+    }
+
+    if (state.user) {
+      const { userType, clinicId, roles } = state.user;
+
+      if (roles?.includes('SUPER_ADMIN')) {
+        if (location.pathname === '/' || location.pathname === '/dashboard' || location.pathname === '/login') {
+          navigate('/super-admin/clinics', { replace: true });
+        }
+        return;
+      }
+
+      if (location.pathname === '/' || location.pathname === '/dashboard') {
+        if (userType === 'STAFF' && roles?.includes('SUPER_ADMIN')) {
+          navigate('/super-admin/clinics', { replace: true });
+        } else if (userType === 'STAFF' && state.user.clinicSlug) {
+          navigate(`/clinic/${state.user.clinicSlug}/dashboard`, { replace: true });
+        } else if (userType === 'OWNER') {
+          // If Owner has no clinicId, redirect to generic portal or '0'
+          const targetClinicId = clinicId || '0';
+          navigate(`/portal/${targetClinicId}/dashboard`, { replace: true });
+        }
+      }
+    }
+  }, [state.isInitialized, state.isAuthenticated, state.user, navigate, location.pathname]);
+
+  if (!state.isInitialized || (state.isAuthenticated && !state.user)) {
+    return <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}><CircularProgress /></Box>;
+  }
+
+  if (!state.isAuthenticated) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  // Fallback if authenticated but no redirect happened (e.g. unknown role)
+  return (
+    <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: '100vh', gap: 2 }}>
+      <CircularProgress />
+      <Box sx={{ textAlign: 'center' }}>
+        <div>Redirecting...</div>
+        <div style={{ fontSize: '0.8em', color: '#666' }}>Role: {state.user?.roles?.join(', ')}</div>
+      </Box>
+    </Box>
+  );
+};
 
 function App() {
-  console.log('🏠 App starting without authentication');
-
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -160,356 +158,130 @@ function App() {
             <AppProvider>
               <Router>
                 <Routes>
-                  {/* Public Routes */}
-                  <Route
-                    path="/login"
-                    element={
-                      <PageErrorBoundary pageName="Login">
-                        <LoginPage />
-                      </PageErrorBoundary>
-                    }
-                  />
+                  <Route path="/login" element={<LoginPage />} />
 
-                  {/* Access Denied Route */}
-                  <Route
-                    path="/access-denied"
-                    element={
-                      <PageErrorBoundary pageName="Access Denied">
-                        <AccessDenied />
-                      </PageErrorBoundary>
-                    }
-                  />
+                  {/* Root Redirector */}
+                  <Route path="/" element={<RootRedirect />} />
 
-                  {/* Main Dashboard Route - Protected */}
+                  {/* ========================================================= */}
+                  {/* SUPER ADMIN ROUTES */}
+                  {/* ========================================================= */}
                   <Route
-                    path="/"
+                    path="/super-admin/*"
                     element={
-                      <ProtectedRoute>
-                        <Layout>
-                          <PageErrorBoundary pageName="Dashboard">
-                            <Suspense fallback={<SuspenseFallback />}>
-                              <Dashboard />
-                            </Suspense>
-                          </PageErrorBoundary>
-                        </Layout>
-                      </ProtectedRoute>
-                    }
-                  />
-
-                  <Route
-                    path="/dashboard"
-                    element={
-                      <ProtectedRoute>
-                        <Layout>
-                          <PageErrorBoundary pageName="Dashboard">
-                            <Suspense fallback={<SuspenseFallback />}>
-                              <Dashboard />
-                            </Suspense>
-                          </PageErrorBoundary>
-                        </Layout>
-                      </ProtectedRoute>
-                    }
-                  />
-
-                  {/* Animals - Protected & Role Based */}
-                  <Route
-                    path="/animals"
-                    element={
-                      <ProtectedRoute requiredPermissions={['animals:read']}>
-                        <Layout>
-                          <PageErrorBoundary pageName="Animals">
-                            <Suspense fallback={<SuspenseFallback />}>
-                              <AnimalPage />
-                            </Suspense>
-                          </PageErrorBoundary>
-                        </Layout>
-                      </ProtectedRoute>
-                    }
-                  />
-
-                  <Route
-                    path="/animals/:id"
-                    element={
-                      <ProtectedRoute requiredPermissions={['animals:read']}>
-                        <Layout>
-                          <PageErrorBoundary pageName="Animal Details">
-                            <Suspense fallback={<SuspenseFallback />}>
-                              <AnimalDetailPage />
-                            </Suspense>
-                          </PageErrorBoundary>
-                        </Layout>
-                      </ProtectedRoute>
-                    }
-                  />
-
-                  {/* Appointments - Protected & Role Based */}
-                  <Route
-                    path="/appointments"
-                    element={
-                      <ProtectedRoute requiredPermissions={['appointments:read']}>
-                        <Layout>
-                          <PageErrorBoundary pageName="Appointments">
-                            <Suspense fallback={<SuspenseFallback />}>
-                              <AppointmentPage />
-                            </Suspense>
-                          </PageErrorBoundary>
-                        </Layout>
-                      </ProtectedRoute>
-                    }
-                  />
-
-                  {/* Vaccinations - Protected & Role Based */}
-                  <Route
-                    path="/vaccinations"
-                    element={
-                      <ProtectedRoute requiredPermissions={['vaccinations:read']}>
-                        <Layout>
-                          <PageErrorBoundary pageName="Vaccinations">
-                            <Suspense fallback={<SuspenseFallback />}>
-                              <VaccinationDashboard />
-                            </Suspense>
-                          </PageErrorBoundary>
-                        </Layout>
-                      </ProtectedRoute>
-                    }
-                  />
-
-                  {/* Laboratory - Protected & Role Based */}
-                  <Route
-                    path="/laboratory"
-                    element={
-                      <ProtectedRoute requiredPermissions={['laboratory:read']}>
-                        <Layout>
-                          <PageErrorBoundary pageName="Laboratory">
-                            <Suspense fallback={<SuspenseFallback />}>
-                              <LabDashboard />
-                            </Suspense>
-                          </PageErrorBoundary>
-                        </Layout>
-                      </ProtectedRoute>
-                    }
-                  />
-
-                  <Route
-                    path="/laboratory/test-types"
-                    element={
-                      <ProtectedRoute requiredPermissions={['laboratory:read']}>
-                        <Layout>
-                          <PageErrorBoundary pageName="Lab Test Types">
-                            <Suspense fallback={<SuspenseFallback />}>
-                              <LabTestTypes />
-                            </Suspense>
-                          </PageErrorBoundary>
-                        </Layout>
-                      </ProtectedRoute>
-                    }
-                  />
-
-                  {/* Billing - Protected & Role Based */}
-                  <Route
-                    path="/billing"
-                    element={
-                      <ProtectedRoute requiredPermissions={['billing:read']}>
-                        <Layout>
-                          <PageErrorBoundary pageName="Billing">
-                            <Suspense fallback={<SuspenseFallback />}>
-                              <Billing />
-                            </Suspense>
-                          </PageErrorBoundary>
-                        </Layout>
-                      </ProtectedRoute>
-                    }
-                  />
-
-                  {/* SMS - Protected & Role Based */}
-                  <Route
-                    path="/sms"
-                    element={
-                      <ProtectedRoute requiredPermissions={['sms:read']}>
-                        <Layout>
-                          <PageErrorBoundary pageName="SMS">
-                            <Suspense fallback={<SuspenseFallback />}>
-                              <SmsPage />
-                            </Suspense>
-                          </PageErrorBoundary>
-                        </Layout>
-                      </ProtectedRoute>
-                    }
-                  />
-
-                  {/* Reminders - Admin/Veterinarian only */}
-                  <Route
-                    path="/reminders"
-                    element={
-                      <VeterinarianRoute>
-                        <Layout>
-                          <PageErrorBoundary pageName="Reminders">
-                            <Suspense fallback={<SuspenseFallback />}>
-                              <RemindersPage />
-                            </Suspense>
-                          </PageErrorBoundary>
-                        </Layout>
-                      </VeterinarianRoute>
-                    }
-                  />
-
-                  {/* Inventory/Stock - Admin/Veterinarian only */}
-                  <Route
-                    path="/inventory"
-                    element={
-                      <VeterinarianRoute>
-                        <Layout>
-                          <PageErrorBoundary pageName="Inventory">
-                            <Suspense fallback={<SuspenseFallback />}>
-                              <StockSystem />
-                            </Suspense>
-                          </PageErrorBoundary>
-                        </Layout>
-                      </VeterinarianRoute>
-                    }
-                  />
-
-                  {/* Reports - Protected & Role Based */}
-                  <Route
-                    path="/reports/*"
-                    element={
-                      <ProtectedRoute requiredPermissions={['reports:read']}>
-                        <Layout>
-                          <PageErrorBoundary pageName="Reports">
-                            <Suspense fallback={<SuspenseFallback />}>
-                              <ReportsPage />
-                            </Suspense>
-                          </PageErrorBoundary>
-                        </Layout>
+                      <ProtectedRoute requiredRoles={['SUPER_ADMIN']}>
+                        <SuperAdminLayout />
                       </ProtectedRoute>
                     }
                   >
-                    <Route index element={<Navigate to="animals" replace />} />
-                    <Route path="animals" element={<AnimalReports />} />
-                    <Route path="appointments" element={<AppointmentReports />} />
-                    <Route path="financial" element={<FinancialReports />} />
+                    <Route path="clinics" element={<ClinicsPage />} />
+                    <Route index element={<Navigate to="clinics" replace />} />
                   </Route>
 
-                  {/* Documents - Protected */}
+                  {/* ========================================================= */}
+                  {/* CLINIC STAFF ROUTES */}
+                  {/* ========================================================= */}
                   <Route
-                    path="/documents"
+                    path="/clinic/:slug/*"
                     element={
-                      <ProtectedRoute>
+                      <ProtectedRoute requiredRoles={['ADMIN', 'VETERINER', 'STAFF', 'SEKRETER', 'TEKNISYEN']}>
                         <Layout>
-                          <PageErrorBoundary pageName="Documents">
-                            <Suspense fallback={<SuspenseFallback />}>
-                              <DocumentPage />
-                            </Suspense>
-                          </PageErrorBoundary>
+                          <Routes>
+                            <Route path="dashboard" element={
+                              <PageErrorBoundary pageName="Dashboard">
+                                <Dashboard />
+                              </PageErrorBoundary>
+                            } />
+
+                            <Route path="animals/*" element={
+                              <PageErrorBoundary pageName="Animals">
+                                <Routes>
+                                  <Route index element={<AnimalPage />} />
+                                  <Route path=":id" element={<AnimalDetailPage />} />
+                                </Routes>
+                              </PageErrorBoundary>
+                            } />
+
+                            <Route path="appointments" element={
+                              <PageErrorBoundary pageName="Appointments">
+                                <AppointmentPage />
+                              </PageErrorBoundary>
+                            } />
+
+                            <Route path="laboratory/*" element={
+                              <PageErrorBoundary pageName="Laboratory">
+                                <Routes>
+                                  <Route index element={<LabDashboard />} />
+                                  <Route path="test-types" element={<LabTestTypes />} />
+                                </Routes>
+                              </PageErrorBoundary>
+                            } />
+
+                            <Route path="billing" element={
+                              <PageErrorBoundary pageName="Billing">
+                                <Billing />
+                              </PageErrorBoundary>
+                            } />
+
+                            <Route path="documents" element={
+                              <PageErrorBoundary pageName="Documents">
+                                <DocumentPage />
+                              </PageErrorBoundary>
+                            } />
+
+                            <Route path="surgeries/:id" element={
+                              <PageErrorBoundary pageName="SurgeryDetails">
+                                <SurgeryDetails />
+                              </PageErrorBoundary>
+                            } />
+
+                            <Route path="hospitalizations/:id" element={
+                              <PageErrorBoundary pageName="HospitalizationDetails">
+                                <HospitalizationDetails />
+                              </PageErrorBoundary>
+                            } />
+
+                            {/* Redirect /clinic/:slug to dashboard */}
+                            <Route path="*" element={<Navigate to="dashboard" replace />} />
+                          </Routes>
                         </Layout>
                       </ProtectedRoute>
                     }
                   />
 
-                  {/* Settings - Admin only */}
+                  {/* ========================================================= */}
+                  {/* CUSTOMER PORTAL ROUTES */}
+                  {/* ========================================================= */}
                   <Route
-                    path="/settings"
+                    path="/portal/:clinicId/*"
                     element={
-                      <AdminRoute>
-                        <Layout>
-                          <PageErrorBoundary pageName="Settings">
-                            <div>Ayarlar Sayfası (Yakında)</div>
-                          </PageErrorBoundary>
-                        </Layout>
-                      </AdminRoute>
-                    }
-                  />
-
-                  {/* User Management - Admin only */}
-                  <Route
-                    path="/users"
-                    element={
-                      <AdminRoute>
-                        <Layout>
-                          <PageErrorBoundary pageName="User Management">
-                            <div>Kullanıcı Yönetimi (Yakında)</div>
-                          </PageErrorBoundary>
-                        </Layout>
-                      </AdminRoute>
-                    }
-                  />
-
-                  {/* Audit Logs - Admin only */}
-                  <Route
-                    path="/audit"
-                    element={
-                      <AdminRoute>
-                        <Layout>
-                          <PageErrorBoundary pageName="Audit Logs">
-                            <div>Denetim Günlükleri (Yakında)</div>
-                          </PageErrorBoundary>
-                        </Layout>
-                      </AdminRoute>
-                    }
-                  />
-
-                  {/* Development/Testing Routes */}
-                  <Route
-                    path="/auth-test"
-                    element={
-                      <ProtectedRoute>
-                        <Layout>
-                          <PageErrorBoundary pageName="Auth Test">
-                            <ComponentErrorBoundary componentName="AuthTest">
-                              <div>
-                                <AuthButton />
-                                <ApiTestComponent />
-                              </div>
-                            </ComponentErrorBoundary>
-                          </PageErrorBoundary>
-                        </Layout>
+                      <ProtectedRoute requiredRoles={['OWNER']}>
+                        <CustomerLayout>
+                          <Routes>
+                            <Route path="dashboard" element={
+                              <PageErrorBoundary pageName="Customer Dashboard">
+                                <CustomerDashboard />
+                              </PageErrorBoundary>
+                            } />
+                            {/* Redirect /portal/:id to dashboard */}
+                            <Route path="*" element={<Navigate to="dashboard" replace />} />
+                          </Routes>
+                        </CustomerLayout>
                       </ProtectedRoute>
                     }
                   />
 
-                  {/* Error Test Route - Admin only */}
-                  <Route
-                    path="/error-test"
-                    element={
-                      <AdminRoute>
-                        <Layout>
-                          <PageErrorBoundary pageName="Error Test">
-                            <ComponentErrorBoundary componentName="ErrorTest">
-                              <div>
-                                <h2>Error Testing</h2>
-                                <button onClick={() => { throw new Error('Test error!'); }}>
-                                  Throw Test Error
-                                </button>
-                                <button onClick={() => {
-                                  const badComponent = null as any;
-                                  return badComponent.nonExistentMethod();
-                                }}>
-                                  Cause Runtime Error
-                                </button>
-                              </div>
-                            </ComponentErrorBoundary>
-                          </PageErrorBoundary>
-                        </Layout>
-                      </AdminRoute>
-                    }
-                  />
-
-                  {/* Fallback - Redirect to login */}
-                  <Route
-                    path="*"
-                    element={<Navigate to="/login" replace />}
-                  />
-                </Routes >
-              </Router >
+                  {/* Fallback */}
+                  <Route path="*" element={<Navigate to="/" replace />} />
+                </Routes>
+              </Router>
               <Toast />
-            </AppProvider >
-          </AuthProvider >
-        </ErrorProvider >
-      </GlobalErrorBoundary >
-    </ThemeProvider >
+            </AppProvider>
+          </AuthProvider>
+        </ErrorProvider>
+      </GlobalErrorBoundary>
+    </ThemeProvider>
   );
 }
 
 export default App;
-
-

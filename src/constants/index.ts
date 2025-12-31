@@ -80,6 +80,11 @@ export const API_ENDPOINTS = {
   // User management endpoints
   USERS: '/api/users',
 
+
+  // Stock endpoints
+  STOCK: '/api/stock',
+  STOCK_ALERTS: '/api/stock/alerts',
+
   // Test endpoints
   TEST: '/api/test',
   SMS: '/api/sms',

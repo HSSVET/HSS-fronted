@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { CalendarWidget } from '../../../shared';
 import { AnimalService, type AnimalRecord } from '../../animals/services/animalService';
 import { AppointmentService, type AppointmentRecord } from '../../appointments/services/appointmentService';
@@ -11,6 +11,8 @@ import QuickAppointmentModal from './QuickAppointmentModal';
 import FastAppointmentModal from './FastAppointmentModal';
 import AddAnimalDialog from '../../animals/components/AddAnimalDialog';
 import { useAnimals } from '../../animals/hooks/useAnimals';
+import { apiClient } from '../../../services/api';
+import { API_ENDPOINTS } from '../../../constants';
 
 interface DashboardStats {
   totalAnimals: number;
@@ -35,6 +37,23 @@ interface ActivityItem {
   animalName: string;
   ownerName: string;
   description: string;
+}
+
+interface StockAlert {
+  productId: number;
+  name: string;
+  currentStock: number;
+  minStock: number;
+  category: string;
+}
+
+interface PendingLabTest {
+  testId: number;
+  testName: string;
+  animalName: string;
+  animalSpecies: string;
+  date: string;
+  status: string;
 }
 
 const STATUS_LABELS = ['Stabil', 'Gözlem', 'Takipte', 'İyileşiyor'];
@@ -77,7 +96,7 @@ const Dashboard: React.FC = () => {
   const { addError, showSuccess } = useError();
   const { loading, startLoading, stopLoading } = useLoading();
   const { createAnimal } = useAnimals({ autoFetch: false });
-  
+
   const [stats, setStats] = useState<DashboardStats>({
     totalAnimals: 0,
     todaysAppointments: 0,
@@ -85,14 +104,17 @@ const Dashboard: React.FC = () => {
   });
   const [hospitalizedPatients, setHospitalizedPatients] = useState<HospitalizedPatient[]>([]);
   const [recentActivities, setRecentActivities] = useState<ActivityItem[]>([]);
+  const [stockAlerts, setStockAlerts] = useState<StockAlert[]>([]);
+  const [pendingLabTests, setPendingLabTests] = useState<PendingLabTest[]>([]);
   const [isQuickModalOpen, setIsQuickModalOpen] = useState(false);
   const [isFastModalOpen, setIsFastModalOpen] = useState(false);
   const [isAddAnimalOpen, setIsAddAnimalOpen] = useState(false);
   const [calendarRefreshKey, setCalendarRefreshKey] = useState(0);
+  const { slug } = useParams<{ slug?: string }>();
 
   const loadTodayAppointments = useCallback(async (): Promise<AppointmentRecord[]> => {
     const appointmentService = new AppointmentService();
-    
+
     try {
       const todayResponse = await appointmentService.getTodayAppointments();
       if (todayResponse.success && todayResponse.data) {
@@ -148,7 +170,7 @@ const Dashboard: React.FC = () => {
       ]);
 
       let animalItems: AnimalRecord[] = [];
-      
+
       if (animalResponse.success && animalResponse.data) {
         animalItems = animalResponse.data.items || [];
       } else {
@@ -200,7 +222,7 @@ const Dashboard: React.FC = () => {
 
       // Ensure appointmentItems is an array
       const appointmentArray = Array.isArray(appointmentItems) ? appointmentItems : [];
-      
+
       const activities: ActivityItem[] = appointmentArray
         .slice()
         .sort((a, b) => {
@@ -230,7 +252,35 @@ const Dashboard: React.FC = () => {
       });
       setHospitalizedPatients(patients);
       setRecentActivities(activities);
-      
+
+      // Fetch stock alerts
+      try {
+        const stockResponse = await apiClient.get<StockAlert[]>(API_ENDPOINTS.STOCK_ALERTS);
+        if (stockResponse.success && stockResponse.data) {
+          setStockAlerts(stockResponse.data);
+        }
+      } catch (stockErr) {
+        console.warn('Stock alerts could not be fetched:', stockErr);
+      }
+
+      // Fetch pending lab tests
+      try {
+        const labResponse = await apiClient.get<any[]>(`${API_ENDPOINTS.LAB_TESTS}/pending`);
+        if (labResponse.success && labResponse.data) {
+          const mappedLabTests: PendingLabTest[] = labResponse.data.map((test: any) => ({
+            testId: test.testId,
+            testName: test.testName,
+            animalName: test.animal?.name || 'Bilinmiyor',
+            animalSpecies: test.animal?.species?.name || '',
+            date: test.date,
+            status: test.status,
+          }));
+          setPendingLabTests(mappedLabTests);
+        }
+      } catch (labErr) {
+        console.warn('Pending lab tests could not be fetched:', labErr);
+      }
+
       showSuccess('Dashboard verileri başarıyla yüklendi');
     } catch (err) {
       console.error('Dashboard verileri alınırken hata:', err);
@@ -262,7 +312,8 @@ const Dashboard: React.FC = () => {
     if (!animalId) {
       return;
     }
-    navigate(`/animals/${animalId}`);
+    const basePath = slug ? `/clinic/${slug}/animals` : '/animals';
+    navigate(`${basePath}/${animalId}`);
   };
 
   const handleAddAnimal = async (form: {
@@ -281,16 +332,16 @@ const Dashboard: React.FC = () => {
   }) => {
     try {
       startLoading('Hayvan ekleniyor...');
-      
+
       const ok = await createAnimal(form);
       if (ok) {
         setIsAddAnimalOpen(false);
         showSuccess('Hayvan başarıyla eklendi');
         await fetchDashboardData();
-        
+
         // Custom event dispatch et - AnimalList'i yenilemek için
         window.dispatchEvent(new CustomEvent('animalAdded'));
-        
+
         // Hayvan listesine yönlendir ki kullanıcı yeni eklenen hayvanı görebilsin
         navigate('/animals');
       } else {
@@ -301,7 +352,7 @@ const Dashboard: React.FC = () => {
     } catch (err: any) {
       // Validation hataları için detaylı mesaj göster
       let msg = err instanceof Error ? err.message : 'Bilinmeyen hata';
-      
+
       // 400 validation hatası için payload'dan detaylı mesaj al
       if (err?.status === 400 && err?.payload?.validationErrors) {
         const validationErrors = err.payload.validationErrors;
@@ -328,7 +379,7 @@ const Dashboard: React.FC = () => {
           .join(', ');
         msg = `Doğrulama Hatası: ${errorDetails}`;
       }
-      
+
       console.error('Hayvan ekleme hatası:', err);
       addError('Yeni hasta kaydı başarısız', 'error', msg);
       // Hata durumunda dialog açık kalacak
@@ -340,12 +391,12 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="dashboard">
-      <LoadingSpinner 
+      <LoadingSpinner
         isLoading={loading.isLoading}
         message={loading.loadingMessage}
         variant="overlay"
       />
-      
+
       <div className="topbar mb-3">
         <h1 className="ui-section-title">Veteriner Paneli</h1>
         <div className="topbar__spacer" />
@@ -469,73 +520,60 @@ const Dashboard: React.FC = () => {
           <CalendarWidget refreshKey={calendarRefreshKey} />
         </div>
 
-        <div className="widget ui-card panel low-stock-widget clickable-widget">
+        <div className="widget ui-card panel low-stock-widget clickable-widget" onClick={() => navigate(slug ? `/clinic/${slug}/inventory` : '/inventory')}>
           <div className="widget-header card-header">
             <h2 className="ui-section-title"><span className="icon icon-warning"></span> Düşük Stok Uyarıları</h2>
           </div>
           <div className="widget-content">
-            <table className="stock-table table">
-              <thead>
-                <tr>
-                  <th>Ürün</th>
-                  <th>Mevcut</th>
-                  <th>Min.</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr className="critical">
-                  <td>Amoksisilin 250mg</td>
-                  <td>5</td>
-                  <td>20</td>
-                </tr>
-                <tr className="warning">
-                  <td>Kedi Aşıları</td>
-                  <td>8</td>
-                  <td>10</td>
-                </tr>
-                <tr className="critical">
-                  <td>Cerrahi Eldiven (M)</td>
-                  <td>12</td>
-                  <td>50</td>
-                </tr>
-                <tr className="warning">
-                  <td>Bandaj 2"</td>
-                  <td>15</td>
-                  <td>25</td>
-                </tr>
-              </tbody>
-            </table>
+            {loading.isLoading ? (
+              <div className="muted">Yükleniyor...</div>
+            ) : stockAlerts.length === 0 ? (
+              <div className="muted">Düşük stok uyarısı bulunmuyor.</div>
+            ) : (
+              <table className="stock-table table">
+                <thead>
+                  <tr>
+                    <th>Ürün</th>
+                    <th>Mevcut</th>
+                    <th>Min.</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {stockAlerts.slice(0, 5).map((item) => (
+                    <tr key={item.productId} className={item.currentStock <= item.minStock / 2 ? 'critical' : 'warning'}>
+                      <td>{item.name}</td>
+                      <td>{item.currentStock}</td>
+                      <td>{item.minStock}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
           </div>
         </div>
 
-        <div className="widget ui-card panel lab-results-widget clickable-widget" onClick={() => navigate('/laboratory')}>
+        <div className="widget ui-card panel lab-results-widget clickable-widget" onClick={() => navigate(slug ? `/clinic/${slug}/laboratory` : '/laboratory')}>
           <div className="widget-header card-header">
             <h2 className="ui-section-title"><span className="icon icon-lab"></span> Bekleyen Laboratuvar Sonuçları</h2>
           </div>
           <div className="widget-content">
-            <ul className="lab-list">
-              <li>
-                <div className="lab-info">
-                  <span className="lab-patient">Bella (Köpek)</span>
-                  <span className="lab-test">Tam Kan Sayımı</span>
-                </div>
-                <div className="lab-date">Bugün</div>
-              </li>
-              <li>
-                <div className="lab-info">
-                  <span className="lab-patient">Tekir (Kedi)</span>
-                  <span className="lab-test">İdrar Tahlili</span>
-                </div>
-                <div className="lab-date">Yarın</div>
-              </li>
-              <li>
-                <div className="lab-info">
-                  <span className="lab-patient">Papatya (Tavşan)</span>
-                  <span className="lab-test">Dışkı Analizi</span>
-                </div>
-                <div className="lab-date">15.06</div>
-              </li>
-            </ul>
+            {loading.isLoading ? (
+              <div className="muted">Yükleniyor...</div>
+            ) : pendingLabTests.length === 0 ? (
+              <div className="muted">Bekleyen test bulunmuyor.</div>
+            ) : (
+              <ul className="lab-list">
+                {pendingLabTests.slice(0, 5).map((test) => (
+                  <li key={test.testId}>
+                    <div className="lab-info">
+                      <span className="lab-patient">{test.animalName} {test.animalSpecies && `(${test.animalSpecies})`}</span>
+                      <span className="lab-test">{test.testName}</span>
+                    </div>
+                    <div className="lab-date">{formatDateDisplay(test.date)}</div>
+                  </li>
+                ))}
+              </ul>
+            )}
             <div className="widget-action">
               <span className="action-text">Laboratuvar Paneline Git →</span>
             </div>
