@@ -20,8 +20,14 @@ interface AdmissionFormProps {
   onSuccess?: () => void;
 }
 
+interface FormValues {
+  diagnosis: string;
+  carePlan: string;
+  cageNumber: string;
+}
+
 const AdmissionForm: React.FC<AdmissionFormProps> = ({ animalId, onSuccess }) => {
-  const formik = useFormik({
+  const formik = useFormik<FormValues>({
     initialValues: {
       diagnosis: '',
       carePlan: '',

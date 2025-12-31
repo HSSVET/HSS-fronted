@@ -51,7 +51,7 @@ export const API_ENDPOINTS = {
   // Invoice endpoints
   INVOICES: '/api/invoices',
   INVOICE_RULES: '/api/invoice-rules',
-  
+
   // Document endpoints
   DOCUMENTS: '/api/documents',
 
@@ -61,29 +61,30 @@ export const API_ENDPOINTS = {
   // Communication and Reminder endpoints
   COMMUNICATIONS: '/api/communications',
   REMINDERS: '/api/reminders',
-  
+
   // Stock Alert endpoints
   STOCK_ALERTS: '/api/stock-alerts',
-  
+
   // Vaccination Schedule endpoints
   VACCINATION_SCHEDULES: '/api/vaccination-schedules',
-  
+
   // Report Schedule endpoints
   REPORT_SCHEDULES: '/api/report-schedules',
-  
+
   // Statistics endpoints
   STATISTICS: '/api/statistics',
-  
+
   // Backup endpoints
   BACKUPS: '/api/backups',
-  
+
   // User management endpoints
   USERS: '/api/users',
 
 
   // Stock endpoints
   STOCK: '/api/stock',
-  STOCK_ALERTS: '/api/stock/alerts',
+  // STOCK_ALERTS: '/api/stock/alerts', // Removed duplicate
+
 
   // Test endpoints
   TEST: '/api/test',

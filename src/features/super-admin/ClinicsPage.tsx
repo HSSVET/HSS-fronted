@@ -27,7 +27,7 @@ import {
   Cancel as InactiveIcon,
   Business as ClinicIcon
 } from '@mui/icons-material';
-import { DataGrid, GridColDef, GridToolbar } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridToolbar, GridRenderCellParams } from '@mui/x-data-grid';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getClinics, createClinic, deleteClinic, Clinic, ClinicCreateRequest } from './services/clinicService';
 
@@ -102,7 +102,7 @@ const ClinicsPage: React.FC = () => {
     { field: 'clinicId', headerName: 'ID', width: 70 },
     {
       field: 'name', headerName: 'Clinic Name', flex: 1, minWidth: 150,
-      renderCell: (params) => (
+      renderCell: (params: GridRenderCellParams) => (
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <AvatarWithFallback name={params.value as string} />
           <Typography variant="body2" fontWeight={500}>{params.value}</Typography>
@@ -115,20 +115,20 @@ const ClinicsPage: React.FC = () => {
       field: 'licenseType',
       headerName: 'Plan',
       width: 120,
-      renderCell: (params) => {
+      renderCell: (params: GridRenderCellParams) => {
         const colors: Record<string, string> = { STRT: 'info', PRO: 'primary', ENT: 'secondary' };
         const color = colors[params.value as string] || 'default';
-        return <Chip label={params.value} size="small" color={color as any} sx={{ fontWeight: 'bold' }} />
+        return <Chip label={params.value as string} size="small" color={color as any} sx={{ fontWeight: 'bold' }} />
       }
     },
     {
       field: 'licenseStatus',
       headerName: 'Status',
       width: 120,
-      renderCell: (params) => (
+      renderCell: (params: GridRenderCellParams) => (
         <Chip
           icon={params.value === 'ACTIVE' ? <ActiveIcon sx={{ fontSize: 16 }} /> : <InactiveIcon sx={{ fontSize: 16 }} />}
-          label={params.value}
+          label={params.value as string}
           size="small"
           color={params.value === 'ACTIVE' ? 'success' : 'error'}
           variant="outlined"
@@ -139,7 +139,7 @@ const ClinicsPage: React.FC = () => {
       field: 'actions',
       headerName: 'Actions',
       width: 100,
-      renderCell: (params) => (
+      renderCell: (params: GridRenderCellParams) => (
         <IconButton color="error" size="small" onClick={() => handleDelete(params.row.clinicId)}>
           <DeleteIcon />
         </IconButton>
@@ -237,7 +237,7 @@ const ClinicsPage: React.FC = () => {
           <DataGrid
             rows={clinics}
             columns={columns}
-            getRowId={(row) => row.clinicId}
+            getRowId={(row: Clinic) => row.clinicId}
             initialState={{
               pagination: { paginationModel: { pageSize: 10 } },
             }}

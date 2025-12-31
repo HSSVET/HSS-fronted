@@ -23,11 +23,16 @@ interface SurgeryFormProps {
   onSuccess?: () => void;
 }
 
+interface SurgeryFormValues {
+  description: string;
+  startDate: string;
+}
+
 const SurgeryForm: React.FC<SurgeryFormProps> = ({ animalId, onSuccess }) => {
   const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
 
-  const formik = useFormik({
+  const formik = useFormik<SurgeryFormValues>({
     initialValues: {
       description: '',
       startDate: '',
