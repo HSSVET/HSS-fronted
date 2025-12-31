@@ -1,0 +1,93 @@
+Starting git synchronization...
+Step 1: Stashing local changes...
+Saved working directory and index state On main: Antigravity sync Wed Dec 31 22:06:09 +03 2025
+Step 2: Pulling from remote...
+From https://github.com/sevketugurel/HSS
+ * branch            main       -> FETCH_HEAD
+Updating fd75c5e..564522a
+Fast-forward
+ MIGRATION_GUIDE.md                                 | 434 +++++++++++++++++++++
+ README.md                                          | 132 +++++--
+ package-lock.json                                  | 143 ++++++-
+ package.json                                       |  10 +-
+ src/App.tsx                                        |  22 +-
+ src/components/Toast.tsx                           |  59 +--
+ src/context/AppContext.tsx                         |  17 +
+ .../animals/components/AddAnimalDialog.tsx         |  66 ++--
+ src/features/animals/hooks/index.ts                |   6 +
+ src/features/animals/hooks/useAnimalQueries.ts     | 292 ++++++++++++++
+ .../appointments/hooks/useAppointmentQueries.ts    | 403 +++++++++++++++++++
+ src/features/billing/hooks/useBillingQueries.ts    | 334 ++++++++++++++++
+ src/features/documents/hooks/useDocumentQueries.ts |  96 +++++
+ .../laboratory/hooks/useLaboratoryQueries.ts       | 358 +++++++++++++++++
+ src/features/reminders/hooks/useReminderQueries.ts |  64 +++
+ src/features/reports/hooks/useReportQueries.ts     |  50 +++
+ src/features/sms/hooks/useSMSQueries.ts            |  47 +++
+ src/features/stock/hooks/useStockQueries.ts        | 296 ++++++++++++++
+ .../vaccinations/hooks/useVaccinationQueries.ts    | 322 +++++++++++++++
+ src/hooks/useApiCall.ts                            |  18 +-
+ src/hooks/useNotifications.ts                      |  37 ++
+ src/lib/react-query/QueryProvider.tsx              |  57 +++
+ src/lib/react-query/index.ts                       |   3 +
+ src/lib/react-query/persistor.ts                   |  32 ++
+ src/lib/react-query/queryClient.ts                 | 169 ++++++++
+ src/lib/zustand/index.ts                           |   2 +
+ src/lib/zustand/middleware.ts                      |  30 ++
+ src/stores/index.ts                                |   2 +
+ src/stores/uiStore.ts                              | 209 ++++++++++
+ 29 files changed, 3580 insertions(+), 130 deletions(-)
+ create mode 100644 MIGRATION_GUIDE.md
+ create mode 100644 src/features/animals/hooks/index.ts
+ create mode 100644 src/features/animals/hooks/useAnimalQueries.ts
+ create mode 100644 src/features/appointments/hooks/useAppointmentQueries.ts
+ create mode 100644 src/features/billing/hooks/useBillingQueries.ts
+ create mode 100644 src/features/documents/hooks/useDocumentQueries.ts
+ create mode 100644 src/features/laboratory/hooks/useLaboratoryQueries.ts
+ create mode 100644 src/features/reminders/hooks/useReminderQueries.ts
+ create mode 100644 src/features/reports/hooks/useReportQueries.ts
+ create mode 100644 src/features/sms/hooks/useSMSQueries.ts
+ create mode 100644 src/features/stock/hooks/useStockQueries.ts
+ create mode 100644 src/features/vaccinations/hooks/useVaccinationQueries.ts
+ create mode 100644 src/hooks/useNotifications.ts
+ create mode 100644 src/lib/react-query/QueryProvider.tsx
+ create mode 100644 src/lib/react-query/index.ts
+ create mode 100644 src/lib/react-query/persistor.ts
+ create mode 100644 src/lib/react-query/queryClient.ts
+ create mode 100644 src/lib/zustand/index.ts
+ create mode 100644 src/lib/zustand/middleware.ts
+ create mode 100644 src/stores/index.ts
+ create mode 100644 src/stores/uiStore.ts
+Step 3: Restoring local changes (pop stash)...
+Auto-merging src/App.tsx
+CONFLICT (content): Merge conflict in src/App.tsx
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+	new file:   src/assets/images/.gitkeep
+	new file:   src/assets/images/anding-hero-v2.png
+	new file:   src/components/auth/RegisterPage.tsx
+	new file:   src/features/landing/AboutPage.tsx
+	new file:   src/features/landing/DemoPage.tsx
+	new file:   src/features/landing/LandingPage.tsx
+	new file:   src/features/landing/ProductsPage.tsx
+	new file:   src/features/landing/components/Features.tsx
+	new file:   src/features/landing/components/Footer.tsx
+	new file:   src/features/landing/components/Hero.tsx
+	new file:   src/features/landing/components/Navbar.tsx
+	new file:   src/features/landing/index.ts
+	deleted:    src/smile-hair-bias
+
+Unmerged paths:
+  (use "git restore --staged <file>..." to unstage)
+  (use "git add <file>..." to mark resolution)
+	both modified:   src/App.tsx
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	fix_git.sh
+	git_sync.log
+
+The stash entry is kept in case you need it again.
+Done.
