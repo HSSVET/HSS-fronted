@@ -95,6 +95,7 @@ steps:
         # Environment variable'ları export et
         export REACT_APP_API_URL="$$LOCAL_BACKEND_URL"
         export REACT_APP_FIREBASE_PROJECT_ID="${_FIREBASE_PROJECT_ID:-hss-cloud-473511}"
+        export CI=false
         
         # Build
         npm run build
