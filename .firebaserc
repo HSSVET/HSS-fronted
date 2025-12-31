@@ -1,5 +1,17 @@
 {
   "projects": {
     "default": "hss-cloud-473511"
+  },
+  "targets": {
+    "hss-cloud-473511": {
+      "hosting": {
+        "prod": [
+          "hss-cloud-473511"
+        ],
+        "dev": [
+          "hss-cloud-473511"
+        ]
+      }
+    }
   }
 }
