@@ -17,6 +17,7 @@ import SurgeryDetails from './features/surgery/components/SurgeryDetails';
 import HospitalizationDetails from './features/hospitalization/components/HospitalizationDetails';
 import SuperAdminLayout from './shared/components/SuperAdminLayout';
 import ClinicsPage from './features/super-admin/ClinicsPage';
+import { OwnerPage, OwnerDetailPage } from './features/owners';
 import LoginPage from './components/auth/LoginPage';
 import RegisterPage from './components/auth/RegisterPage';
 import ProtectedRoute from './components/auth/ProtectedRoute';
@@ -226,6 +227,15 @@ function App() {
                             <Route path="documents" element={
                               <PageErrorBoundary pageName="Documents">
                                 <DocumentPage />
+                              </PageErrorBoundary>
+                            } />
+
+                            <Route path="owners/*" element={
+                              <PageErrorBoundary pageName="Owners">
+                                <Routes>
+                                  <Route index element={<OwnerPage />} />
+                                  <Route path=":id" element={<OwnerDetailPage />} />
+                                </Routes>
                               </PageErrorBoundary>
                             } />
 

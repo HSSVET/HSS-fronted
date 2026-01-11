@@ -7,34 +7,14 @@ import {
   Grid,
   Card,
   CardContent,
-  useTheme,
-  alpha,
-  Fade,
-  Chip,
-  IconButton,
-  Avatar,
-  Stack,
-  Divider,
-  List,
-  ListItem,
-  ListItemText,
 } from '@mui/material';
 import {
-  CheckCircle as CheckCircleIcon,
   ArrowForward as ArrowForwardIcon,
-  // PlayArrow as PlayArrowIcon, // Removed unused
-  // LocalHospital as LocalHospitalIcon, // Removed unused
   Pets as PetsIcon,
   Timeline as TimelineIcon,
-  Assignment as AssignmentIcon,
-  Security as SecurityIcon,
-  Speed as SpeedIcon,
-  Insights as InsightsIcon,
-  Check as CheckIcon,
 } from '@mui/icons-material';
 
 const DemoPage = () => {
-  const theme = useTheme();
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [messages, setMessages] = useState<string[]>([]);
 
@@ -54,7 +34,7 @@ const DemoPage = () => {
         </Typography>
 
         <Grid container spacing={4} sx={{ mt: 4 }}>
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <Card sx={{ height: '100%' }}>
               <CardContent>
                 <Typography variant="h6" gutterBottom>
@@ -67,7 +47,7 @@ const DemoPage = () => {
               </CardContent>
             </Card>
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <Card sx={{ height: '100%' }}>
               <CardContent>
                 <Typography variant="h6" gutterBottom>
