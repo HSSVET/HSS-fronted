@@ -13,6 +13,7 @@ import { AppointmentPage } from './features/appointments';
 import { LabDashboard, LabTestTypes } from './features/laboratory';
 import { Billing } from './features/billing';
 import { DocumentPage } from './features/documents';
+import RemindersPage from './features/reminders/components/RemindersPage';
 import SurgeryDetails from './features/surgery/components/SurgeryDetails';
 import HospitalizationDetails from './features/hospitalization/components/HospitalizationDetails';
 import SuperAdminLayout from './shared/components/SuperAdminLayout';
@@ -22,6 +23,14 @@ import LoginPage from './components/auth/LoginPage';
 import RegisterPage from './components/auth/RegisterPage';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import Toast from './components/Toast';
+import VaccinationDashboard from './features/vaccinations/components/VaccinationDashboard';
+import SmsPage from './features/sms/components/SmsPage';
+import StockSystem from './features/stock/components/StockSystem';
+import ReportsPage from './features/reports/components/ReportsPage';
+import SettingsPage from './features/settings/components/SettingsPage';
+
+// Error Boundaries
+
 import {
   GlobalErrorBoundary,
   PageErrorBoundary,
@@ -230,12 +239,41 @@ function App() {
                               </PageErrorBoundary>
                             } />
 
-                            <Route path="owners/*" element={
-                              <PageErrorBoundary pageName="Owners">
-                                <Routes>
-                                  <Route index element={<OwnerPage />} />
-                                  <Route path=":id" element={<OwnerDetailPage />} />
-                                </Routes>
+
+                            <Route path="reminders" element={
+                              <PageErrorBoundary pageName="Reminders">
+                                <RemindersPage />
+                              </PageErrorBoundary>
+                            } />
+
+                            <Route path="vaccinations" element={
+                              <PageErrorBoundary pageName="Vaccinations">
+                                <VaccinationDashboard />
+                              </PageErrorBoundary>
+                            } />
+
+                            <Route path="sms" element={
+                              <PageErrorBoundary pageName="SMS">
+                                <SmsPage />
+                              </PageErrorBoundary>
+                            } />
+
+                            <Route path="inventory" element={
+                              <PageErrorBoundary pageName="Inventory">
+                                <StockSystem />
+                              </PageErrorBoundary>
+                            } />
+
+                            <Route path="reports" element={
+                              <PageErrorBoundary pageName="Reports">
+                                <ReportsPage />
+                              </PageErrorBoundary>
+                            } />
+
+                            <Route path="settings" element={
+                              <PageErrorBoundary pageName="Settings">
+                                <SettingsPage />
+
                               </PageErrorBoundary>
                             } />
 
