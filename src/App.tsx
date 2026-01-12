@@ -37,6 +37,7 @@ import {
 } from './components/common/ErrorBoundary';
 import './shared/styles/App.css';
 import { LandingPage, ProductsPage, AboutPage, DemoPage } from './features/landing';
+import GlobalConfirmDialog from './components/common/GlobalConfirmDialog';
 
 const theme = createTheme({
   palette: {
@@ -212,6 +213,15 @@ function App() {
                               </PageErrorBoundary>
                             } />
 
+                            <Route path="owners/*" element={
+                              <PageErrorBoundary pageName="Owners">
+                                <Routes>
+                                  <Route index element={<OwnerPage />} />
+                                  <Route path=":id" element={<OwnerDetailPage />} />
+                                </Routes>
+                              </PageErrorBoundary>
+                            } />
+
                             <Route path="appointments" element={
                               <PageErrorBoundary pageName="Appointments">
                                 <AppointmentPage />
@@ -324,6 +334,7 @@ function App() {
                 </Routes>
               </Router>
               <Toast />
+              <GlobalConfirmDialog />
             </ErrorProvider>
           </AuthProvider>
         </GlobalErrorBoundary>

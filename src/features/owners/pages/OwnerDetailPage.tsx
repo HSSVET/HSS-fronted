@@ -15,7 +15,9 @@ import {
   ListItem,
   ListItemText,
   ListItemIcon,
-  Avatar
+  Avatar,
+  CircularProgress,
+  Alert
 } from '@mui/material';
 import {
   Person as PersonIcon,
@@ -28,10 +30,11 @@ import {
   Business as BusinessIcon,
   ArrowBack as ArrowBackIcon,
   Edit as EditIcon,
-  Warning as WarningIcon,
   Note as NoteIcon
 } from '@mui/icons-material';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { ownerService } from '../../../services/ownerService';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -59,44 +62,49 @@ function TabPanel(props: TabPanelProps) {
   );
 }
 
-// Mock Data
-const MOCK_OWNER = {
-  id: 1,
-  firstName: 'Ahmet',
-  lastName: 'Yılmaz',
-  type: 'INDIVIDUAL',
-  phone: '5551234567',
-  email: 'ahmet@example.com',
-  address: 'Örnek Mah. Çınar Cad. No:12 D:4 İstanbul',
-  notes: 'Randevularına geç kalma eğilimi var.',
-  warnings: 'Ödeme konusunda hassas davranılmalı.',
-  corporateName: '',
-  taxNo: '',
-  taxOffice: '',
-  pets: [
-    { id: 101, name: 'Boncuk', species: 'Cat', breed: 'Tekir', age: 3 },
-    { id: 102, name: 'Karabaş', species: 'Dog', breed: 'Kangal', age: 5 }
-  ],
-  financial: {
-    totalInvoiced: 5000,
-    totalPaid: 4500,
-    balance: 500,
-    overdue: 500,
-    lastPaymentDate: '2023-11-20'
-  }
-};
-
 const OwnerDetailPage = () => {
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [value, setValue] = useState(0);
 
-  // TODO: Fetch owner data by id
-  const owner = MOCK_OWNER;
+  const ownerId = parseInt(id || '0', 10);
+
+  // Fetch Owner Details
+  const { data: ownerWrapper, isLoading: loadingOwner, error: ownerError } = useQuery({
+    queryKey: ['owner', ownerId],
+    queryFn: () => ownerService.getOwnerById(ownerId),
+    enabled: !!ownerId
+  });
+
+  // Fetch Financial Summary
+  const { data: financialWrapper, isLoading: loadingFin } = useQuery({
+    queryKey: ['owner-financial', ownerId],
+    queryFn: () => ownerService.getFinancialSummary(ownerId),
+    enabled: !!ownerId
+  });
+
+  const owner = ownerWrapper?.success ? ownerWrapper.data : null;
+  const financial = financialWrapper?.success ? financialWrapper.data : null;
+
+  // Mock pets for now until we have that endpoint
+  const pets: any[] = [
+    // { id: 101, name: 'Boncuk', species: 'Cat', breed: 'Tekir', age: 3 },
+  ];
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
+
+  if (loadingOwner) {
+    return <Box sx={{ display: 'flex', justifyContent: 'center', p: 5 }}><CircularProgress /></Box>;
+  }
+
+  if (ownerError || !owner) {
+    return <Alert severity="error">Müşteri bulunamadı veya yüklenirken bir hata oluştu.</Alert>;
+  }
+
+  // Helper types for safe access
+  const safeOwner = owner as any;
 
   return (
     <Box sx={{ p: 3 }}>
@@ -110,8 +118,8 @@ const OwnerDetailPage = () => {
           Geri
         </Button>
         <Typography variant="h4" sx={{ fontWeight: 600, flexGrow: 1 }}>
-          {owner.type === 'CORPORATE' ? owner.corporateName : `${owner.firstName} ${owner.lastName}`}
-          {owner.type === 'CORPORATE' && <Chip label="Kurumsal" color="secondary" size="small" sx={{ ml: 2, verticalAlign: 'middle' }} />}
+          {safeOwner.type === 'CORPORATE' ? safeOwner.corporateName : `${safeOwner.firstName} ${safeOwner.lastName}`}
+          {safeOwner.type === 'CORPORATE' && <Chip label="Kurumsal" color="secondary" size="small" sx={{ ml: 2, verticalAlign: 'middle' }} />}
         </Typography>
         <Button variant="outlined" startIcon={<EditIcon />}>
           Düzenle
@@ -145,21 +153,21 @@ const OwnerDetailPage = () => {
                   <List>
                     <ListItem>
                       <ListItemIcon><PhoneIcon /></ListItemIcon>
-                      <ListItemText primary="Telefon" secondary={owner.phone} />
+                      <ListItemText primary="Telefon" secondary={safeOwner.phone || '-'} />
                     </ListItem>
                     <ListItem>
                       <ListItemIcon><EmailIcon /></ListItemIcon>
-                      <ListItemText primary="E-Posta" secondary={owner.email} />
+                      <ListItemText primary="E-Posta" secondary={safeOwner.email || '-'} />
                     </ListItem>
                     <ListItem>
                       <ListItemIcon><HomeIcon /></ListItemIcon>
-                      <ListItemText primary="Adres" secondary={owner.address} />
+                      <ListItemText primary="Adres" secondary={safeOwner.address || '-'} />
                     </ListItem>
                   </List>
                 </CardContent>
               </Card>
             </Grid>
-            {owner.type === 'CORPORATE' && (
+            {safeOwner.type === 'CORPORATE' && (
               <Grid size={{ xs: 12, md: 6 }}>
                 <Card variant="outlined">
                   <CardContent>
@@ -167,11 +175,11 @@ const OwnerDetailPage = () => {
                     <List>
                       <ListItem>
                         <ListItemIcon><BusinessIcon /></ListItemIcon>
-                        <ListItemText primary="Vergi Dairesi" secondary={owner.taxOffice} />
+                        <ListItemText primary="Vergi Dairesi" secondary={safeOwner.taxOffice || '-'} />
                       </ListItem>
                       <ListItem>
                         <ListItemIcon><BusinessIcon /></ListItemIcon>
-                        <ListItemText primary="Vergi No" secondary={owner.taxNo} />
+                        <ListItemText primary="Vergi No" secondary={safeOwner.taxNo || '-'} />
                       </ListItem>
                     </List>
                   </CardContent>
@@ -185,17 +193,20 @@ const OwnerDetailPage = () => {
                     <NoteIcon color="warning" /> Notlar & Uyarılar
                   </Typography>
                   <Divider sx={{ my: 1 }} />
-                  {owner.notes && (
+                  {safeOwner.notes && (
                     <Box sx={{ mb: 2 }}>
                       <Typography variant="subtitle2" color="text.secondary">Notlar:</Typography>
-                      <Typography variant="body2">{owner.notes}</Typography>
+                      <Typography variant="body2">{safeOwner.notes}</Typography>
                     </Box>
                   )}
-                  {owner.warnings && (
+                  {safeOwner.warnings && (
                     <Box>
                       <Typography variant="subtitle2" color="error">Özel Uyarılar:</Typography>
-                      <Typography variant="body2" color="error" fontWeight="bold">{owner.warnings}</Typography>
+                      <Typography variant="body2" color="error" fontWeight="bold">{safeOwner.warnings}</Typography>
                     </Box>
+                  )}
+                  {!safeOwner.notes && !safeOwner.warnings && (
+                    <Typography variant="body2" color="text.secondary">Herhangi bir not veya uyarı bulunmuyor.</Typography>
                   )}
                 </CardContent>
               </Card>
@@ -210,69 +221,77 @@ const OwnerDetailPage = () => {
               Yeni Pet Ekle
             </Button>
           </Box>
-          <Grid container spacing={2}>
-            {owner.pets.map(pet => (
-              <Grid size={{ xs: 12, sm: 6, md: 4 }} key={pet.id}>
-                <Card variant="outlined">
-                  <CardContent>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-                      <Avatar src={`/api/animals/${pet.id}/photo`} alt={pet.name} sx={{ width: 56, height: 56 }}>
-                        {pet.name[0]}
-                      </Avatar>
-                      <Box>
-                        <Typography variant="h6">{pet.name}</Typography>
-                        <Typography variant="body2" color="text.secondary">{pet.species} - {pet.breed}</Typography>
+          {pets.length === 0 ? (
+            <Alert severity="info">Henüz kayıtlı evcil hayvan bulunmuyor.</Alert>
+          ) : (
+            <Grid container spacing={2}>
+              {pets.map((pet: any) => (
+                <Grid size={{ xs: 12, sm: 6, md: 4 }} key={pet.id}>
+                  <Card variant="outlined">
+                    <CardContent>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+                        <Avatar src={`/api/animals/${pet.id}/photo`} alt={pet.name} sx={{ width: 56, height: 56 }}>
+                          {pet.name[0]}
+                        </Avatar>
+                        <Box>
+                          <Typography variant="h6">{pet.name}</Typography>
+                          <Typography variant="body2" color="text.secondary">{pet.species} - {pet.breed}</Typography>
+                        </Box>
                       </Box>
-                    </Box>
-                    <Divider sx={{ my: 1 }} />
-                    <Typography variant="body2">Yaş: {pet.age}</Typography>
-                    <Box sx={{ mt: 2, display: 'flex', gap: 1 }}>
-                      <Button size="small" variant="outlined" fullWidth onClick={() => navigate(`/clinic/demo/animals/${pet.id}`)}>
-                        Detay
-                      </Button>
-                    </Box>
-                  </CardContent>
-                </Card>
-              </Grid>
-            ))}
-          </Grid>
+                      <Divider sx={{ my: 1 }} />
+                      <Typography variant="body2">Yaş: {pet.age}</Typography>
+                      <Box sx={{ mt: 2, display: 'flex', gap: 1 }}>
+                        <Button size="small" variant="outlined" fullWidth onClick={() => navigate(`/clinic/demo/animals/${pet.id}`)}>
+                          Detay
+                        </Button>
+                      </Box>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              ))}
+            </Grid>
+          )}
         </TabPanel>
 
         {/* Financial Tab */}
         <TabPanel value={value} index={2}>
-          <Grid container spacing={3} sx={{ mb: 3 }}>
-            <Grid size={{ xs: 12, sm: 4 }}>
-              <Card sx={{ bgcolor: '#e8f5e9' }}>
-                <CardContent>
-                  <Typography color="text.secondary" gutterBottom>Toplam Bakiye</Typography>
-                  <Typography variant="h4" color="success.main" fontWeight="bold">
-                    {owner.financial.balance.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' })}
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-            <Grid size={{ xs: 12, sm: 4 }}>
-              <Card sx={{ bgcolor: '#ffebee' }}>
-                <CardContent>
-                  <Typography color="text.secondary" gutterBottom>Gecikmiş Ödeme</Typography>
-                  <Typography variant="h4" color="error.main" fontWeight="bold">
-                    {owner.financial.overdue.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' })}
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-            <Grid size={{ xs: 12, sm: 4 }}>
-              <Box sx={{ height: '100%', display: 'flex', alignItems: 'center' }}>
-                <Button variant="contained" size="large" fullWidth startIcon={<MoneyIcon />}>
-                  Ödeme Al
-                </Button>
-              </Box>
-            </Grid>
-          </Grid>
+          {loadingFin ? <CircularProgress /> : (
+            <>
+              <Grid container spacing={3} sx={{ mb: 3 }}>
+                <Grid size={{ xs: 12, sm: 4 }}>
+                  <Card sx={{ bgcolor: '#e8f5e9' }}>
+                    <CardContent>
+                      <Typography color="text.secondary" gutterBottom>Toplam Bakiye</Typography>
+                      <Typography variant="h4" color="success.main" fontWeight="bold">
+                        {(financial?.balance || 0).toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' })}
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+                <Grid size={{ xs: 12, sm: 4 }}>
+                  <Card sx={{ bgcolor: '#ffebee' }}>
+                    <CardContent>
+                      <Typography color="text.secondary" gutterBottom>Gecikmiş Ödeme</Typography>
+                      <Typography variant="h4" color="error.main" fontWeight="bold">
+                        {(financial?.overdueAmount || 0).toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' })}
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+                <Grid size={{ xs: 12, sm: 4 }}>
+                  <Box sx={{ height: '100%', display: 'flex', alignItems: 'center' }}>
+                    <Button variant="contained" size="large" fullWidth startIcon={<MoneyIcon />}>
+                      Ödeme Al
+                    </Button>
+                  </Box>
+                </Grid>
+              </Grid>
 
-          <Typography variant="h6" gutterBottom>Son Hareketler</Typography>
-          {/* List or Table of invoices/payments */}
-          <Typography variant="body2" color="text.secondary">Finansal hareket geçmişi burada listelenecek...</Typography>
+              <Typography variant="h6" gutterBottom>Son Hareketler</Typography>
+              {/* List or Table of invoices/payments */}
+              <Typography variant="body2" color="text.secondary">Finansal hareket geçmişi burada listelenecek... (API Bekleniyor)</Typography>
+            </>
+          )}
         </TabPanel>
 
         {/* Communication Tab */}

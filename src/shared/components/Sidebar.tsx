@@ -35,6 +35,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, toggleSidebar }) => {
     { icon: 'icon-dashboard', text: 'Panel', path: '/dashboard', permission: 'dashboard:read' },
     { icon: 'icon-calendar', text: 'Randevular', path: '/appointments', permission: 'appointments:read' },
     { icon: 'icon-paw', text: 'Hastalar/Hayvanlar', path: '/animals', permission: 'animals:read' },
+    { icon: 'icon-users', text: 'Müşteriler', path: '/owners', permission: 'animals:read' }, // Using animals:read as proxy for now
     { icon: 'icon-lab', text: 'Laboratuvar', path: '/laboratory', permission: 'laboratory:read' },
     { icon: 'icon-syringe', text: 'Aşı Yönetimi', path: '/vaccinations', permission: 'vaccinations:read' },
     { icon: 'icon-billing', text: 'Ödeme & Fatura', path: '/billing', permission: 'billing:read' },

@@ -36,15 +36,23 @@ const emptyPage = <T>(page: number, limit: number): PaginatedResponse<Owner> => 
   totalPages: 0,
 });
 
+export interface OwnerFinancialSummary {
+  ownerId: number;
+  totalInvoiced: number;
+  totalPaid: number;
+  balance: number;
+  overdueAmount: number;
+}
+
 export class OwnerService {
   async getAllOwners(page: number = 0, limit: number = 100): Promise<ApiResponse<PaginatedResponse<Owner>>> {
     const response = await apiClient.get<SpringPage<Owner>>(`/api/owners?page=${page}&size=${limit}`);
-    
+
     if (response.success && response.data) {
       const paginatedResponse: PaginatedResponse<Owner> = normalizeSpringPage(response.data);
       return { success: true, data: paginatedResponse };
     }
-    
+
     return {
       success: false,
       data: emptyPage(page, limit),
@@ -75,6 +83,11 @@ export class OwnerService {
 
   async deleteOwner(id: number): Promise<ApiResponse<void>> {
     const response = await apiClient.delete<void>(`/api/owners/${id}`);
+    return response;
+  }
+
+  async getFinancialSummary(id: number): Promise<ApiResponse<OwnerFinancialSummary>> {
+    const response = await apiClient.get<OwnerFinancialSummary>(`/api/owners/${id}/financial-summary`);
     return response;
   }
 }
