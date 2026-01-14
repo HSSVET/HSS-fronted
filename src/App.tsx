@@ -139,7 +139,8 @@ const AuthRedirector = ({ children }: { children: React.ReactNode }) => {
   }
 
   if (!state.isAuthenticated) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
+    // For public routes, just render the content
+    return <>{children}</>;
   }
 
   // Fallback if authenticated but no redirect happened (e.g. unknown role)
