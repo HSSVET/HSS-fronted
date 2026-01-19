@@ -48,8 +48,8 @@ export const API_ENDPOINTS = {
   VACCINES: '/api/vaccines',
   VACCINATIONS: '/api/vaccinations',
 
-  // Invoice endpoints
-  INVOICES: '/api/invoices',
+  // Billing endpoints
+  INVOICES: '/api/billing',
   INVOICE_RULES: '/api/invoice-rules',
 
   // Document endpoints
