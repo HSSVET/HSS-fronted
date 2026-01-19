@@ -29,7 +29,7 @@ const StockMovements: React.FC = () => {
     };
 
     const getMovementLabel = (type: MovementType) => {
-        return type === MovementType.INBOUND ? 'Inbound' : 'Outbound';
+        return type === MovementType.INBOUND ? 'Giriş' : 'Çıkış';
     };
 
     const filteredMovements = filter === 'all'
@@ -49,13 +49,13 @@ const StockMovements: React.FC = () => {
             {/* Header */}
             <div className="movements-header">
                 <div className="section-info">
-                    <h2 className="section-title">Stock Movement Log</h2>
-                    <p className="section-subtitle">Track all inventory movements and transactions</p>
+                    <h2 className="section-title">Stok Hareket Kaydı</h2>
+                    <p className="section-subtitle">Tüm envanter hareketlerini ve işlemlerini takip edin</p>
                 </div>
                 <div className="search-section">
                     <input
                         type="text"
-                        placeholder="Search movements..."
+                        placeholder="Hareketlerde ara..."
                         className="search-input"
                     />
                     <select
@@ -63,28 +63,28 @@ const StockMovements: React.FC = () => {
                         value={filter}
                         onChange={(e) => setFilter(e.target.value as any)}
                     >
-                        <option value="all">All Movements</option>
-                        <option value={MovementType.INBOUND}>Inbound</option>
-                        <option value={MovementType.OUTBOUND}>Outbound</option>
+                        <option value="all">Tüm Hareketler</option>
+                        <option value={MovementType.INBOUND}>Giriş</option>
+                        <option value={MovementType.OUTBOUND}>Çıkış</option>
                     </select>
                 </div>
             </div>
 
             {/* Movement History */}
             <div className="movement-history">
-                <h3 className="section-subtitle">Movement History</h3>
+                <h3 className="section-subtitle">Hareket Geçmişi</h3>
 
                 <div className="movements-table-container">
                     <table className="movements-table">
                         <thead>
                             <tr>
-                                <th>Date</th>
-                                <th>Product</th>
-                                <th>Type</th>
-                                <th>Quantity</th>
-                                <th>Staff Member</th>
-                                <th>Supplier</th>
-                                <th>Notes</th>
+                                <th>Tarih</th>
+                                <th>Ürün</th>
+                                <th>Tür</th>
+                                <th>Miktar</th>
+                                <th>Personel</th>
+                                <th>Tedarikçi</th>
+                                <th>Notlar</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -131,21 +131,21 @@ const StockMovements: React.FC = () => {
                     <span className="stat-icon">📥</span>
                     <div className="stat-info">
                         <span className="stat-value">150</span>
-                        <span className="stat-label">Total Inbound This Week</span>
+                        <span className="stat-label">Bu Hafta Toplam Giriş</span>
                     </div>
                 </div>
                 <div className="stat-card">
                     <span className="stat-icon">📤</span>
                     <div className="stat-info">
                         <span className="stat-value">48</span>
-                        <span className="stat-label">Total Outbound This Week</span>
+                        <span className="stat-label">Bu Hafta Toplam Çıkış</span>
                     </div>
                 </div>
                 <div className="stat-card">
                     <span className="stat-icon">📈</span>
                     <div className="stat-info">
                         <span className="stat-value">102</span>
-                        <span className="stat-label">Net Stock Increase</span>
+                        <span className="stat-label">Net Stok Artışı</span>
                     </div>
                 </div>
             </div>
