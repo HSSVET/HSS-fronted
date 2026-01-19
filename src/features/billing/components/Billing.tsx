@@ -92,12 +92,6 @@ const BillingContent: React.FC = () => {
             <span className="icon icon-plus"></span>
             Fatura Oluştur
           </button>
-          {activeTab === 'invoices' && (
-            <button className="action-button" onClick={handleCreateInvoice}>
-              <span className="icon icon-hospital"></span>
-              Yeni Fatura
-            </button>
-          )}
           {activeTab === 'payments' && (
             <button className="action-button" onClick={handleCreatePayment}>
               <span className="icon icon-plus"></span>
