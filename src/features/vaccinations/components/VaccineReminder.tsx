@@ -52,8 +52,11 @@ import {
   FilterList as FilterIcon,
   Refresh as RefreshIcon
 } from '@mui/icons-material';
-import { vaccinationService } from '../services/vaccinationService';
+import { vaccinationService, VaccinationService } from '../services/vaccinationService';
 import { VaccinationSchedule } from '../types/vaccination';
+import { animalService } from '../../animals/services/animalService';
+import type { BasicAnimalRecord } from '../../animals/services/animalService';
+import type { Vaccine } from '../types/vaccination';
 import '../styles/Vaccination.css';
 
 interface VaccineReminderProps {
@@ -93,10 +96,16 @@ const VaccineReminder: React.FC<VaccineReminderProps> = ({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showSettings, setShowSettings] = useState(false);
-  const [showAddReminder, setShowAddReminder] = useState(false);
+  const [showReminderDialog, setShowReminderDialog] = useState(false);
+  const [editingReminder, setEditingReminder] = useState<ReminderItem | null>(null);
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [filterPriority, setFilterPriority] = useState<string>('all');
   const [expandedReminder, setExpandedReminder] = useState<string | null>(null);
+
+  // Backend data states
+  const [animals, setAnimals] = useState<BasicAnimalRecord[]>([]);
+  const [vaccines, setVaccines] = useState<Vaccine[]>([]);
+  const [loadingData, setLoadingData] = useState(false);
 
   const [reminderSettings, setReminderSettings] = useState<ReminderSettings>({
     emailEnabled: true,
@@ -109,6 +118,7 @@ const VaccineReminder: React.FC<VaccineReminderProps> = ({
 
   const [newReminder, setNewReminder] = useState({
     animalId: '',
+    animalName: '',
     vaccineName: '',
     dueDate: '',
     priority: 'medium' as 'low' | 'medium' | 'high' | 'critical',
@@ -117,6 +127,7 @@ const VaccineReminder: React.FC<VaccineReminderProps> = ({
 
   useEffect(() => {
     loadData();
+    loadFormData();
   }, [animalId, showAll]);
 
   const loadData = async () => {
@@ -192,6 +203,28 @@ const VaccineReminder: React.FC<VaccineReminderProps> = ({
     }
   };
 
+  const loadFormData = async () => {
+    setLoadingData(true);
+    try {
+      // Hayvanları yükle
+      const animalsResponse = await animalService.getBasicAnimals();
+      if (animalsResponse.success && animalsResponse.data) {
+        setAnimals(animalsResponse.data);
+      }
+
+      // Aşıları yükle
+      const vaccinesResponse = await VaccinationService.getVaccines();
+      if (vaccinesResponse.success && vaccinesResponse.data) {
+        setVaccines(vaccinesResponse.data);
+      }
+    } catch (error) {
+      console.error('Form verileri yüklenirken hata:', error);
+      setError('Form verileri yüklenirken hata oluştu');
+    } finally {
+      setLoadingData(false);
+    }
+  };
+
   const getPriorityColor = (priority: string) => {
     switch (priority) {
       case 'critical':
@@ -262,9 +295,9 @@ const VaccineReminder: React.FC<VaccineReminderProps> = ({
     try {
       // Mock API call
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      setReminders(prev => prev.map(reminder => 
-        reminder.id === reminderId 
+
+      setReminders(prev => prev.map(reminder =>
+        reminder.id === reminderId
           ? { ...reminder, status: 'sent' as const, sentAt: new Date() }
           : reminder
       ));
@@ -277,9 +310,9 @@ const VaccineReminder: React.FC<VaccineReminderProps> = ({
     try {
       // Mock API call
       await new Promise(resolve => setTimeout(resolve, 500));
-      
-      setReminders(prev => prev.map(reminder => 
-        reminder.id === reminderId 
+
+      setReminders(prev => prev.map(reminder =>
+        reminder.id === reminderId
           ? { ...reminder, status: 'completed' as const, completedAt: new Date() }
           : reminder
       ));
@@ -288,33 +321,71 @@ const VaccineReminder: React.FC<VaccineReminderProps> = ({
     }
   };
 
-  const handleAddReminder = async () => {
-    try {
-      const newReminderItem: ReminderItem = {
-        id: Date.now().toString(),
-        animalId: newReminder.animalId,
-        animalName: 'Yeni Hayvan', // Gerçek uygulamada API'den gelecek
-        vaccineName: newReminder.vaccineName,
-        dueDate: new Date(newReminder.dueDate),
-        priority: newReminder.priority,
-        status: 'pending',
-        reminderType: newReminder.reminderType,
-        createdAt: new Date()
-      };
 
-      setReminders(prev => [...prev, newReminderItem]);
-      setShowAddReminder(false);
+
+  const handleEditReminder = (reminder: ReminderItem) => {
+    // Formu düzenleme modunda doldur
+    setNewReminder({
+      animalId: reminder.animalId,
+      animalName: reminder.animalName,
+      vaccineName: reminder.vaccineName,
+      dueDate: new Date(reminder.dueDate).toISOString().slice(0, 16), // datetime-local format
+      priority: reminder.priority,
+      reminderType: reminder.reminderType
+    });
+    setEditingReminder(reminder);
+    setShowReminderDialog(true);
+  };
+
+  const handleSaveReminder = async () => {
+    try {
+      if (editingReminder) {
+        // Düzenleme modu
+        setReminders(prev => prev.map(reminder =>
+          reminder.id === editingReminder.id
+            ? {
+              ...reminder,
+              animalId: newReminder.animalId,
+              animalName: newReminder.animalName,
+              vaccineName: newReminder.vaccineName,
+              dueDate: new Date(newReminder.dueDate),
+              priority: newReminder.priority,
+              reminderType: newReminder.reminderType
+            }
+            : reminder
+        ));
+      } else {
+        // Yeni ekleme modu
+        const selectedAnimal = animals.find(a => a.id.toString() === newReminder.animalId);
+        const newReminderItem: ReminderItem = {
+          id: Date.now().toString(),
+          animalId: newReminder.animalId,
+          animalName: selectedAnimal?.name || newReminder.animalName || 'Bilinmeyen',
+          vaccineName: newReminder.vaccineName,
+          dueDate: new Date(newReminder.dueDate),
+          priority: newReminder.priority,
+          status: 'pending',
+          reminderType: newReminder.reminderType,
+          createdAt: new Date()
+        };
+        setReminders(prev => [...prev, newReminderItem]);
+      }
+
+      setShowReminderDialog(false);
+      setEditingReminder(null);
       setNewReminder({
         animalId: '',
+        animalName: '',
         vaccineName: '',
         dueDate: '',
         priority: 'medium',
         reminderType: 'email'
       });
     } catch (err) {
-      setError('Hatırlatıcı eklenirken hata oluştu');
+      setError('Hatırlatıcı kaydedilirken hata oluştu');
     }
   };
+
 
   const handleDeleteReminder = async (reminderId: string) => {
     try {
@@ -331,11 +402,11 @@ const VaccineReminder: React.FC<VaccineReminderProps> = ({
 
     return (
       <Fade in={true} timeout={300}>
-        <Card 
+        <Card
           key={reminder.id}
-          sx={{ 
-            mb: 2, 
-            borderLeft: 4, 
+          sx={{
+            mb: 2,
+            borderLeft: 4,
             borderColor: isOverdue ? 'error.main' : isUrgent ? 'warning.main' : 'info.main',
             backgroundColor: isOverdue ? 'error.light' : isUrgent ? 'warning.light' : 'background.paper'
           }}
@@ -406,7 +477,10 @@ const VaccineReminder: React.FC<VaccineReminderProps> = ({
                   </Tooltip>
                 )}
                 <Tooltip title="Düzenle">
-                  <IconButton color="info">
+                  <IconButton
+                    color="info"
+                    onClick={() => handleEditReminder(reminder)}
+                  >
                     <EditIcon />
                   </IconButton>
                 </Tooltip>
@@ -460,7 +534,10 @@ const VaccineReminder: React.FC<VaccineReminderProps> = ({
           <Button
             variant="contained"
             startIcon={<AddIcon />}
-            onClick={() => setShowAddReminder(true)}
+            onClick={() => {
+              setEditingReminder(null);
+              setShowReminderDialog(true);
+            }}
           >
             Hatırlatıcı Ekle
           </Button>
@@ -564,7 +641,10 @@ const VaccineReminder: React.FC<VaccineReminderProps> = ({
             <Button
               variant="contained"
               startIcon={<AddIcon />}
-              onClick={() => setShowAddReminder(true)}
+              onClick={() => {
+                setEditingReminder(null);
+                setShowReminderDialog(true);
+              }}
             >
               İlk Hatırlatıcıyı Ekle
             </Button>
@@ -576,30 +656,76 @@ const VaccineReminder: React.FC<VaccineReminderProps> = ({
         )}
       </Paper>
 
-      {/* Add Reminder Dialog */}
+      {/* Add/Edit Reminder Dialog */}
       <Dialog
-        open={showAddReminder}
-        onClose={() => setShowAddReminder(false)}
+        open={showReminderDialog}
+        onClose={() => {
+          setShowReminderDialog(false);
+          setEditingReminder(null);
+          setNewReminder({
+            animalId: '',
+            animalName: '',
+            vaccineName: '',
+            dueDate: '',
+            priority: 'medium',
+            reminderType: 'email'
+          });
+        }}
         maxWidth="sm"
         fullWidth
       >
-        <DialogTitle>Yeni Hatırlatıcı Ekle</DialogTitle>
+        <DialogTitle>{editingReminder ? 'Hatırlatıcıyı Düzenle' : 'Yeni Hatırlatıcı Ekle'}</DialogTitle>
         <DialogContent>
           <Box sx={{ pt: 2 }}>
-            <TextField
-              fullWidth
-              label="Hayvan ID"
-              value={newReminder.animalId}
-              onChange={(e) => setNewReminder(prev => ({ ...prev, animalId: e.target.value }))}
-              margin="normal"
-            />
-            <TextField
-              fullWidth
-              label="Aşı Adı"
-              value={newReminder.vaccineName}
-              onChange={(e) => setNewReminder(prev => ({ ...prev, vaccineName: e.target.value }))}
-              margin="normal"
-            />
+            <FormControl fullWidth margin="normal">
+              <InputLabel>Hayvan Seç *</InputLabel>
+              <Select
+                value={newReminder.animalId}
+                onChange={(e) => {
+                  const selectedAnimal = animals.find(a => a.id.toString() === e.target.value);
+                  setNewReminder(prev => ({
+                    ...prev,
+                    animalId: e.target.value,
+                    animalName: selectedAnimal?.name || ''
+                  }));
+                }}
+                label="Hayvan Seç *"
+                disabled={loadingData || animals.length === 0}
+              >
+                {loadingData ? (
+                  <MenuItem value="">Yükleniyor...</MenuItem>
+                ) : animals.length === 0 ? (
+                  <MenuItem value="">Hayvan bulunamadı</MenuItem>
+                ) : (
+                  animals.map((animal) => (
+                    <MenuItem key={animal.id} value={animal.id.toString()}>
+                      {animal.name} - {animal.ownerName} ({animal.speciesName})
+                    </MenuItem>
+                  ))
+                )}
+              </Select>
+            </FormControl>
+            <FormControl fullWidth margin="normal">
+              <InputLabel>Aşı Seç *</InputLabel>
+              <Select
+                value={newReminder.vaccineName}
+                onChange={(e) => setNewReminder(prev => ({ ...prev, vaccineName: e.target.value }))}
+                label="Aşı Seç *"
+                disabled={loadingData || vaccines.length === 0}
+              >
+                {loadingData ? (
+                  <MenuItem value="">Yükleniyor...</MenuItem>
+                ) : vaccines.length === 0 ? (
+                  <MenuItem value="">Aşı bulunamadı</MenuItem>
+                ) : (
+                  vaccines.map((vaccine) => (
+                    <MenuItem key={vaccine.id} value={vaccine.name}>
+                      {vaccine.name} - {vaccine.manufacturer}
+                    </MenuItem>
+                  ))
+                )}
+              </Select>
+            </FormControl>
             <TextField
               fullWidth
               label="Hatırlatma Tarihi"
@@ -637,15 +763,26 @@ const VaccineReminder: React.FC<VaccineReminderProps> = ({
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setShowAddReminder(false)}>
+          <Button onClick={() => {
+            setShowReminderDialog(false);
+            setEditingReminder(null);
+            setNewReminder({
+              animalId: '',
+              animalName: '',
+              vaccineName: '',
+              dueDate: '',
+              priority: 'medium',
+              reminderType: 'email'
+            });
+          }}>
             İptal
           </Button>
           <Button
-            onClick={handleAddReminder}
+            onClick={handleSaveReminder}
             variant="contained"
             disabled={!newReminder.animalId || !newReminder.vaccineName || !newReminder.dueDate}
           >
-            Ekle
+            {editingReminder ? 'Güncelle' : 'Ekle'}
           </Button>
         </DialogActions>
       </Dialog>
@@ -690,9 +827,9 @@ const VaccineReminder: React.FC<VaccineReminderProps> = ({
               }
               label="Telefon Bildirimleri"
             />
-            
+
             <Divider sx={{ my: 2 }} />
-            
+
             <Typography variant="h6" gutterBottom>
               Otomatik Hatırlatma
             </Typography>
@@ -705,7 +842,7 @@ const VaccineReminder: React.FC<VaccineReminderProps> = ({
               }
               label="Otomatik Hatırlatma Aktif"
             />
-            
+
             <TextField
               fullWidth
               label="Hatırlatma Saati"
