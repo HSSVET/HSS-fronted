@@ -61,6 +61,11 @@ export class LaboratoryService {
     return apiClient.patch(`${API_ENDPOINTS.LAB_TESTS}/${id}/results`, { results });
   }
 
+  // Upload test result file
+  static async uploadTestResult(id: string, formData: FormData): Promise<ApiResponse<LabTest>> {
+    return apiClient.post(`${API_ENDPOINTS.LAB_TESTS}/${id}/results`, formData);
+  }
+
   // Complete lab test
   static async completeLabTest(id: string, results: any[], notes?: string): Promise<ApiResponse<LabTest>> {
     return apiClient.patch(`${API_ENDPOINTS.LAB_TESTS}/${id}/complete`, { results, notes });
@@ -84,15 +89,15 @@ export class LaboratoryService {
   // Get lab results
   static async getLabResults(filters?: any): Promise<ApiResponse<any[]>> {
     const params = new URLSearchParams();
-    
+
     if (filters?.animalId) {
       params.append('animalId', filters.animalId);
     }
-    
+
     if (filters?.testType) {
       params.append('testType', filters.testType);
     }
-    
+
     return apiClient.get(`${API_ENDPOINTS.LAB_RESULTS}${params.toString() ? '?' + params.toString() : ''}`);
   }
 

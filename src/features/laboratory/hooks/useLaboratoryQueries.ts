@@ -257,6 +257,24 @@ export function useUpdateTestResults() {
 }
 
 /**
+ * Hook to upload lab result file
+ */
+export function useUploadLabResult() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: ({ id, formData }: { id: string; formData: FormData }) =>
+            LaboratoryService.uploadTestResult(id, formData),
+
+        onSuccess: (data, variables) => {
+            queryClient.invalidateQueries({ queryKey: queryKeys.laboratory.test(variables.id) });
+            queryClient.invalidateQueries({ queryKey: queryKeys.laboratory.tests() });
+            queryClient.invalidateQueries({ queryKey: queryKeys.laboratory.pending() });
+        },
+    });
+}
+
+/**
  * Hook to complete a lab test
  */
 export function useCompleteLabTest() {

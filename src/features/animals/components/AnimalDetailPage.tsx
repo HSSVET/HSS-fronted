@@ -219,7 +219,7 @@ const AnimalDetailPage: React.FC = () => {
       case 3: // Randevu Takibi
         return <AppointmentTracking />;
       case 4: // Lab Testleri/Sonuçları
-        return <LaboratoryTests />;
+        return <LaboratoryTests animalId={id} />;
       case 5: // Radyoloji Görüntüleme
         return <RadiologyImaging />;
       case 6: // Reçeteler
