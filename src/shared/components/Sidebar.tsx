@@ -2,8 +2,26 @@ import React from 'react';
 import { Link, useLocation, useParams } from 'react-router-dom';
 import { usePermissions } from '../../hooks/usePermissions';
 import { useAuth } from '../../context/AuthContext';
-import { OFFLINE_MODE } from '../../config/offline';
 import '../styles/components/Sidebar.css';
+
+// Icons
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import PetsIcon from '@mui/icons-material/Pets';
+import PeopleIcon from '@mui/icons-material/People';
+import BiotechIcon from '@mui/icons-material/Biotech';
+import VaccinesIcon from '@mui/icons-material/Vaccines';
+import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import SmsIcon from '@mui/icons-material/Sms';
+import InventoryIcon from '@mui/icons-material/Inventory';
+import DescriptionIcon from '@mui/icons-material/Description';
+import BarChartIcon from '@mui/icons-material/BarChart';
+import SettingsIcon from '@mui/icons-material/Settings';
+import LogoutIcon from '@mui/icons-material/Logout';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 interface SidebarProps {
   collapsed: boolean;
@@ -15,8 +33,6 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, toggleSidebar }) => {
   const { slug } = useParams<{ slug?: string }>();
   const { hasPermission } = usePermissions();
   const { user, logout } = useAuth();
-
-
 
   React.useEffect(() => {
     if (collapsed) {
@@ -32,22 +48,19 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, toggleSidebar }) => {
 
   // Menu items with permission requirements
   const allMenuItems = [
-    { icon: 'icon-dashboard', text: 'Panel', path: '/dashboard', permission: 'dashboard:read' },
-    { icon: 'icon-calendar', text: 'Randevular', path: '/appointments', permission: 'appointments:read' },
-    { icon: 'icon-paw', text: 'Hastalar/Hayvanlar', path: '/animals', permission: 'animals:read' },
-    { icon: 'icon-users', text: 'Müşteriler', path: '/owners', permission: 'animals:read' }, // Using animals:read as proxy for now
-    { icon: 'icon-lab', text: 'Laboratuvar', path: '/laboratory', permission: 'laboratory:read' },
-    { icon: 'icon-syringe', text: 'Aşı Yönetimi', path: '/vaccinations', permission: 'vaccinations:read' },
-    { icon: 'icon-billing', text: 'Ödeme & Fatura', path: '/billing', permission: 'billing:read' },
-
-    { icon: 'icon-bell', text: 'Hatırlatmalar', path: '/reminders', permission: 'reminders:read' },
-
-
-    { icon: 'icon-message', text: 'SMS', path: '/sms', permission: 'sms:read' },
-    { icon: 'icon-box', text: 'Envanter/Stok', path: '/inventory', permission: 'inventory:read' },
-    { icon: 'icon-document', text: 'Belgeler/Kontratlar', path: '/documents', permission: 'documents:read' },
-    { icon: 'icon-chart', text: 'Raporlar', path: '/reports', permission: 'reports:read' },
-    { icon: 'icon-settings', text: 'Ayarlar', path: '/settings', permission: 'settings:read' },
+    { icon: <DashboardIcon />, text: 'Panel', path: '/dashboard', permission: 'dashboard:read' },
+    { icon: <CalendarMonthIcon />, text: 'Randevular', path: '/appointments', permission: 'appointments:read' },
+    { icon: <PetsIcon />, text: 'Hastalar/Hayvanlar', path: '/animals', permission: 'animals:read' },
+    { icon: <PeopleIcon />, text: 'Müşteriler', path: '/owners', permission: 'animals:read' }, // Using animals:read as proxy for now
+    { icon: <BiotechIcon />, text: 'Laboratuvar', path: '/laboratory', permission: 'laboratory:read' },
+    { icon: <VaccinesIcon />, text: 'Aşı Yönetimi', path: '/vaccinations', permission: 'vaccinations:read' },
+    { icon: <ReceiptLongIcon />, text: 'Ödeme & Fatura', path: '/billing', permission: 'billing:read' },
+    { icon: <NotificationsIcon />, text: 'Hatırlatmalar', path: '/reminders', permission: 'reminders:read' },
+    { icon: <SmsIcon />, text: 'SMS', path: '/sms', permission: 'sms:read' },
+    { icon: <InventoryIcon />, text: 'Envanter/Stok', path: '/inventory', permission: 'inventory:read' },
+    { icon: <DescriptionIcon />, text: 'Belgeler/Kontratlar', path: '/documents', permission: 'documents:read' },
+    { icon: <BarChartIcon />, text: 'Raporlar', path: '/reports', permission: 'reports:read' },
+    { icon: <SettingsIcon />, text: 'Ayarlar', path: '/settings', permission: 'settings:read' },
   ];
 
   // Helper to construct path
@@ -83,7 +96,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, toggleSidebar }) => {
           </div>
         )}
         <button className="toggle-button" onClick={toggleSidebar}>
-          <span className={`icon ${collapsed ? 'icon-chevron-right' : 'icon-chevron-left'}`}></span>
+          {collapsed ? <ChevronRightIcon /> : <ChevronLeftIcon />}
         </button>
       </div>
 
@@ -96,8 +109,9 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, toggleSidebar }) => {
               key={index}
               to={fullPath}
               className={`menu-item ${isActive ? 'active' : ''}`}
+              title={collapsed ? item.text : ''}
             >
-              <span className={`icon ${item.icon}`}></span>
+              <span className="icon">{item.icon}</span>
               {!collapsed && <span className="text">{item.text}</span>}
             </Link>
           );
@@ -106,7 +120,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, toggleSidebar }) => {
 
       <div className="user-container">
         <div className="user-profile">
-          <span className="icon icon-user"></span>
+          <span className="icon"><AccountCircleIcon /></span>
           {!collapsed && (
             <div className="user-info">
               <span className="user-name">
@@ -125,8 +139,8 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, toggleSidebar }) => {
             </div>
           )}
         </div>
-        <button className="logout" onClick={handleLogout}>
-          <span className="icon icon-logout"></span>
+        <button className="logout" onClick={handleLogout} title={collapsed ? 'Çıkış' : ''}>
+          <span className="icon"><LogoutIcon /></span>
           {!collapsed && <span className="text">Çıkış</span>}
         </button>
       </div>

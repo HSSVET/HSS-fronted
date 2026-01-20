@@ -25,6 +25,17 @@ export interface Vaccine {
     isActive?: boolean;
 }
 
+export interface VaccinationCreateRequest {
+    animalId: string;
+    vaccineId: string;
+    date: string | Date; // Allow string for form handling
+    nextDueDate?: string | Date;
+    veterinarianName: string;
+    notes?: string;
+    stockProductId?: string; // ID of the StockProduct (inventory item)
+    deductStock?: boolean;
+}
+
 export interface VaccineStock {
     id: string;
     vaccineId: string;

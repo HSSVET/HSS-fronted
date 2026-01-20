@@ -99,14 +99,7 @@ const Dashboard: React.FC = () => {
   const { createAnimal } = useAnimals({ autoFetch: false });
 
   // Safe sandbox usage
-  let sandbox;
-  try {
-    sandbox = useSandbox();
-  } catch (e) {
-    // Context might not be present in normal app flow
-    sandbox = { isDemo: false, openRegistrationGate: () => { }, closeRegistrationGate: () => { } };
-  }
-  const { isDemo, openRegistrationGate } = sandbox;
+  const { isDemo, openRegistrationGate } = useSandbox();
 
   const [stats, setStats] = useState<DashboardStats>({
     totalAnimals: 0,

@@ -1,6 +1,29 @@
 import React, { useState } from 'react';
-import { Edit, Trash2, Plus, AlertTriangle } from 'lucide-react';
-import '../styles/AppointmentList.css';
+import {
+  Box,
+  Typography,
+  Button,
+  IconButton,
+  Card,
+  CardContent,
+  Chip,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Stack,
+  CircularProgress
+} from '@mui/material';
+import {
+  Edit as EditIcon,
+  Delete as DeleteIcon,
+  Add as AddIcon,
+  Warning as WarningIcon,
+  AccessTime as AccessTimeIcon,
+  Person as PersonIcon,
+  Phone as PhoneIcon,
+  Pets as PetsIcon
+} from '@mui/icons-material';
 import { LegacyAppointment } from '../types/appointment';
 
 interface AppointmentListProps {
@@ -50,134 +73,158 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
   };
 
   return (
-    <div className="appointment-list">
-      <div className="appointment-list-header">
-        <h3>{formatDate(selectedDate)} Randevuları</h3>
-        <button
-          className="add-appointment-btn"
+    <Box>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Typography variant="h6" fontWeight="bold">
+          {formatDate(selectedDate)} Randevuları
+        </Typography>
+        <Button
+          variant="contained"
+          startIcon={<AddIcon />}
           onClick={onNewAppointment}
+          sx={{
+            borderRadius: 2,
+            textTransform: 'none',
+            boxShadow: 2
+          }}
         >
-          <Plus size={20} />
           Yeni Randevu
-        </button>
-      </div>
+        </Button>
+      </Box>
 
       {isLoading ? (
-        <div className="appointments-loading">
-          <p>Randevular yükleniyor...</p>
-        </div>
+        <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
+          <CircularProgress />
+        </Box>
       ) : errorMessage ? (
-        <div className="appointments-loading appointments-loading--error">
-          <p>{errorMessage}</p>
-        </div>
+        <Box sx={{ p: 2, bgcolor: 'error.light', borderRadius: 1, color: 'error.contrastText' }}>
+          <Typography>{errorMessage}</Typography>
+        </Box>
       ) : appointments.length === 0 ? (
-        <div className="no-appointments">
-          <p>Bu tarih için henüz randevu bulunmuyor.</p>
-          <button
-            className="create-first-appointment"
+        <Box sx={{
+          textAlign: 'center',
+          py: 8,
+          bgcolor: 'background.paper',
+          borderRadius: 2,
+          border: '1px dashed',
+          borderColor: 'divider'
+        }}>
+          <Typography variant="body1" color="text.secondary" gutterBottom>
+            Bu tarih için henüz randevu bulunmuyor.
+          </Typography>
+          <Button
+            variant="outlined"
+            size="small"
+            startIcon={<AddIcon />}
             onClick={onNewAppointment}
+            sx={{ mt: 1, textTransform: 'none' }}
           >
             İlk randevuyu oluştur
-          </button>
-        </div>
+          </Button>
+        </Box>
       ) : (
-        <div className="appointments-grid">
+        <Box sx={{ display: 'grid', gap: 2, gridTemplateColumns: { xs: '1fr', lg: '1fr 1fr' } }}>
           {appointments.map((appointment) => {
-            const detailItems = [
-              { label: 'Sahip', value: appointment.ownerName },
-              { label: 'TC/Kimlik', value: appointment.patientId },
-              { label: 'Telefon', value: appointment.phone },
-              { label: 'Çip No', value: appointment.chipNumber },
-              {
-                label: 'Tür/Irk',
-                value: [appointment.petType, appointment.breed].filter(Boolean).join(' / '),
-              }
-            ].filter((item) => Boolean(item.value));
-
             return (
-              <div key={appointment.id} className="appointment-card">
-                <div className="appointment-header">
-                  <div className="appointment-time">
-                    {appointment.time}
-                  </div>
-                  <div className="appointment-actions">
-                    <button
-                      className="edit-btn"
-                      onClick={() => onEdit(appointment)}
-                      title="Düzenle"
-                    >
-                      <Edit size={16} />
-                    </button>
-                    <button
-                      className="delete-btn"
-                      onClick={() => handleDeleteClick(appointment)}
-                      title="Sil"
-                    >
-                      <Trash2 size={16} />
-                    </button>
-                  </div>
-                </div>
+              <Card
+                key={appointment.id}
+                elevation={0}
+                sx={{
+                  border: '1px solid',
+                  borderColor: 'divider',
+                  borderRadius: 2,
+                  transition: 'all 0.2s',
+                  '&:hover': {
+                    borderColor: 'primary.main',
+                    boxShadow: 2
+                  }
+                }}
+              >
+                <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
+                    <Chip
+                      icon={<AccessTimeIcon sx={{ fontSize: 16 }} />}
+                      label={appointment.time}
+                      color="primary"
+                      variant="filled" // Changed from soft/outlined to filled for better visibility
+                      size="small"
+                      sx={{ fontWeight: 'bold' }}
+                    />
+                    <Box>
+                      <IconButton size="small" onClick={() => onEdit(appointment)} title="Düzenle">
+                        <EditIcon fontSize="small" />
+                      </IconButton>
+                      <IconButton size="small" color="error" onClick={() => handleDeleteClick(appointment)} title="Sil">
+                        <DeleteIcon fontSize="small" />
+                      </IconButton>
+                    </Box>
+                  </Box>
 
-                <div className="appointment-content">
-                  <div className="patient-info">
-                    <h4>{appointment.patientName}</h4>
-                    {detailItems.length > 0 && (
-                      <div className="patient-details">
-                        {detailItems.map((item) => (
-                          <span key={item.label} className="detail-item">
-                            <strong>{item.label}:</strong> {item.value}
-                          </span>
-                        ))}
-                      </div>
+                  <Typography variant="h6" gutterBottom>
+                    {appointment.patientName}
+                  </Typography>
+
+                  <Stack spacing={1} sx={{ mb: 2 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'text.secondary', fontSize: '0.875rem' }}>
+                      <PersonIcon fontSize="inherit" />
+                      <Typography variant="body2">{appointment.ownerName}</Typography>
+                    </Box>
+                    {appointment.phone && (
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'text.secondary', fontSize: '0.875rem' }}>
+                        <PhoneIcon fontSize="inherit" />
+                        <Typography variant="body2">{appointment.phone}</Typography>
+                      </Box>
                     )}
-                  </div>
+                    {(appointment.petType || appointment.breed) && (
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'text.secondary', fontSize: '0.875rem' }}>
+                        <PetsIcon fontSize="inherit" />
+                        <Typography variant="body2">
+                          {[appointment.petType, appointment.breed].filter(Boolean).join(' / ')}
+                        </Typography>
+                      </Box>
+                    )}
+                  </Stack>
 
                   {appointment.description && (
-                    <div className="appointment-description">
-                      <strong>Açıklama:</strong> {appointment.description}
-                    </div>
+                    <Box sx={{ pt: 2, borderTop: '1px solid', borderColor: 'divider' }}>
+                      <Typography variant="body2" color="text.secondary">
+                        {appointment.description}
+                      </Typography>
+                    </Box>
                   )}
-                </div>
-              </div>
+                </CardContent>
+              </Card>
             );
           })}
-        </div>
+        </Box>
       )}
 
       {deleteConfirm && (
-        <div className="delete-confirm-overlay">
-          <div className="delete-confirm-modal">
-            <div className="delete-confirm-header">
-              <AlertTriangle size={24} className="warning-icon" />
-              <h3>Randevuyu Sil</h3>
-            </div>
-
-            <div className="delete-confirm-content">
-              <p>
-                <strong>{deleteConfirm.patientName}</strong> adlı hayvanın
-                <strong> {deleteConfirm.time}</strong> saatindeki randevusunu silmek istediğinizden emin misiniz?
-              </p>
-              <p className="warning-text">Bu işlem geri alınamaz.</p>
-            </div>
-
-            <div className="delete-confirm-actions">
-              <button
-                className="cancel-delete-btn"
-                onClick={cancelDelete}
-              >
-                İptal
-              </button>
-              <button
-                className="confirm-delete-btn"
-                onClick={confirmDelete}
-              >
-                Evet, Sil
-              </button>
-            </div>
-          </div>
-        </div>
+        <Dialog open={Boolean(deleteConfirm)} onClose={cancelDelete}>
+          <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'error.main' }}>
+            <WarningIcon />
+            Randevuyu Sil
+          </DialogTitle>
+          <DialogContent>
+            <Typography>
+              <strong>{deleteConfirm.patientName}</strong> adlı hayvanın
+              <strong> {deleteConfirm.time}</strong> saatindeki randevusunu silmek istediğinizden emin misiniz?
+            </Typography>
+            <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
+              Bu işlem geri alınamaz.
+            </Typography>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={cancelDelete} color="inherit">
+              İptal
+            </Button>
+            <Button onClick={confirmDelete} color="error" variant="contained">
+              Evet, Sil
+            </Button>
+          </DialogActions>
+        </Dialog>
       )}
-    </div>
+    </Box>
   );
 };
 

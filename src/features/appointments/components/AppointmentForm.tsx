@@ -1,6 +1,14 @@
 import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
-import { Clock } from 'lucide-react';
-import '../styles/AppointmentForm.css';
+import {
+    Box,
+    TextField,
+    Button,
+    Typography,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    Stack,
+} from '@mui/material';
 import { LegacyAppointment, AppointmentFormData } from '../types/appointment';
 
 interface AppointmentFormProps {
@@ -67,156 +75,131 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
     };
 
     return (
-        <div className="appointment-form-overlay">
-            <div className="appointment-form">
-                <div className="form-header">
-                    <h2>{appointment ? 'Randevu Düzenle' : 'Randevu Al'}</h2>
-                    <button className="close-btn" onClick={onCancel}>×</button>
-                </div>
+        <form onSubmit={handleSubmit}>
+            <DialogTitle sx={{ pb: 1 }}>
+                {appointment ? 'Randevu Düzenle' : 'Yeni Randevu Al'}
+                <Typography variant="subtitle2" color="text.secondary" sx={{ mt: 0.5 }}>
+                    {formatDate(selectedDate)}
+                </Typography>
+            </DialogTitle>
 
-                <form onSubmit={handleSubmit}>
-                    <div className="form-section">
-                        <h3>Tarih</h3>
-                        <div className="date-display">
-                            {formatDate(selectedDate)}
-                        </div>
-                    </div>
+            <DialogContent dividers>
+                <Stack spacing={3} sx={{ mt: 1 }}>
+                    {/* Time Selection */}
+                    <TextField
+                        type="time"
+                        name="time"
+                        label="Randevu Saati"
+                        value={formData.time}
+                        onChange={handleInputChange}
+                        required
+                        fullWidth
+                        InputLabelProps={{ shrink: true }}
+                    />
 
-                    <div className="form-section">
-                        <h3>Saat</h3>
-                        <div className="time-input-container">
-                            <Clock size={20} className="time-icon" />
-                            <input
-                                type="time"
-                                name="time"
-                                value={formData.time}
-                                onChange={handleInputChange}
-                                required
-                                className="time-input"
-                            />
-                        </div>
-                    </div>
-
-                    <div className="form-section">
-                        <h3>Hasta Sahibi Bilgileri</h3>
-                        <div className="form-group">
-                            <label>Hasta Sahibi Adı</label>
-                            <input
-                                type="text"
+                    {/* Owner Information */}
+                    <Box>
+                        <Typography variant="subtitle2" gutterBottom color="primary">
+                            Hasta Sahibi Bilgileri
+                        </Typography>
+                        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 2 }}>
+                            <TextField
                                 name="ownerName"
+                                label="Ad Soyad"
                                 value={formData.ownerName}
                                 onChange={handleInputChange}
-                                placeholder="Hasta sahibi adı"
                                 required
-                                className="form-input"
+                                fullWidth
+                                size="small"
                             />
-                        </div>
-
-                        <div className="form-group">
-                            <label>TC Kimlik No</label>
-                            <input
-                                type="text"
-                                name="patientId"
-                                value={formData.patientId}
-                                onChange={handleInputChange}
-                                placeholder="11 haneli TC kimlik no"
-                                required
-                                className="form-input"
-                                maxLength={11}
-                            />
-                        </div>
-
-                        <div className="form-group">
-                            <label>Telefon</label>
-                            <input
-                                type="tel"
+                            <TextField
                                 name="phone"
+                                label="Telefon"
                                 value={formData.phone}
                                 onChange={handleInputChange}
-                                placeholder="Telefon numarası"
                                 required
-                                className="form-input"
+                                fullWidth
+                                size="small"
                             />
-                        </div>
-                    </div>
+                            <Box sx={{ gridColumn: { xs: '1', md: 'span 2' } }}>
+                                <TextField
+                                    name="patientId"
+                                    label="TC Kimlik No"
+                                    value={formData.patientId}
+                                    onChange={handleInputChange}
+                                    required
+                                    fullWidth
+                                    size="small"
+                                    inputProps={{ maxLength: 11 }}
+                                />
+                            </Box>
+                        </Box>
+                    </Box>
 
-                    <div className="form-section">
-                        <h3>Hayvan Bilgileri</h3>
-                        <div className="form-group">
-                            <label>Hayvan Adı</label>
-                            <input
-                                type="text"
+                    {/* Patient Information */}
+                    <Box>
+                        <Typography variant="subtitle2" gutterBottom color="primary">
+                            Hasta Bilgileri
+                        </Typography>
+                        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 2 }}>
+                            <TextField
                                 name="patientName"
+                                label="Hasta Adı"
                                 value={formData.patientName}
                                 onChange={handleInputChange}
-                                placeholder="Hayvan adı"
                                 required
-                                className="form-input"
+                                fullWidth
+                                size="small"
                             />
-                        </div>
-
-                        <div className="form-group">
-                            <label>Çip No</label>
-                            <input
-                                type="text"
+                            <TextField
                                 name="chipNumber"
+                                label="Çip No"
                                 value={formData.chipNumber}
                                 onChange={handleInputChange}
-                                placeholder="Hayvan çip numarası"
-                                className="form-input"
+                                fullWidth
+                                size="small"
                             />
-                        </div>
-
-                        <div className="form-group">
-                            <label>Tür</label>
-                            <input
-                                type="text"
+                            <TextField
                                 name="petType"
+                                label="Tür"
                                 value={formData.petType}
                                 onChange={handleInputChange}
-                                placeholder="Hayvan türü"
-                                className="form-input"
+                                fullWidth
+                                size="small"
                             />
-                        </div>
-
-                        <div className="form-group">
-                            <label>Irk</label>
-                            <input
-                                type="text"
+                            <TextField
                                 name="breed"
+                                label="Irk"
                                 value={formData.breed}
                                 onChange={handleInputChange}
-                                placeholder="Hayvan ırkı"
-                                className="form-input"
+                                fullWidth
+                                size="small"
                             />
-                        </div>
-                    </div>
+                        </Box>
+                    </Box>
 
-                    <div className="form-section">
-                        <h3>Açıklama</h3>
-                        <div className="form-group">
-                            <textarea
-                                name="description"
-                                value={formData.description}
-                                onChange={handleInputChange}
-                                placeholder="Randevu açıklaması (isteğe bağlı)"
-                                className="form-textarea"
-                                rows={4}
-                            />
-                        </div>
-                    </div>
+                    {/* Description */}
+                    <TextField
+                        name="description"
+                        label="Açıklama / Notlar"
+                        value={formData.description}
+                        onChange={handleInputChange}
+                        multiline
+                        rows={3}
+                        fullWidth
+                    />
+                </Stack>
+            </DialogContent>
 
-                    <div className="form-actions">
-                        <button type="button" onClick={onCancel} className="cancel-btn">
-                            İptal
-                        </button>
-                        <button type="submit" className="save-btn">
-                            {appointment ? 'Güncelle' : 'Kaydet'}
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
+            <DialogActions sx={{ p: 2.5 }}>
+                <Button onClick={onCancel} color="inherit">
+                    İptal
+                </Button>
+                <Button type="submit" variant="contained">
+                    {appointment ? 'Güncelle' : 'Kaydet'}
+                </Button>
+            </DialogActions>
+        </form>
     );
 };
 

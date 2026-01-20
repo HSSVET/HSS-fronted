@@ -14,7 +14,8 @@ import {
   Popover,
   SelectChangeEvent,
   TextField,
-  Typography
+  Typography,
+  Tooltip
 } from '@mui/material';
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -54,11 +55,27 @@ const formatDisplayDate = (value: string) => {
 
 const mapToAnimalListItem = (animal: AnimalRecord): AnimalListItem => {
   // Mock verilerden health status'u belirle
+  // Status mapping
   let healthStatus: AnimalListItem['health'] = 'İyi';
-  if (animal.hasChronicDiseases) {
-    healthStatus = 'Tedavi Altında';
-  } else if (animal.hasAllergies) {
-    healthStatus = 'Kontrol Gerekli';
+  if (animal.status) {
+    switch (animal.status) {
+      case 'FOLLOW_UP': healthStatus = 'Tedavi Altında'; break; // Mapped to Treatment
+      case 'DECEASED': healthStatus = 'Vefat'; break;
+      case 'ARCHIVED': healthStatus = 'Arşiv'; break;
+      case 'ACTIVE':
+      default:
+        if (animal.hasChronicDiseases) healthStatus = 'Tedavi Altında';
+        else if (animal.hasAllergies) healthStatus = 'Kontrol Gerekli';
+        else healthStatus = 'İyi';
+        break;
+    }
+  } else {
+    // Fallback if status missing or null
+    if (animal.hasChronicDiseases) {
+      healthStatus = 'Tedavi Altında';
+    } else if (animal.hasAllergies) {
+      healthStatus = 'Kontrol Gerekli';
+    }
   }
 
   return {
@@ -79,13 +96,15 @@ interface AnimalRowProps {
   style: React.CSSProperties;
   animals: AnimalListItem[];
   onAnimalClick: (id: string) => void;
+  onEditClick: (id: string) => void;
+  onAppointmentClick: (id: string) => void;
   getHealthChipClass: (health: string) => string;
 }
 
 // Props that will be passed via rowProps (index and style are added automatically by react-window)
 type AnimalRowCustomProps = Omit<AnimalRowProps, 'index' | 'style'>;
 
-const AnimalRowComponent = React.memo<AnimalRowProps>(({ index, style, animals, onAnimalClick, getHealthChipClass }) => {
+const AnimalRowComponent = React.memo<AnimalRowProps>(({ index, style, animals, onAnimalClick, onEditClick, onAppointmentClick, getHealthChipClass }) => {
   const animal = animals[index];
 
   if (!animal) {
@@ -116,15 +135,21 @@ const AnimalRowComponent = React.memo<AnimalRowProps>(({ index, style, animals, 
           </span>
         </div>
         <div className="animal-table-cell actions" onClick={(e) => e.stopPropagation()}>
-          <IconButton size="small" className="action-icon-button">
-            <EventIcon />
-          </IconButton>
-          <IconButton size="small" className="action-icon-button">
-            <EditIcon />
-          </IconButton>
-          <IconButton size="small" className="action-icon-button" onClick={() => onAnimalClick(animal.id)}>
-            <DescriptionIcon />
-          </IconButton>
+          <Tooltip title="Randevu Oluştur">
+            <IconButton size="small" className="action-icon-button" onClick={() => onAppointmentClick(animal.id)}>
+              <EventIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Düzenle">
+            <IconButton size="small" className="action-icon-button" onClick={() => onEditClick(animal.id)}>
+              <EditIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Detaylar">
+            <IconButton size="small" className="action-icon-button" onClick={() => onAnimalClick(animal.id)}>
+              <DescriptionIcon />
+            </IconButton>
+          </Tooltip>
         </div>
       </div>
     </div>
@@ -142,7 +167,7 @@ const AnimalList: React.FC<AnimalListProps> = ({ onAddAnimal }) => {
   const navigate = useNavigate();
   const { addError, showSuccess } = useError();
   const { loading, startLoading, stopLoading } = useLoading();
-  
+
   const [animals, setAnimals] = useState<AnimalListItem[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortAnchorEl, setSortAnchorEl] = useState<null | HTMLElement>(null);
@@ -160,13 +185,13 @@ const AnimalList: React.FC<AnimalListProps> = ({ onAddAnimal }) => {
       startLoading('Hayvan listesi yükleniyor...');
 
       const animalService = new AnimalService();
-      
+
       // İlk çağrı ile total sayısını öğren
       const firstResponse = await animalService.getAnimals(0, 20);
 
       if (firstResponse.success && firstResponse.data) {
         const total = firstResponse.data.total;
-        
+
         if (total === 0) {
           setAnimals([]);
           addError('Hayvan bulunamadı', 'warning', 'Veritabanında hayvan kaydı bulunamadı');
@@ -176,14 +201,14 @@ const AnimalList: React.FC<AnimalListProps> = ({ onAddAnimal }) => {
         // Tüm hayvanları getirmek için tüm sayfaları çek
         let allAnimals = [...firstResponse.data.items];
         const totalPages = firstResponse.data.totalPages;
-        
+
         // Eğer birden fazla sayfa varsa, diğer sayfaları da çek
         if (totalPages > 1) {
           const remainingPages = [];
           for (let page = 1; page < totalPages; page++) {
             remainingPages.push(animalService.getAnimals(page, 20));
           }
-          
+
           const remainingResponses = await Promise.all(remainingPages);
           remainingResponses.forEach((response) => {
             if (response.success && response.data && response.data.items) {
@@ -191,7 +216,7 @@ const AnimalList: React.FC<AnimalListProps> = ({ onAddAnimal }) => {
             }
           });
         }
-        
+
         const formattedAnimals = allAnimals.map(mapToAnimalListItem);
         setAnimals(formattedAnimals);
         showSuccess(`${total} hayvan başarıyla yüklendi`);
@@ -228,14 +253,14 @@ const AnimalList: React.FC<AnimalListProps> = ({ onAddAnimal }) => {
 
   useEffect(() => {
     fetchAnimals();
-    
+
     // Custom event listener - hayvan eklendiğinde listeyi yenile
     const handleAnimalAdded = () => {
       fetchAnimals();
     };
-    
+
     window.addEventListener('animalAdded', handleAnimalAdded);
-    
+
     return () => {
       window.removeEventListener('animalAdded', handleAnimalAdded);
     };
@@ -362,13 +387,24 @@ const AnimalList: React.FC<AnimalListProps> = ({ onAddAnimal }) => {
   }, []);
 
   const handleAnimalClick = useCallback((animalId: string) => {
-    navigate(`/animals/${animalId}`);
+    navigate(animalId);
+  }, [navigate]);
+
+  const handleEditClick = useCallback((animalId: string) => {
+    // Navigate to detail page with edit state or just detail for now
+    // Ideally open an edit dialog or toggle edit mode in detail
+    navigate(`${animalId}?action=edit`);
+  }, [navigate]);
+
+  const handleAppointmentClick = useCallback((animalId: string) => {
+    // Navigate to detail page and switch to appointment tab (index 3)
+    navigate(`${animalId}?tab=3`);
   }, [navigate]);
 
   if (loading.isLoading) {
     return (
       <div className="animal-list-container">
-        <LoadingSpinner 
+        <LoadingSpinner
           isLoading={loading.isLoading}
           message={loading.loadingMessage || 'Hayvan listesi yükleniyor...'}
           variant="backdrop"
@@ -571,6 +607,8 @@ const AnimalList: React.FC<AnimalListProps> = ({ onAddAnimal }) => {
               rowProps={{
                 animals: filteredAndSortedAnimals,
                 onAnimalClick: handleAnimalClick,
+                onEditClick: handleEditClick,
+                onAppointmentClick: handleAppointmentClick,
                 getHealthChipClass: getHealthChipClass,
               }}
             />

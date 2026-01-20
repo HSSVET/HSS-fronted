@@ -14,6 +14,9 @@ interface AnimalData {
   hospitalStatus: string;
   image: string;
   species: string;
+  status?: string;
+  behaviorNotes?: string;
+  profileImageUrl?: string;
 }
 
 interface ProfileHeaderProps {
@@ -29,7 +32,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ animalData }) => {
       <Box sx={{ display: 'flex', gap: 3, alignItems: 'center', flexDirection: { xs: 'column', sm: 'row' } }}>
         <Box>
           <Avatar
-            src={animalData.image}
+            src={animalData.profileImageUrl || animalData.image}
             alt={animalData.name}
             sx={{ width: 120, height: 120, borderRadius: 3, boxShadow: 2 }}
             variant="rounded"
@@ -78,6 +81,10 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ animalData }) => {
               <Box sx={{ display: 'flex', mb: 1 }}>
                 <Typography sx={labelStyle}>Hastane Durumu:</Typography>
                 <Typography sx={valueStyle}>{animalData.hospitalStatus}</Typography>
+              </Box>
+              <Box sx={{ display: 'flex', mb: 1 }}>
+                <Typography sx={labelStyle}>Durum:</Typography>
+                <Typography sx={valueStyle}>{animalData.status || 'Aktif'}</Typography>
               </Box>
             </Box>
           </Box>

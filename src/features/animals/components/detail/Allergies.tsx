@@ -69,7 +69,9 @@ const mockConditions: Condition[] = [
   },
 ];
 
-const Allergies: React.FC = () => {
+const Allergies: React.FC<{ animal: any }> = ({ animal }) => {
+  const conditions = animal.conditions || [];
+
   const handleNewCondition = () => {
     // TODO: Implement new condition functionality
     console.log('New condition clicked');
@@ -91,42 +93,29 @@ const Allergies: React.FC = () => {
     console.log('Update condition:', conditionId);
   };
 
-  const getSeverityColor = (severity: Condition['severity']) => {
+  const getSeverityColor = (severity: string) => {
     switch (severity) {
-      case 'Hafif':
+      case 'MILD':
         return '#4caf50';
-      case 'Orta':
+      case 'MODERATE':
         return '#ff9800';
-      case 'Ciddi':
+      case 'SEVERE':
         return '#f44336';
       default:
         return '#757575';
     }
   };
 
-  const getStatusIcon = (status: Condition['status']) => {
+  const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'Aktif':
+      case 'ACTIVE':
         return <CircleIcon sx={{ color: '#4caf50', fontSize: '0.8rem' }} />;
-      case 'Mevsimsel':
+      case 'MANAGED':
         return <CalendarTodayIcon sx={{ color: '#2196f3', fontSize: '0.8rem' }} />;
-      case 'İnaktif':
+      case 'RESOLVED':
         return <CircleIcon sx={{ color: '#757575', fontSize: '0.8rem' }} />;
       default:
         return null;
-    }
-  };
-
-  const getTreatmentIcon = (type: Treatment['type']) => {
-    switch (type) {
-      case 'medication':
-        return '💊';
-      case 'diet':
-        return '🍽️';
-      case 'drops':
-        return '💧';
-      default:
-        return '📋';
     }
   };
 
@@ -149,156 +138,123 @@ const Allergies: React.FC = () => {
         </Button>
       </Box>
 
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-        {mockConditions.map((condition) => (
-          <Card
-            key={condition.id}
-            sx={{
-              borderRadius: 2,
-              boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-            }}
-          >
-            <Box
+      {conditions.length === 0 ? (
+        <Typography color="text.secondary">Kayıtlı alerji veya kronik rahatsızlık bulunmamaktadır.</Typography>
+      ) : (
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          {conditions.map((condition: any) => (
+            <Card
+              key={condition.id}
               sx={{
-                backgroundColor: '#ef5350',
-                color: 'white',
-                p: 2,
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
+                borderRadius: 2,
+                boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
               }}
             >
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <ErrorOutlineIcon />
-                <Typography variant="h6">{condition.name}</Typography>
-              </Box>
-              <Chip
-                label={condition.severity}
+              <Box
                 sx={{
-                  backgroundColor: 'white',
-                  color: getSeverityColor(condition.severity),
-                  fontWeight: 'bold',
+                  backgroundColor: condition.type === 'ALLERGY' ? '#ef5350' : '#ffa726',
+                  color: 'white',
+                  p: 2,
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
                 }}
-              />
-            </Box>
-
-            <CardContent>
-              <Typography variant="h6" sx={{ mb: 2 }}>Bilgiler</Typography>
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mb: 3 }}>
+              >
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <CalendarTodayIcon sx={{ color: '#666' }} />
-                  <Typography>Tanı Tarihi: {condition.diagnosisDate}</Typography>
+                  <ErrorOutlineIcon />
+                  <Typography variant="h6">{condition.name}</Typography>
                 </Box>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <PersonIcon sx={{ color: '#666' }} />
-                  <Typography>Tanı Koyan: {condition.diagnosedBy}</Typography>
-                </Box>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  {getStatusIcon(condition.status)}
-                  <Typography>Durum: {condition.status}</Typography>
-                </Box>
-                <Box
+                <Chip
+                  label={condition.severity}
                   sx={{
-                    mt: 1,
-                    p: 1,
-                    backgroundColor: 'rgba(0,0,0,0.02)',
-                    borderRadius: 1,
+                    backgroundColor: 'white',
+                    color: getSeverityColor(condition.severity),
+                    fontWeight: 'bold',
                   }}
-                >
-                  <Typography variant="subtitle2" gutterBottom>
-                    Belirtiler:
-                  </Typography>
-                  <Typography color="text.secondary">
-                    {condition.symptoms.join(', ')}
-                  </Typography>
+                />
+              </Box>
+
+              <CardContent>
+                <Typography variant="h6" sx={{ mb: 2 }}>Bilgiler</Typography>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mb: 3 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <CalendarTodayIcon sx={{ color: '#666' }} />
+                    <Typography>Tanı Tarihi: {condition.diagnosisDate}</Typography>
+                  </Box>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <PersonIcon sx={{ color: '#666' }} />
+                    <Typography>Tanı Koyan: {condition.diagnosedBy || 'Belirtilmemiş'}</Typography>
+                  </Box>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    {getStatusIcon(condition.status)}
+                    <Typography>Durum: {condition.status}</Typography>
+                  </Box>
                 </Box>
-              </Box>
 
-              <Divider sx={{ my: 2 }} />
+                <Divider sx={{ my: 2 }} />
 
-              <Typography variant="h6" sx={{ mb: 2 }}>Tedavi</Typography>
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mb: 3 }}>
-                {condition.treatments.map((treatment, index) => (
-                  <Box
-                    key={index}
-                    sx={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 1,
-                      p: 1,
-                      backgroundColor: 'rgba(0,0,0,0.02)',
-                      borderRadius: 1,
-                    }}
-                  >
-                    <Typography sx={{ fontSize: '1.2rem' }}>
-                      {getTreatmentIcon(treatment.type)}
-                    </Typography>
-                    <Typography>{treatment.name}</Typography>
-                  </Box>
-                ))}
-              </Box>
+                {/* Treatment section placeholder as basic text for now as backend doesn't support complex treatment list yet */}
 
-              {condition.notes && (
-                <>
-                  <Divider sx={{ my: 2 }} />
-                  <Typography variant="h6" sx={{ mb: 2 }}>Notlar</Typography>
-                  <Box
-                    sx={{
-                      p: 1.5,
-                      backgroundColor: 'rgba(255,167,38,0.1)',
-                      borderRadius: 1,
-                      mb: 2,
-                    }}
-                  >
-                    <Typography variant="body2">{condition.notes}</Typography>
-                  </Box>
-                </>
-              )}
+                {condition.notes && (
+                  <>
+                    <Typography variant="h6" sx={{ mb: 2 }}>Notlar</Typography>
+                    <Box
+                      sx={{
+                        p: 1.5,
+                        backgroundColor: 'rgba(255,167,38,0.1)',
+                        borderRadius: 1,
+                        mb: 2,
+                      }}
+                    >
+                      <Typography variant="body2">{condition.notes}</Typography>
+                    </Box>
+                    <Divider sx={{ my: 2 }} />
+                  </>
+                )}
 
-              <Divider sx={{ my: 2 }} />
-
-              <Box sx={{ display: 'flex', gap: 1 }}>
-                <Tooltip title="Yazdır">
-                  <IconButton
-                    size="small"
-                    onClick={() => handlePrint(condition.id)}
-                    sx={{ color: '#666' }}
-                  >
-                    <PrintIcon />
-                  </IconButton>
-                </Tooltip>
-                <Tooltip title="Detaylar">
-                  <IconButton
-                    size="small"
-                    onClick={() => handleDetails(condition.id)}
-                    sx={{ color: '#4caf50' }}
-                  >
-                    <SearchIcon />
-                  </IconButton>
-                </Tooltip>
-                <Tooltip title="Kopyala">
-                  <IconButton
-                    size="small"
-                    onClick={() => handleCopy(condition.id)}
-                    sx={{ color: '#2196f3' }}
-                  >
-                    <ContentCopyIcon />
-                  </IconButton>
-                </Tooltip>
-                <Tooltip title="Güncelle">
-                  <IconButton
-                    size="small"
-                    onClick={() => handleUpdate(condition.id)}
-                    sx={{ color: '#ff9800' }}
-                  >
-                    <AutorenewIcon />
-                  </IconButton>
-                </Tooltip>
-              </Box>
-            </CardContent>
-          </Card>
-        ))}
-      </Box>
+                <Box sx={{ display: 'flex', gap: 1 }}>
+                  <Tooltip title="Yazdır">
+                    <IconButton
+                      size="small"
+                      onClick={() => handlePrint(condition.id)}
+                      sx={{ color: '#666' }}
+                    >
+                      <PrintIcon />
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip title="Detaylar">
+                    <IconButton
+                      size="small"
+                      onClick={() => handleDetails(condition.id)}
+                      sx={{ color: '#4caf50' }}
+                    >
+                      <SearchIcon />
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip title="Kopyala">
+                    <IconButton
+                      size="small"
+                      onClick={() => handleCopy(condition.id)}
+                      sx={{ color: '#2196f3' }}
+                    >
+                      <ContentCopyIcon />
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip title="Güncelle">
+                    <IconButton
+                      size="small"
+                      onClick={() => handleUpdate(condition.id)}
+                      sx={{ color: '#ff9800' }}
+                    >
+                      <AutorenewIcon />
+                    </IconButton>
+                  </Tooltip>
+                </Box>
+              </CardContent>
+            </Card>
+          ))}
+        </Box>
+      )}
     </Box>
   );
 };

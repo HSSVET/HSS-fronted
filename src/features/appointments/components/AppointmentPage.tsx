@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Container, Paper, Typography, Box, Dialog } from '@mui/material';
 import { AppointmentService } from '../services/appointmentService';
 import '../styles/AppointmentSystem.css';
 import type { AppointmentFormData, LegacyAppointment } from '../types/appointment';
@@ -130,29 +131,90 @@ const AppointmentPage: React.FC = () => {
   };
 
   return (
-    <div className="appointment-system">
-      <div className="appointment-system-header ui-card panel ui-card--hover" style={{ textAlign: 'left' }}>
-        <h1 className="appointment-system-title ui-section-title">Randevu Sistemi</h1>
-        <p className="appointment-system-subtitle">Veteriner Hekim Randevu Yönetimi</p>
-      </div>
+    <Container maxWidth="xl" sx={{ py: 3 }}>
+      {/* Header Section */}
+      <Paper
+        elevation={0}
+        sx={{
+          p: 3,
+          mb: 3,
+          borderRadius: 3,
+          background: 'linear-gradient(135deg, #1a237e 0%, #0d47a1 100%)', // Example modern gradient
+          color: 'white',
+          position: 'relative',
+          overflow: 'hidden'
+        }}
+      >
+        <Box sx={{ position: 'relative', zIndex: 1 }}>
+          <Typography variant="h4" component="h1" fontWeight="bold" gutterBottom>
+            Randevu Sistemi
+          </Typography>
+          <Typography variant="subtitle1" sx={{ opacity: 0.9 }}>
+            Veteriner Hekim Randevu Yönetimi
+          </Typography>
+        </Box>
+        {/* Decorative circle */}
+        <Box
+          sx={{
+            position: 'absolute',
+            top: -20,
+            right: -20,
+            width: 150,
+            height: 150,
+            borderRadius: '50%',
+            backgroundColor: 'rgba(255,255,255,0.1)'
+          }}
+        />
+      </Paper>
 
-      <div className="appointment-system-container grid gap-3" style={{ gridTemplateColumns: '420px 1fr' }}>
-        <div className="calendar-section ui-card panel">
-          <Calendar
-            selectedDate={selectedDate}
-            onDateSelect={handleDateSelect}
-            appointments={appointments}
-          />
-          {isLoading && (
-            <p className="calendar-status">Randevular yükleniyor...</p>
-          )}
-          {error && !isLoading && (
-            <p className="calendar-status error">{error}</p>
-          )}
-        </div>
+      <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 3 }}>
+        {/* Left Column: Calendar */}
+        <Box sx={{ width: { xs: '100%', md: 320, lg: 360 }, flexShrink: 0 }}>
+          <Paper
+            elevation={0}
+            sx={{
+              p: 0,
+              borderRadius: 3,
+              overflow: 'hidden',
+              border: '1px solid',
+              borderColor: 'divider',
+              height: '100%'
+            }}
+          >
+            <Calendar
+              selectedDate={selectedDate}
+              onDateSelect={handleDateSelect}
+              appointments={appointments}
+            />
+            {isLoading && (
+              <Box p={2}>
+                <Typography variant="body2" color="text.secondary" align="center">
+                  Randevular yükleniyor...
+                </Typography>
+              </Box>
+            )}
+            {error && !isLoading && (
+              <Box p={2}>
+                <Typography variant="body2" color="error" align="center">
+                  {error}
+                </Typography>
+              </Box>
+            )}
+          </Paper>
+        </Box>
 
-        <div className="content-section">
-          <div className="ui-card panel ui-card--hover">
+        {/* Right Column: Appointment List */}
+        <Box sx={{ flexGrow: 1, minWidth: 0 }}>
+          <Paper
+            elevation={0}
+            sx={{
+              p: 3,
+              borderRadius: 3,
+              border: '1px solid',
+              borderColor: 'divider',
+              minHeight: 600
+            }}
+          >
             <AppointmentList
               appointments={todayAppointments}
               selectedDate={selectedDate}
@@ -162,21 +224,28 @@ const AppointmentPage: React.FC = () => {
               isLoading={isLoading}
               errorMessage={!isLoading ? error : null}
             />
-          </div>
+          </Paper>
 
           {showForm && (
-            <div className="ui-card panel ui-card--hover">
-              <AppointmentForm
-                appointment={editingAppointment}
-                selectedDate={selectedDate}
-                onSave={editingAppointment ? updateAppointment : addAppointment}
-                onCancel={handleCancelForm}
-              />
-            </div>
+            <Dialog
+              open={showForm}
+              onClose={handleCancelForm}
+              maxWidth="sm"
+              fullWidth
+            >
+              <Paper elevation={0}>
+                <AppointmentForm
+                  appointment={editingAppointment}
+                  selectedDate={selectedDate}
+                  onSave={editingAppointment ? updateAppointment : addAppointment}
+                  onCancel={handleCancelForm}
+                />
+              </Paper>
+            </Dialog>
           )}
-        </div>
-      </div>
-    </div>
+        </Box>
+      </Box>
+    </Container>
   );
 };
 

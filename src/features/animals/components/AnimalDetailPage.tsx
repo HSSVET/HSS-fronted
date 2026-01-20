@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { CssBaseline, Container, Box, Button, CircularProgress, Typography } from '@mui/material';
 import { ArrowBack } from '@mui/icons-material';
@@ -29,7 +29,9 @@ import Notes from './detail/Notes';
 import NoteIcon from '@mui/icons-material/Note';
 import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
 import HealingIcon from '@mui/icons-material/Healing';
+import MonitorWeightIcon from '@mui/icons-material/MonitorWeight';
 import SurgeryList from '../../surgery/components/SurgeryList';
+import WeightHistory from './detail/WeightHistory';
 import SurgeryForm from '../../surgery/components/SurgeryForm';
 import HospitalizationList from '../../hospitalization/components/HospitalizationList';
 import AdmissionForm from '../../hospitalization/components/AdmissionForm';
@@ -59,9 +61,28 @@ const theme = createTheme({
 const AnimalDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
   const [selectedTab, setSelectedTab] = useState(0);
   const [openSurgeryForm, setOpenSurgeryForm] = useState(false);
   const [openAdmissionForm, setOpenAdmissionForm] = useState(false);
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const tabParam = params.get('tab');
+    if (tabParam) {
+      const tabIndex = parseInt(tabParam, 10);
+      if (!isNaN(tabIndex)) {
+        setSelectedTab(tabIndex);
+      }
+    }
+
+    // Check for edit action
+    const actionParam = params.get('action');
+    if (actionParam === 'edit') {
+      // TODO: Open edit dialog or toggle edit mode
+      console.log("Edit mode requested via URL");
+    }
+  }, [location.search]);
 
   const [animalData, setAnimalData] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -86,11 +107,11 @@ const AnimalDetailPage: React.FC = () => {
             ...animal,
             // Derive display fields if missing in AnimalRecord but used in UI
             age: animal.ageInYears ? `${animal.ageInYears} yaş` : 'Bilinmiyor',
-            height: 'Unknown', // Backend doesn't have height
+            height: animal.height ? `${animal.height} cm` : 'Bilinmiyor',
             hospitalStatus: 'Ayaktan', // Default, logic to be improved
-            image: animal.species?.name === 'Kedi' ? '/assets/cat.jpg' : '/assets/golden-retriever.jpeg', // Placeholder logic
+            image: animal.profileImageUrl || (animal.species?.name === 'Kedi' ? '/assets/cat.jpg' : '/assets/golden-retriever.jpeg'),
             chip: animal.microchipNumber,
-            neutered: 'Bilinmiyor'
+            neutered: animal.sterilized ? 'Evet' : 'Hayır'
           };
           setAnimalData(detailedAnimal);
         } else {
@@ -117,6 +138,7 @@ const AnimalDetailPage: React.FC = () => {
       label: 'Önemli Uyarılar',
       icon: <WarningIcon />,
     },
+    // ... items
     {
       id: 'disease-history',
       label: 'Hastalık Geçmişi',
@@ -177,12 +199,19 @@ const AnimalDetailPage: React.FC = () => {
       label: 'Yatış/Hospitalizasyon',
       icon: <LocalHospitalIcon />,
     },
+    {
+      id: 'weight',
+      label: 'Kilo Takibi',
+      icon: <MonitorWeightIcon />,
+    },
   ];
 
   const renderContent = () => {
+    if (!animalData) return null;
+
     switch (selectedTab) {
       case 0: // Önemli Uyarılar
-        return <ImportantAlerts />;
+        return <ImportantAlerts animal={animalData} />;
       case 1: // Hastalık Geçmişi
         return <DiseaseHistory />;
       case 2: // Klinik Muayene
@@ -198,7 +227,7 @@ const AnimalDetailPage: React.FC = () => {
       case 7: // Aşılar
         return <Vaccinations />;
       case 8: // Alerjiler/Kronik Rahatsızlıklar
-        return <Allergies />;
+        return <Allergies animal={animalData} />;
       case 9: // Patoloji Bulguları
         return <PathologyFindings
           reportInfo={{
@@ -248,8 +277,10 @@ const AnimalDetailPage: React.FC = () => {
             </Dialog>
           </Box>
         );
+      case 13: // Kilo Takibi
+        return <WeightHistory />;
       default:
-        return <ImportantAlerts />;
+        return <ImportantAlerts animal={animalData} />;
     }
   };
 
@@ -265,7 +296,7 @@ const AnimalDetailPage: React.FC = () => {
     return (
       <Box sx={{ p: 3 }}>
         <Typography color="error">{error || 'Animal not found'}</Typography>
-        <Button onClick={() => navigate('/animals')}>Back to List</Button>
+        <Button onClick={() => navigate('..')}>Back to List</Button>
       </Box>
     );
   }
@@ -278,7 +309,7 @@ const AnimalDetailPage: React.FC = () => {
           <Box sx={{ mb: 2 }}>
             <Button
               startIcon={<ArrowBack />}
-              onClick={() => navigate('/animals')}
+              onClick={() => navigate('..')}
               sx={{
                 color: 'primary.main',
                 '&:hover': {

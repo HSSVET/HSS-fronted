@@ -17,7 +17,12 @@ const SandboxContext = createContext<SandboxContextType | undefined>(undefined);
 export const useSandbox = () => {
   const context = useContext(SandboxContext);
   if (!context) {
-    throw new Error('useSandbox must be used within a SandboxProvider');
+    // Return safe default if provider is missing
+    return {
+      isDemo: false,
+      openRegistrationGate: () => { },
+      closeRegistrationGate: () => { }
+    };
   }
   return context;
 };

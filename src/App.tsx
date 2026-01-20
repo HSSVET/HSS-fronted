@@ -24,6 +24,7 @@ import RegisterPage from './components/auth/RegisterPage';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import Toast from './components/Toast';
 import VaccinationDashboard from './features/vaccinations/components/VaccinationDashboard';
+import NewVaccinationPage from './features/vaccinations/pages/NewVaccinationPage';
 import SmsPage from './features/sms/components/SmsPage';
 import StockSystem from './features/stock/components/StockSystem';
 import ReportsPage from './features/reports/components/ReportsPage';
@@ -257,9 +258,12 @@ function App() {
                               </PageErrorBoundary>
                             } />
 
-                            <Route path="vaccinations" element={
+                            <Route path="vaccinations/*" element={
                               <PageErrorBoundary pageName="Vaccinations">
-                                <VaccinationDashboard />
+                                <Routes>
+                                  <Route index element={<VaccinationDashboard />} />
+                                  <Route path="new" element={<NewVaccinationPage />} />
+                                </Routes>
                               </PageErrorBoundary>
                             } />
 

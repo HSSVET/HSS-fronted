@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { ChevronDown } from 'lucide-react';
-import '../styles/Calendar.css';
+import { Box, Button, IconButton, Typography, Menu, MenuItem } from '@mui/material';
+import { ChevronLeft, ChevronRight, KeyboardArrowDown } from '@mui/icons-material';
 import { LegacyAppointment } from '../types/appointment';
 
 interface CalendarProps {
@@ -10,8 +10,8 @@ interface CalendarProps {
 }
 
 const Calendar: React.FC<CalendarProps> = ({ selectedDate, onDateSelect, appointments }) => {
-    const [showMonthDropdown, setShowMonthDropdown] = useState<boolean>(false);
-    const [showYearDropdown, setShowYearDropdown] = useState<boolean>(false);
+    const [monthAnchorEl, setMonthAnchorEl] = useState<null | HTMLElement>(null);
+    const [yearAnchorEl, setYearAnchorEl] = useState<null | HTMLElement>(null);
 
     const today = new Date();
     const currentMonth = selectedDate.getMonth();
@@ -25,10 +25,10 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDate, onDateSelect, appoint
     const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
     const firstDayOfMonth = new Date(currentYear, currentMonth, 1).getDay();
 
-    // Türkçe için Pazartesi'yi haftanın ilk günü yapmak için
+    // Pazartesi ilk gün (Monday=1, Sunday=0 -> Adjusted: Monday=0, Sunday=6)
     const adjustedFirstDay = firstDayOfMonth === 0 ? 6 : firstDayOfMonth - 1;
 
-    // Yıl aralığını belirle (geçmişten geleceğe)
+    // Yıl aralığı
     const startYear = 2020;
     const endYear = 2030;
     const years = Array.from({ length: endYear - startYear + 1 }, (_, i) => startYear + i);
@@ -62,18 +62,30 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDate, onDateSelect, appoint
         onDateSelect(newDate);
     };
 
-    const selectMonth = (monthIndex: number): void => {
-        const newDate = new Date(selectedDate);
-        newDate.setMonth(monthIndex);
-        onDateSelect(newDate);
-        setShowMonthDropdown(false);
+    const handleMonthClick = (event: React.MouseEvent<HTMLElement>) => {
+        setMonthAnchorEl(event.currentTarget);
     };
 
-    const selectYear = (year: number): void => {
-        const newDate = new Date(selectedDate);
-        newDate.setFullYear(year);
-        onDateSelect(newDate);
-        setShowYearDropdown(false);
+    const handleMonthClose = (index?: number) => {
+        if (typeof index === 'number') {
+            const newDate = new Date(selectedDate);
+            newDate.setMonth(index);
+            onDateSelect(newDate);
+        }
+        setMonthAnchorEl(null);
+    };
+
+    const handleYearClick = (event: React.MouseEvent<HTMLElement>) => {
+        setYearAnchorEl(event.currentTarget);
+    };
+
+    const handleYearClose = (year?: number) => {
+        if (typeof year === 'number') {
+            const newDate = new Date(selectedDate);
+            newDate.setFullYear(year);
+            onDateSelect(newDate);
+        }
+        setYearAnchorEl(null);
     };
 
     const goToToday = (): void => {
@@ -83,12 +95,14 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDate, onDateSelect, appoint
     const renderCalendarDays = (): React.ReactElement[] => {
         const days: React.ReactElement[] = [];
 
-        // Önceki ayın boş günleri
+        // Empty slots for previous month
         for (let i = 0; i < adjustedFirstDay; i++) {
-            days.push(<div key={`empty-${i}`} className="calendar-day empty"></div>);
+            days.push(
+                <Box key={`empty-${i}`} sx={{ height: 40 }} />
+            );
         }
 
-        // Ayın günleri
+        // Days of month
         for (let day = 1; day <= daysInMonth; day++) {
             const isSelected = selectedDate.getDate() === day &&
                 selectedDate.getMonth() === currentMonth &&
@@ -99,13 +113,39 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDate, onDateSelect, appoint
             const hasAppts = hasAppointments(day);
 
             days.push(
-                <div
-                    key={day}
-                    className={`calendar-day ${isSelected ? 'selected' : ''} ${isToday ? 'today' : ''} ${hasAppts ? 'has-appointments' : ''}`}
-                    onClick={() => selectDate(day)}
-                >
-                    {day}
-                </div>
+                <Box key={day} sx={{ display: 'flex', justifyContent: 'center', mb: 1 }}>
+                    <Box
+                        onClick={() => selectDate(day)}
+                        sx={{
+                            width: 36,
+                            height: 36,
+                            borderRadius: '50%',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            cursor: 'pointer',
+                            fontSize: '0.875rem',
+                            fontWeight: isSelected || isToday ? 'bold' : 'normal',
+                            backgroundColor: isSelected
+                                ? 'primary.main'
+                                : isToday
+                                    ? 'secondary.light'
+                                    : 'transparent',
+                            color: isSelected
+                                ? 'white'
+                                : isToday
+                                    ? 'secondary.contrastText'
+                                    : 'text.primary',
+                            border: hasAppts && !isSelected ? '1px solid' : 'none',
+                            borderColor: 'primary.main',
+                            '&:hover': {
+                                backgroundColor: isSelected ? 'primary.dark' : 'action.hover',
+                            }
+                        }}
+                    >
+                        {day}
+                    </Box>
+                </Box>
             );
         }
 
@@ -113,103 +153,98 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDate, onDateSelect, appoint
     };
 
     return (
-        <div className="calendar">
-            <div className="calendar-header">
-                <button onClick={goToPreviousMonth} className="nav-button">‹</button>
+        <Box sx={{ p: 2, bgcolor: 'background.paper' }}>
+            {/* Header */}
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+                <IconButton onClick={goToPreviousMonth} size="small">
+                    <ChevronLeft />
+                </IconButton>
 
-                <div className="date-selectors">
-                    {/* Ay Seçici */}
-                    <div className="dropdown-container">
-                        <button
-                            className="dropdown-button"
-                            onClick={() => {
-                                setShowMonthDropdown(!showMonthDropdown);
-                                setShowYearDropdown(false);
-                            }}
-                        >
-                            {monthNames[currentMonth]}
-                            <ChevronDown size={16} className={`dropdown-icon ${showMonthDropdown ? 'rotated' : ''}`} />
-                        </button>
+                <Box sx={{ display: 'flex', gap: 1 }}>
+                    <Button
+                        size="small"
+                        endIcon={<KeyboardArrowDown />}
+                        onClick={handleMonthClick}
+                        color="inherit"
+                        sx={{ textTransform: 'none', fontWeight: 600 }}
+                    >
+                        {monthNames[currentMonth]}
+                    </Button>
+                    <Menu
+                        anchorEl={monthAnchorEl}
+                        open={Boolean(monthAnchorEl)}
+                        onClose={() => handleMonthClose()}
+                    >
+                        {monthNames.map((month, index) => (
+                            <MenuItem
+                                key={index}
+                                selected={index === currentMonth}
+                                onClick={() => handleMonthClose(index)}
+                            >
+                                {month}
+                            </MenuItem>
+                        ))}
+                    </Menu>
 
-                        {showMonthDropdown && (
-                            <div className="dropdown-menu month-dropdown">
-                                {monthNames.map((month, index) => (
-                                    <button
-                                        key={index}
-                                        className={`dropdown-item ${index === currentMonth ? 'active' : ''}`}
-                                        onClick={() => selectMonth(index)}
-                                    >
-                                        {month}
-                                    </button>
-                                ))}
-                            </div>
-                        )}
-                    </div>
+                    <Button
+                        size="small"
+                        endIcon={<KeyboardArrowDown />}
+                        onClick={handleYearClick}
+                        color="inherit"
+                        sx={{ textTransform: 'none', fontWeight: 600 }}
+                    >
+                        {currentYear}
+                    </Button>
+                    <Menu
+                        anchorEl={yearAnchorEl}
+                        open={Boolean(yearAnchorEl)}
+                        onClose={() => handleYearClose()}
+                    >
+                        {years.map((year) => (
+                            <MenuItem
+                                key={year}
+                                selected={year === currentYear}
+                                onClick={() => handleYearClose(year)}
+                            >
+                                {year}
+                            </MenuItem>
+                        ))}
+                    </Menu>
+                </Box>
 
-                    {/* Yıl Seçici */}
-                    <div className="dropdown-container">
-                        <button
-                            className="dropdown-button"
-                            onClick={() => {
-                                setShowYearDropdown(!showYearDropdown);
-                                setShowMonthDropdown(false);
-                            }}
-                        >
-                            {currentYear}
-                            <ChevronDown size={16} className={`dropdown-icon ${showYearDropdown ? 'rotated' : ''}`} />
-                        </button>
+                <IconButton onClick={goToNextMonth} size="small">
+                    <ChevronRight />
+                </IconButton>
+            </Box>
 
-                        {showYearDropdown && (
-                            <div className="dropdown-menu year-dropdown">
-                                {years.map((year) => (
-                                    <button
-                                        key={year}
-                                        className={`dropdown-item ${year === currentYear ? 'active' : ''}`}
-                                        onClick={() => selectYear(year)}
-                                    >
-                                        {year}
-                                    </button>
-                                ))}
-                            </div>
-                        )}
-                    </div>
-                </div>
-
-                <button onClick={goToNextMonth} className="nav-button">›</button>
-            </div>
-
-            {/* Bugüne Git Butonu */}
-            <div className="calendar-actions">
-                <button onClick={goToToday} className="today-button">
+            {/* Today Button */}
+            <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
+                <Button
+                    variant="outlined"
+                    size="small"
+                    onClick={goToToday}
+                    sx={{ borderRadius: 4, textTransform: 'none', px: 3 }}
+                >
                     Bugün
-                </button>
-            </div>
+                </Button>
+            </Box>
 
-            <div className="calendar-weekdays">
-                <div className="weekday">Pzt</div>
-                <div className="weekday">Sal</div>
-                <div className="weekday">Çar</div>
-                <div className="weekday">Per</div>
-                <div className="weekday">Cum</div>
-                <div className="weekday">Cmt</div>
-                <div className="weekday">Paz</div>
-            </div>
+            {/* Weekdays */}
+            <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', mb: 1 }}>
+                {['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'].map((day) => (
+                    <Box key={day} sx={{ textAlign: 'center' }}>
+                        <Typography variant="caption" color="text.secondary" fontWeight="bold">
+                            {day}
+                        </Typography>
+                    </Box>
+                ))}
+            </Box>
 
-            <div className="calendar-grid">
+            {/* Days Grid */}
+            <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 0 }}>
                 {renderCalendarDays()}
-            </div>
-
-            {/* Dropdown'ları kapatmak için overlay */}
-            {(showMonthDropdown || showYearDropdown) && (
-                <div
-                    className="dropdown-overlay"
-                    onClick={() => {
-                        setShowMonthDropdown(false);
-                        setShowYearDropdown(false);
-                    }}
-                />
-            )}
-        </div>
+            </Box>
+        </Box>
     );
 };
 
