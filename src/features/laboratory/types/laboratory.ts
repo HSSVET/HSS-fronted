@@ -62,9 +62,10 @@ export interface TestParameter {
 }
 
 export interface CreateLabTestRequest {
-  animalId: string;
-  veterinarianId: string;
-  testTypeIds: string[];
+  animalId: string | number;
+  veterinarianId?: string | number;
+  testName: string;
+  category?: string;
   notes?: string;
   urgent?: boolean;
 }

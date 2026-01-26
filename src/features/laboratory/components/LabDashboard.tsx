@@ -1,48 +1,102 @@
 import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { LaboratoryService } from '../services/laboratoryService';
 import {
   usePendingTests,
   useLabTests,
-  useUploadLabResult
+  useUploadLabResult,
+  useLabStats,
+  useCreateLabTest
 } from '../hooks/useLaboratoryQueries';
 import { useQueryClient } from '@tanstack/react-query';
 import '../styles/Laboratory.css';
 import type { LabTest } from '../types/laboratory';
+import { Autocomplete, TextField, CircularProgress, Dialog, DialogTitle, DialogContent, DialogActions, Button, Checkbox, FormControlLabel, Select, MenuItem, InputLabel, FormControl } from '@mui/material';
+import { useAnimals } from '../../animals/hooks/useAnimals';
+import { useLabTestsByAnimal } from '../hooks/useLaboratoryQueries';
+import type { AnimalRecord } from '../../animals/services/animalService';
 
 const LabDashboard: React.FC = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
-  // Queries
-  const { data: pendingTestsResponse, isLoading: isLoadingPending } = usePendingTests();
-  const { data: allTestsResponse, isLoading: isLoadingAll } = useLabTests(1, 20); // Get recent 20 tests
-
-  // Mutations
-  const uploadResultMutation = useUploadLabResult();
-
   // State
+  const [activeTab, setActiveTab] = useState<string>('ALL');
   const [selectedTestId, setSelectedTestId] = useState<number | null>(null);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [patientSearch, setPatientSearch] = useState('');
+  const [selectedPatient, setSelectedPatient] = useState<AnimalRecord | null>(null);
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [showUploadProgress, setShowUploadProgress] = useState(false);
   const [snackbar, setSnackbar] = useState({ show: false, message: '', type: 'info' });
-  const [showModal, setShowModal] = useState(false); // Keep for now, but quick add implementation pending
+  const [showModal, setShowModal] = useState(false);
+  const [viewingFile, setViewingFile] = useState<{ url: string; type: 'pdf' | 'image' } | null>(null);
+
+  // New Test Form State
+  const [newTestName, setNewTestName] = useState('');
+  const [isUrgent, setIsUrgent] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Queries
+  const { data: statsResponse } = useLabStats();
+
+  // Patient Search Query
+  const { animals: patientOptions, loading: loadingPatients, fetchAnimals } = useAnimals({
+    search: patientSearch,
+    limit: 20,
+    autoFetch: false
+  });
+
+  // Debounced patient search
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      fetchAnimals({ search: patientSearch });
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [patientSearch, fetchAnimals]);
+
+  // Main Lists
+  const { data: allTestsResponse, isLoading: isLoadingAll } = useLabTests(
+    1,
+    20,
+    activeTab !== 'ALL' ? activeTab : undefined,
+    undefined,
+    { enabled: !selectedPatient }
+  );
+
+  const { data: animalTestsResponse, isLoading: isLoadingAnimal } = useLabTestsByAnimal(
+    selectedPatient?.id?.toString(),
+    { enabled: !!selectedPatient }
+  );
+
+  // Mutations
+  const uploadResultMutation = useUploadLabResult();
+  const createTestMutation = useCreateLabTest();
+
   // Derived state
-  const pendingTests = pendingTestsResponse?.data || [];
-  const allTests = allTestsResponse?.data?.items || [];
+  const stats = statsResponse?.data || {
+    total: 0,
+    pending: 0,
+    inProgress: 0,
+    completed: 0,
+    cancelled: 0,
+    today: 0
+  };
 
-  // Combine pending and recent completed for the queue view, or just use allTests if it includes pending
-  // Let's use allTests for the main table to show everything sorted by date desc (default backend)
-  const displayTests = allTests;
+  const getDisplayTests = () => {
+    if (selectedPatient) {
+      let tests = animalTestsResponse?.data || [];
+      if (activeTab !== 'ALL') {
+        tests = tests.filter(t => t.status === activeTab);
+      }
+      return tests;
+    }
+    return allTestsResponse?.data?.content || [];
+  };
 
-  const pendingCount = displayTests.filter(t => t.status === 'PENDING').length;
-  const workingCount = displayTests.filter(t => t.status === 'IN_PROGRESS').length;
-  const completedCount = displayTests.filter(t => t.status === 'COMPLETED').length;
-
+  const displayTests = getDisplayTests();
+  const isLoading = selectedPatient ? isLoadingAnimal : isLoadingAll;
   const selectedTest = selectedTestId ? displayTests.find(t => t.testId === selectedTestId) : null;
 
   const handleFileUpload = async (file: File) => {
@@ -83,7 +137,7 @@ const LabDashboard: React.FC = () => {
       case 'PENDING': return 'status-pending';
       case 'IN_PROGRESS': return 'status-working';
       case 'COMPLETED': return 'status-completed';
-      case 'CANCELLED': return 'status-cancelled'; // Add css for this if needed
+      case 'CANCELLED': return 'status-cancelled';
       default: return 'status-pending';
     }
   };
@@ -106,11 +160,66 @@ const LabDashboard: React.FC = () => {
     }
   };
 
+
+  const handleCreateTest = async () => {
+    if (!selectedPatient) {
+      showSnackbarMessage('Lütfen bir hasta seçin.', 'warning');
+      return;
+    }
+    if (!newTestName) {
+      showSnackbarMessage('Lütfen test adını girin.', 'warning');
+      return;
+    }
+
+    try {
+      await createTestMutation.mutateAsync({
+        animalId: selectedPatient.id,
+        testName: newTestName,
+        urgent: isUrgent,
+        notes: ''
+      });
+      showSnackbarMessage('Test başarıyla oluşturuldu.', 'success');
+      setShowModal(false);
+      setNewTestName('');
+      setIsUrgent(false);
+    } catch (error) {
+      console.error(error);
+      showSnackbarMessage('Test oluşturulurken hata oluştu.', 'error');
+    }
+  };
+
   const showSnackbarMessage = (message: string, type: string = 'info') => {
     setSnackbar({ show: true, message, type });
     setTimeout(() => {
       setSnackbar(prev => ({ ...prev, show: false }));
     }, 5000);
+  };
+
+  const openFileView = async (fileUrl: string) => {
+    const isPdf = fileUrl.toLowerCase().endsWith('.pdf');
+
+    // If it's already a Full HTTP URL, use it directly (if trusted)
+    // But mostly we deal with gs:// or relative paths that need signing
+    if (fileUrl.startsWith('http') && !fileUrl.includes('storage.googleapis.com')) {
+      // If it is http but NOT already a signed GCS url (rough check), maybe use it directly?
+      // For now, let's assume everything needs signing unless we decide otherwise.
+      // Actually, safely assume we try to sign everything that isn't already signed.
+    }
+
+    try {
+      const response = await LaboratoryService.getSignedUrl(fileUrl);
+      if (response.success && response.data.signedUrl) {
+        setViewingFile({
+          url: response.data.signedUrl,
+          type: isPdf ? 'pdf' : 'image'
+        });
+      } else {
+        showSnackbarMessage('Dosya yüklenemedi: ' + (response.error || 'Bilinmeyen hata'), 'error');
+      }
+    } catch (error) {
+      console.error("Failed to get signed URL:", error);
+      showSnackbarMessage('Dosya açılırken hata oluştu.', 'error');
+    }
   };
 
   const selectTest = (testId: number) => {
@@ -127,19 +236,38 @@ const LabDashboard: React.FC = () => {
           </select>
         </div>
 
-        <div className="patient-search">
-          <input
-            type="text"
-            placeholder="Test ara (ID, isim)..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+        <div className="patient-search" style={{ width: '300px' }}>
+          <Autocomplete
+            options={patientOptions}
+            loading={loadingPatients}
+            getOptionLabel={(option) => `${option.name} (${option.species?.name || ''}) - ${option.owner?.name || ''}`}
+            value={selectedPatient}
+            onChange={(_, newValue) => setSelectedPatient(newValue)}
+            onInputChange={(_, newInputValue) => setPatientSearch(newInputValue)}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                placeholder="Hasta Seç..."
+                size="small"
+                fullWidth
+                InputProps={{
+                  ...params.InputProps,
+                  endAdornment: (
+                    <React.Fragment>
+                      {loadingPatients ? <CircularProgress color="inherit" size={20} /> : null}
+                      {params.InputProps.endAdornment}
+                    </React.Fragment>
+                  ),
+                }}
+              />
+            )}
           />
         </div>
 
         <div className="top-controls">
           <button
             className="btn-secondary"
-            onClick={() => navigate('/laboratory/test-types')}
+            onClick={() => navigate('test-types')}
           >
             Test Türleri
           </button>
@@ -150,7 +278,7 @@ const LabDashboard: React.FC = () => {
       </header>
 
       <main className="lab-main-grid">
-        {/* Quick Order Panel - Keeping static for now as mock was heavily hardcoded */}
+        {/* Quick Order Panel */}
         <aside className="quick-order-panel ui-card panel ui-card--hover">
           <h2>Hızlı İşlemler</h2>
           <div className="lab-stats">
@@ -158,11 +286,11 @@ const LabDashboard: React.FC = () => {
             <div className="stat-grid">
               <div className="mini-stat">
                 <span className="stat-label">Bugün</span>
-                <span className="stat-value">{displayTests.length}</span>
+                <span className="stat-value">{stats.today}</span>
               </div>
               <div className="mini-stat">
                 <span className="stat-label">Bekleyen</span>
-                <span className="stat-value critical">{pendingCount}</span>
+                <span className="stat-value critical">{stats.pending}</span>
               </div>
             </div>
           </div>
@@ -171,15 +299,35 @@ const LabDashboard: React.FC = () => {
         {/* Test Queue */}
         <section className="test-queue ui-card panel">
           <div className="queue-header">
-            <h2>Test Listesi</h2>
-            <div className="queue-stats">
-              <span className="stat-item">Beklemede: <span>{pendingCount}</span></span>
-              <span className="stat-item">Çalışılıyor: <span>{workingCount}</span></span>
-              <span className="stat-item">Tamam: <span>{completedCount}</span></span>
+            <div className="tabs">
+              <button
+                className={`tab-btn ${activeTab === 'ALL' ? 'active' : ''}`}
+                onClick={() => setActiveTab('ALL')}
+              >
+                Tümü ({stats.total})
+              </button>
+              <button
+                className={`tab-btn ${activeTab === 'PENDING' ? 'active' : ''}`}
+                onClick={() => setActiveTab('PENDING')}
+              >
+                Bekleyen ({stats.pending})
+              </button>
+              <button
+                className={`tab-btn ${activeTab === 'IN_PROGRESS' ? 'active' : ''}`}
+                onClick={() => setActiveTab('IN_PROGRESS')}
+              >
+                Çalışılıyor ({stats.inProgress})
+              </button>
+              <button
+                className={`tab-btn ${activeTab === 'COMPLETED' ? 'active' : ''}`}
+                onClick={() => setActiveTab('COMPLETED')}
+              >
+                Tamamlanan ({stats.completed})
+              </button>
             </div>
           </div>
 
-          {isLoadingAll ? (
+          {isLoading ? (
             <div className="skeleton-loader">
               <div className="skeleton-row"></div>
               <div className="skeleton-row"></div>
@@ -237,6 +385,17 @@ const LabDashboard: React.FC = () => {
                             onClick={(e) => {
                               e.stopPropagation();
                               selectTest(test.testId);
+                              // We need to find the result file URL. Assuming the first result for now as per previous logic it wasn't explicit.
+                              // Actually, the previous 'Görüntüle' was just selecting the test. 
+                              // If there are results, we should try to open the latest one OR just select the test.
+                              // The user request says "click button 'gorüntüle'". 
+                              // Let's check if there are results, if so, open the first one's file if available.
+                              if (test.results && test.results.length > 0 && test.results[0].fileUrl) {
+                                openFileView(test.results[0].fileUrl);
+                              } else {
+                                // Fallback to just selecting it if no file
+                                selectTest(test.testId);
+                              }
                             }}
                           >
                             Görüntüle
@@ -317,7 +476,13 @@ const LabDashboard: React.FC = () => {
                         {result.fileUrl && (
                           <div className="meta-item">
                             <span className="meta-label">Dosya:</span>
-                            <a href={result.fileUrl} target="_blank" rel="noopener noreferrer" className="meta-value link">Dosyayı Görüntüle</a>
+                            <button
+                              className="meta-value link"
+                              style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', textDecoration: 'underline', color: 'var(--primary-color)' }}
+                              onClick={() => openFileView(result.fileUrl!)}
+                            >
+                              Dosyayı Görüntüle
+                            </button>
                           </div>
                         )}
                       </div>
@@ -347,15 +512,85 @@ const LabDashboard: React.FC = () => {
         }}
       />
 
-      {/* Search Modal Placeholder */}
-      {showModal && (
+      {/* Create Test Modal */}
+      <Dialog open={showModal} onClose={() => setShowModal(false)} maxWidth="sm" fullWidth>
+        <DialogTitle>Yeni Test Ekle</DialogTitle>
+        <DialogContent>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '0.5rem' }}>
+            <Autocomplete
+              options={patientOptions}
+              loading={loadingPatients}
+              getOptionLabel={(option) => `${option.name} (${option.species?.name || ''}) - ${option.owner?.name || ''}`}
+              value={selectedPatient}
+              onChange={(_, newValue) => setSelectedPatient(newValue)}
+              onInputChange={(_, newInputValue) => setPatientSearch(newInputValue)}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Hasta Seç"
+                  placeholder="İsim ile ara..."
+                  InputProps={{
+                    ...params.InputProps,
+                    endAdornment: (
+                      <React.Fragment>
+                        {loadingPatients ? <CircularProgress color="inherit" size={20} /> : null}
+                        {params.InputProps.endAdornment}
+                      </React.Fragment>
+                    ),
+                  }}
+                />
+              )}
+            />
+
+            <TextField
+              label="Test Adı"
+              value={newTestName}
+              onChange={(e) => setNewTestName(e.target.value)}
+              placeholder="Örn: Tam Kan Sayımı"
+              fullWidth
+            />
+
+            <FormControlLabel
+              control={<Checkbox checked={isUrgent} onChange={(e) => setIsUrgent(e.target.checked)} />}
+              label="Acil"
+            />
+          </div>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setShowModal(false)}>İptal</Button>
+          <Button onClick={handleCreateTest} variant="contained" color="primary" disabled={createTestMutation.isPending}>
+            {createTestMutation.isPending ? 'Oluşturuluyor...' : 'Oluştur'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* File View Modal */}
+      {viewingFile && (
         <div className="modal" onClick={(e) => {
-          if (e.target === e.currentTarget) setShowModal(false);
+          if (e.target === e.currentTarget) setViewingFile(null);
         }}>
-          <div className="modal-content">
-            <h3>Yeni Test Ekle</h3>
-            <p>Bu özellik henüz aktif değil.</p>
-            <button onClick={() => setShowModal(false)}>Kapat</button>
+          <div className="modal-content" style={{ width: '90%', height: '90%', maxWidth: '1000px', padding: '1rem', display: 'flex', flexDirection: 'column' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
+              <h3>Dosya Önizleme</h3>
+              <button onClick={() => setViewingFile(null)} className="btn-secondary">Kapat</button>
+            </div>
+            <div style={{ flex: 1, overflow: 'hidden', background: '#f5f5f5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              {viewingFile.type === 'pdf' ? (
+                <iframe
+                  src={viewingFile.url}
+                  title="PDF Viewer"
+                  width="100%"
+                  height="100%"
+                  style={{ border: 'none' }}
+                />
+              ) : (
+                <img
+                  src={viewingFile.url}
+                  alt="Result"
+                  style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }}
+                />
+              )}
+            </div>
           </div>
         </div>
       )}

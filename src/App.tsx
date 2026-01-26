@@ -27,7 +27,6 @@ import VaccinationDashboard from './features/vaccinations/components/Vaccination
 import NewVaccinationPage from './features/vaccinations/pages/NewVaccinationPage';
 import SmsPage from './features/sms/components/SmsPage';
 import StockSystem from './features/stock/components/StockSystem';
-import ReportsPage from './features/reports/components/ReportsPage';
 import SettingsPage from './features/settings/components/SettingsPage';
 
 // Error Boundaries
@@ -276,12 +275,6 @@ function App() {
                             <Route path="inventory" element={
                               <PageErrorBoundary pageName="Inventory">
                                 <StockSystem />
-                              </PageErrorBoundary>
-                            } />
-
-                            <Route path="reports" element={
-                              <PageErrorBoundary pageName="Reports">
-                                <ReportsPage />
                               </PageErrorBoundary>
                             } />
 

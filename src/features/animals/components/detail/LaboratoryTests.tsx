@@ -19,6 +19,7 @@ import DescriptionIcon from '@mui/icons-material/Description';
 import { useLabTestsByAnimal } from '../../../laboratory/hooks/useLaboratoryQueries';
 import '../../styles/LaboratoryTests.css';
 import type { LabTest, LabResult } from '../../../laboratory/types/laboratory';
+import { LaboratoryService } from '../../../laboratory/services/laboratoryService';
 
 interface LaboratoryTestsProps {
   animalId?: string;
@@ -50,6 +51,23 @@ const LaboratoryTests: React.FC<LaboratoryTestsProps> = ({ animalId }) => {
 
   const labTests = response?.data || [];
 
+  const openFileView = async (fileUrl: string) => {
+    try {
+      if (fileUrl.startsWith('http') && !fileUrl.includes('storage.googleapis.com')) {
+        window.open(fileUrl, '_blank');
+        return;
+      }
+      const response = await LaboratoryService.getSignedUrl(fileUrl);
+      if (response.success && response.data.signedUrl) {
+        window.open(response.data.signedUrl, '_blank');
+      } else {
+        console.error('Failed to get signed URL');
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   const renderTestResult = (result: LabResult) => (
     <Box key={result.resultId} sx={{
       display: 'flex',
@@ -78,9 +96,7 @@ const LaboratoryTests: React.FC<LaboratoryTestsProps> = ({ animalId }) => {
             <Button
               size="small"
               startIcon={<DescriptionIcon />}
-              href={result.fileUrl}
-              target="_blank"
-              rel="noopener noreferrer"
+              onClick={() => openFileView(result.fileUrl!)}
             >
               Dosya
             </Button>

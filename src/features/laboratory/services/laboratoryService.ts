@@ -1,7 +1,7 @@
 import { apiClient } from '../../../services/api';
 import { API_ENDPOINTS } from '../../../constants';
 import type { LabTest, TestType, CreateLabTestRequest } from '../types/laboratory';
-import type { ApiResponse, PaginatedResponse } from '../../../types/common';
+import type { ApiResponse, PaginatedResponse, SpringPage } from '../../../types/common';
 
 export class LaboratoryService {
   // Get all lab tests with pagination
@@ -10,7 +10,7 @@ export class LaboratoryService {
     limit: number = 10,
     status?: string,
     category?: string
-  ): Promise<ApiResponse<PaginatedResponse<LabTest>>> {
+  ): Promise<ApiResponse<SpringPage<LabTest>>> {
     const params = new URLSearchParams({
       page: page.toString(),
       limit: limit.toString(),
@@ -19,6 +19,18 @@ export class LaboratoryService {
     });
 
     return apiClient.get(`${API_ENDPOINTS.LAB_TESTS}?${params}`);
+  }
+
+  // Get lab statistics
+  static async getStatistics(): Promise<ApiResponse<{
+    total: number;
+    pending: number;
+    inProgress: number;
+    completed: number;
+    cancelled: number;
+    today: number;
+  }>> {
+    return apiClient.get(`${API_ENDPOINTS.LAB_TESTS}/stats`);
   }
 
   // Get lab test by ID
@@ -104,5 +116,17 @@ export class LaboratoryService {
   // Create lab result
   static async createLabResult(resultData: any): Promise<ApiResponse<any>> {
     return apiClient.post(API_ENDPOINTS.LAB_RESULTS, resultData);
+  }
+
+  // Get signed URL from backend
+  static async getSignedUrl(filePath: string): Promise<ApiResponse<{ signedUrl: string; expirationTime: string }>> {
+    return apiClient.get(`${API_ENDPOINTS.FILES}/signed-url?filePath=${encodeURIComponent(filePath)}`);
+  }
+
+  // Helper to get view/download URL for a file path (Deprecated - use getSignedUrl for secure access)
+  static getViewFileUrl(filePath: string): string {
+    // If it's a full URL (http/https), return as is
+    if (filePath.startsWith('http')) return filePath;
+    return `${API_ENDPOINTS.FILES}/view?filePath=${encodeURIComponent(filePath)}`;
   }
 } 

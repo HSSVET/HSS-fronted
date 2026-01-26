@@ -59,7 +59,6 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, toggleSidebar }) => {
     { icon: <SmsIcon />, text: 'SMS', path: '/sms', permission: 'sms:read' },
     { icon: <InventoryIcon />, text: 'Envanter/Stok', path: '/inventory', permission: 'inventory:read' },
     { icon: <DescriptionIcon />, text: 'Belgeler/Kontratlar', path: '/documents', permission: 'documents:read' },
-    { icon: <BarChartIcon />, text: 'Raporlar', path: '/reports', permission: 'reports:read' },
     { icon: <SettingsIcon />, text: 'Ayarlar', path: '/settings', permission: 'settings:read' },
   ];
 
