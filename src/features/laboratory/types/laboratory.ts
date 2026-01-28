@@ -1,25 +1,39 @@
-import { BaseEntity } from '../../../types/common';
 
-export type TestStatus = 'pending' | 'in_progress' | 'completed' | 'cancelled';
+export type TestStatus = 'PENDING' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
 
 export type TestCategory = 'blood' | 'urine' | 'xray' | 'ultrasound' | 'biopsy' | 'other';
 
-export interface LabTest extends BaseEntity {
-  animalId: string;
-  animalName: string;
-  veterinarianId: string;
-  veterinarianName: string;
-  testType: string;
-  category: TestCategory;
-  status: TestStatus;
-  requestDate: Date;
-  completionDate?: Date;
-  results?: TestResult[];
-  notes?: string;
-  cost?: number;
-  urgent: boolean;
+export interface LabResult {
+  resultId: number;
+  testId: number;
+  result: string;
+  value?: string;
+  unit?: string;
+  normalRange?: string;
+  interpretation?: string;
+  fileUrl?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
+export interface LabTest {
+  testId: number;
+  animalId: number;
+  animalName: string;
+  testName: string;
+  date: string;
+  status: TestStatus;
+  results?: LabResult[];
+  createdAt?: string;
+  updatedAt?: string;
+
+  // Backwards compatibility or optional fields if needed by UI but not in main response
+  veterinarianName?: string;
+  category?: TestCategory;
+  urgent?: boolean;
+}
+
+// Deprecated or mapped types
 export interface TestResult {
   parameter: string;
   value: string | number;
@@ -48,9 +62,10 @@ export interface TestParameter {
 }
 
 export interface CreateLabTestRequest {
-  animalId: string;
-  veterinarianId: string;
-  testTypeIds: string[];
+  animalId: string | number;
+  veterinarianId?: string | number;
+  testName: string;
+  category?: string;
   notes?: string;
   urgent?: boolean;
-} 
+}

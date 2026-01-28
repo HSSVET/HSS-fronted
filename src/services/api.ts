@@ -606,16 +606,28 @@ export class ApiClient {
     const headers = await this.getHeaders();
 
     // Log request data for debugging
-    if (data) {
+    if (data && !(data instanceof FormData)) {
       console.log('API POST request to:', `${API_BASE_URL}${endpoint}`, 'Data:', JSON.stringify(data, null, 2));
     }
 
+    const fetchOptions: RequestInit = {
+      method: 'POST',
+      headers,
+    };
+
+    if (data instanceof FormData) {
+      // Remove Content-Type to let browser set it with boundary
+      const h = headers as Record<string, string>;
+      if (h['Content-Type']) {
+        delete h['Content-Type'];
+      }
+      fetchOptions.body = data;
+    } else if (data) {
+      fetchOptions.body = JSON.stringify(data);
+    }
+
     const response = await this.executeWithRetry(
-      () => fetch(`${API_BASE_URL}${endpoint}`, {
-        method: 'POST',
-        headers,
-        body: data ? JSON.stringify(data) : undefined,
-      }),
+      () => fetch(`${API_BASE_URL}${endpoint}`, fetchOptions),
       retries
     );
 

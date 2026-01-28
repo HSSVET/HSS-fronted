@@ -4,6 +4,7 @@ export { default as AnimalDetailPage } from './components/AnimalDetailPage';
 export { default as AnimalSystem } from './components/AnimalSystem';
 export { default as AddAnimalDialog } from './components/AddAnimalDialog';
 export { default as AnimalPage } from './components/AnimalPage';
+export { default as AnimalSearchAutocomplete } from './components/AnimalSearchAutocomplete';
 
 // Detail components
 export { default as ProfileHeader } from './components/detail/ProfileHeader';

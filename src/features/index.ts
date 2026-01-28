@@ -4,7 +4,7 @@ export * from './animals';
 export * from './appointments';
 export * from './billing';
 export * from './laboratory';
-export * from './reports';
+
 export * from './settings';
 export * from './sms';
 export * from './stock';

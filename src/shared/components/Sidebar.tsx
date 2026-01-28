@@ -16,12 +16,13 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import SmsIcon from '@mui/icons-material/Sms';
 import InventoryIcon from '@mui/icons-material/Inventory';
 import DescriptionIcon from '@mui/icons-material/Description';
-import BarChartIcon from '@mui/icons-material/BarChart';
 import SettingsIcon from '@mui/icons-material/Settings';
 import LogoutIcon from '@mui/icons-material/Logout';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import QueueIcon from '@mui/icons-material/Queue';
+import LoginIcon from '@mui/icons-material/Login';
 
 interface SidebarProps {
   collapsed: boolean;
@@ -50,6 +51,8 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, toggleSidebar }) => {
   const allMenuItems = [
     { icon: <DashboardIcon />, text: 'Panel', path: '/dashboard', permission: 'dashboard:read' },
     { icon: <CalendarMonthIcon />, text: 'Randevular', path: '/appointments', permission: 'appointments:read' },
+    { icon: <QueueIcon />, text: 'Hasta Kuyruğu', path: '/queue', permission: 'appointments:read' },
+    { icon: <LoginIcon />, text: 'Hasta Girişi', path: '/check-in', permission: 'appointments:write' },
     { icon: <PetsIcon />, text: 'Hastalar/Hayvanlar', path: '/animals', permission: 'animals:read' },
     { icon: <PeopleIcon />, text: 'Müşteriler', path: '/owners', permission: 'animals:read' }, // Using animals:read as proxy for now
     { icon: <BiotechIcon />, text: 'Laboratuvar', path: '/laboratory', permission: 'laboratory:read' },
@@ -59,7 +62,6 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, toggleSidebar }) => {
     { icon: <SmsIcon />, text: 'SMS', path: '/sms', permission: 'sms:read' },
     { icon: <InventoryIcon />, text: 'Envanter/Stok', path: '/inventory', permission: 'inventory:read' },
     { icon: <DescriptionIcon />, text: 'Belgeler/Kontratlar', path: '/documents', permission: 'documents:read' },
-    { icon: <BarChartIcon />, text: 'Raporlar', path: '/reports', permission: 'reports:read' },
     { icon: <SettingsIcon />, text: 'Ayarlar', path: '/settings', permission: 'settings:read' },
   ];
 
