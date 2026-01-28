@@ -95,6 +95,7 @@ steps:
         # Environment variable'ları export et
         export REACT_APP_API_URL="$$LOCAL_BACKEND_URL"
         export REACT_APP_FIREBASE_PROJECT_ID="${_FIREBASE_PROJECT_ID:-hss-cloud-473511}"
+        export CI=false
         
         # Build
         npm run build
@@ -126,6 +127,11 @@ steps:
         
         # Firebase project'i ayarla
         firebase use "${PROJECT_ID}" || echo "⚠️ Firebase project ayarlanamadı"
+
+        # Hosting target mapping (idempotent). Cloud Build'de bazen target config görünmüyor.
+        # Site id genelde project id ile aynı (hss-cloud-473511).
+        firebase target:apply hosting dev "${PROJECT_ID}" --project="${PROJECT_ID}" || echo "ℹ️ dev target already applied"
+        firebase target:apply hosting prod "${PROJECT_ID}" --project="${PROJECT_ID}" || echo "ℹ️ prod target already applied"
         
         # Deploy target belirle
         if [ "${_ENVIRONMENT}" = "prod" ]; then
@@ -138,7 +144,7 @@ steps:
           CHANNEL_ID="staging-$$SHORT_SHA_VAL"
           
           # Preview channel'a deploy et (expires 7d)
-          firebase hosting:channel:deploy "$$CHANNEL_ID" --only dev --project="${PROJECT_ID}" --expires 7d --non-interactive
+          firebase hosting:channel:deploy "$$CHANNEL_ID" --only hosting:dev --project="${PROJECT_ID}" --expires 7d --non-interactive
         fi
         
         echo "✅ Firebase deploy başarılı!"

@@ -326,39 +326,46 @@ const LoginPage: React.FC<LoginPageProps> = ({
           <Zoom in={animationStep >= 1} timeout={1000}>
             <Avatar
               sx={{
-                width: 80,
-                height: 80,
+                width: 96,
+                height: 96,
                 margin: 'auto',
-                mb: 2,
+                mb: 3,
                 background: isAdminPortal
                   ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
                   : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                boxShadow: '0 8px 24px rgba(102, 126, 234, 0.25)',
                 animation: `${floatAnimation} 3s ease-in-out infinite`,
+                border: '4px solid rgba(255, 255, 255, 0.9)',
               }}
             >
-              {isAdminPortal ? <AdminPanelSettings sx={{ fontSize: 40 }} /> : <Pets sx={{ fontSize: 40 }} />}
+              {isAdminPortal ? <AdminPanelSettings sx={{ fontSize: 48 }} /> : <Pets sx={{ fontSize: 48 }} />}
             </Avatar>
           </Zoom>
           <Typography
             variant="h4"
             component="h1"
             sx={{
-              fontWeight: 'bold',
+              fontWeight: 700,
               mb: 1,
               background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
               backgroundClip: 'text',
               WebkitBackgroundClip: 'text',
-              color: 'transparent',
+              WebkitTextFillColor: 'transparent',
               animation: `${gradientAnimation} 3s ease infinite`,
-              backgroundSize: '200% 200%'
+              backgroundSize: '200% 200%',
+              letterSpacing: '-0.02em'
             }}
           >
             {isAdminPortal ? 'Admin Portal' : companyName}
           </Typography>
           <Typography
             variant="subtitle1"
-            color="text.secondary"
-            sx={{ mb: 2 }}
+            sx={{
+              mb: 3,
+              color: 'rgba(0, 0, 0, 0.6)',
+              fontWeight: 500,
+              letterSpacing: '0.01em'
+            }}
           >
             {isAdminPortal ? 'Sistem Yönetimi' : 'Veteriner Klinik Yönetim Sistemi'}
           </Typography>
@@ -769,57 +776,78 @@ const LoginPage: React.FC<LoginPageProps> = ({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundImage: customBackground || `
-            linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)),
-            url('https://images.unsplash.com/photo-1623366302587-b38b1ddaefd9?q=80&w=2525&auto=format&fit=crop')
-          `,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
+        background: customBackground || `
+          radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.15) 0%, transparent 50%),
+          radial-gradient(circle at 80% 80%, rgba(102, 126, 234, 0.15) 0%, transparent 50%),
+          radial-gradient(circle at 40% 90%, rgba(118, 75, 162, 0.1) 0%, transparent 50%),
+          linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%)
+        `,
         position: 'relative',
         overflow: 'hidden'
       }}
     >
       {renderControls()}
 
-      {/* Decorative Circles */}
+      {/* Decorative Shapes - Modern & Subtle */}
       <Box
         sx={{
           position: 'absolute',
-          top: -100,
-          left: -100,
-          width: 300,
-          height: 300,
+          top: '-10%',
+          left: '-5%',
+          width: '40%',
+          height: '40%',
           borderRadius: '50%',
-          background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%)',
-          filter: 'blur(50px)',
-          animation: `${pulseAnimation} 4s ease-in-out infinite`
+          background: 'radial-gradient(circle, rgba(120, 119, 198, 0.08) 0%, transparent 70%)',
+          filter: 'blur(60px)',
+          animation: `${pulseAnimation} 8s ease-in-out infinite`,
+          zIndex: 0
         }}
       />
       <Box
         sx={{
           position: 'absolute',
-          bottom: -50,
-          right: -50,
-          width: 200,
-          height: 200,
+          bottom: '-15%',
+          right: '-10%',
+          width: '50%',
+          height: '50%',
           borderRadius: '50%',
-          background: 'linear-gradient(135deg, rgba(118, 75, 162, 0.2) 0%, rgba(102, 126, 234, 0.2) 100%)',
-          filter: 'blur(30px)',
-          animation: `${floatAnimation} 5s ease-in-out infinite`
+          background: 'radial-gradient(circle, rgba(102, 126, 234, 0.06) 0%, transparent 70%)',
+          filter: 'blur(80px)',
+          animation: `${floatAnimation} 10s ease-in-out infinite`,
+          zIndex: 0
+        }}
+      />
+      <Box
+        sx={{
+          position: 'absolute',
+          top: '30%',
+          right: '10%',
+          width: '25%',
+          height: '25%',
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(118, 75, 162, 0.05) 0%, transparent 70%)',
+          filter: 'blur(70px)',
+          animation: `${floatAnimation} 12s ease-in-out infinite`,
+          animationDelay: '2s',
+          zIndex: 0
         }}
       />
 
       <Container maxWidth="xs" sx={{ position: 'relative', zIndex: 1 }}>
         <Fade in timeout={800}>
           <Paper
-            elevation={24}
+            elevation={0}
             sx={{
-              p: { xs: 3, sm: 4 },
-              borderRadius: 4,
-              background: 'rgba(255, 255, 255, 0.8)',
-              backdropFilter: 'blur(20px)',
-              border: '1px solid rgba(255, 255, 255, 0.3)',
-              boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.15)',
+              p: { xs: 4, sm: 5 },
+              borderRadius: '24px',
+              background: 'rgba(255, 255, 255, 0.7)',
+              backdropFilter: 'blur(40px) saturate(180%)',
+              border: '1px solid rgba(255, 255, 255, 0.8)',
+              boxShadow: '0 8px 32px rgba(102, 126, 234, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04)',
+              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+              '&:hover': {
+                boxShadow: '0 12px 48px rgba(102, 126, 234, 0.12), 0 4px 16px rgba(0, 0, 0, 0.06)',
+              }
             }}
           >
             {renderHeader()}
@@ -831,8 +859,8 @@ const LoginPage: React.FC<LoginPageProps> = ({
               {loginStep === 'success' && renderSuccessState()}
             </Box>
 
-            <Box sx={{ mt: 3, textAlign: 'center' }}>
-              <Typography variant="caption" color="text.secondary">
+            <Box sx={{ mt: 4, pt: 3, borderTop: '1px solid rgba(0, 0, 0, 0.06)', textAlign: 'center' }}>
+              <Typography variant="caption" sx={{ color: 'rgba(0, 0, 0, 0.4)', fontSize: '0.75rem' }}>
                 &copy; {new Date().getFullYear()} {companyName}. Tüm hakları saklıdır.
               </Typography>
             </Box>

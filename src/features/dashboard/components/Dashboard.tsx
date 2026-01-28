@@ -13,6 +13,7 @@ import AddAnimalDialog from '../../animals/components/AddAnimalDialog';
 import { useAnimals } from '../../animals/hooks/useAnimals';
 import { apiClient } from '../../../services/api';
 import { API_ENDPOINTS } from '../../../constants';
+import { useSandbox } from '../../../context/SandboxContext';
 
 interface DashboardStats {
   totalAnimals: number;
@@ -97,6 +98,9 @@ const Dashboard: React.FC = () => {
   const { loading, startLoading, stopLoading } = useLoading();
   const { createAnimal } = useAnimals({ autoFetch: false });
 
+  // Safe sandbox usage
+  const { isDemo, openRegistrationGate } = useSandbox();
+
   const [stats, setStats] = useState<DashboardStats>({
     totalAnimals: 0,
     todaysAppointments: 0,
@@ -112,7 +116,58 @@ const Dashboard: React.FC = () => {
   const [calendarRefreshKey, setCalendarRefreshKey] = useState(0);
   const { slug } = useParams<{ slug?: string }>();
 
+  // Helper for Mock Data Generation
+  const generateMockData = useCallback(() => {
+    // Mock Appointments
+    const now = new Date();
+    const mockAppointments: AppointmentRecord[] = Array(8).fill(null).map((_, i) => ({
+      appointmentId: i + 1,
+      animalId: i + 1,
+      animalName: ['Luna', 'Max', 'Bella', 'Charlie', 'Lucy', 'Simba', 'Pamuk', 'Boncuk'][i],
+      dateTime: new Date(now.getTime() + (i - 2) * 3600000).toISOString(), // Spread around current time
+      subject: ['Aşı Kontrolü', 'Genel Muayene', 'Diş Temizliği', 'Yaralanma', 'Kısırlaştırma', 'Deri Sorunu', 'Kontrol', 'Acil Durum'][i],
+      veterinarianId: 101,
+      veterinarianName: 'Dr. Ayşe Yılmaz',
+      ownerName: ['Ahmet Demir', 'Mehmet Kaya', 'Ayşe Çelik', 'Fatma Yildiz', 'Ali Öztürk', 'Zeynep Kara', 'Mustafa Aydın', 'Elif Koç'][i],
+      status: i < 2 ? 'COMPLETED' : 'SCHEDULED',
+      notes: 'Demo notları',
+      createdAt: now.toISOString(),
+      updatedAt: now.toISOString(),
+    }));
+
+    // Mock Animals
+    const mockAnimals: AnimalRecord[] = Array(8).fill(null).map((_, i) => ({
+      id: i + 1,
+      name: ['Luna', 'Max', 'Bella', 'Charlie', 'Lucy', 'Simba', 'Pamuk', 'Boncuk'][i],
+      species: { id: i % 2 === 0 ? 1 : 2, name: i % 2 === 0 ? 'Kedi' : 'Köpek' },
+      breed: { id: i, name: i % 2 === 0 ? 'Tekir' : 'Golden Retriever' },
+      owner: { id: i + 1, name: ['Ahmet Demir', 'Mehmet Kaya', 'Ayşe Çelik', 'Fatma Yildiz', 'Ali Öztürk', 'Zeynep Kara', 'Mustafa Aydın', 'Elif Koç'][i] },
+      gender: i % 2 === 0 ? 'Dişi' : 'Erkek',
+      birthDate: '2022-01-01',
+      weight: (i + 1) * 2.5,
+      color: 'Karışık',
+      microchipNumber: `DEMO-${1000 + i}`,
+    }));
+
+    // Mock Stock Alerts
+    const mockStock: StockAlert[] = [
+      { productId: 1, name: 'Kuduz Aşısı', currentStock: 2, minStock: 10, category: 'Aşılar' },
+      { productId: 2, name: 'Karma Aşı', currentStock: 5, minStock: 15, category: 'Aşılar' },
+      { productId: 3, name: 'Sargı Bezi', currentStock: 12, minStock: 20, category: 'Medikal' },
+    ];
+
+    // Mock Lab Tests
+    const mockLab: PendingLabTest[] = [
+      { testId: 1, testName: 'Tam Kan Sayımı', animalName: 'Luna', animalSpecies: 'Kedi', date: now.toISOString(), status: 'Sonuç Bekleniyor' },
+      { testId: 2, testName: 'Biyokimya', animalName: 'Max', animalSpecies: 'Köpek', date: now.toISOString(), status: 'İnceleniyor' },
+    ];
+
+    return { mockAppointments, mockAnimals, mockStock, mockLab };
+  }, []);
+
   const loadTodayAppointments = useCallback(async (): Promise<AppointmentRecord[]> => {
+    if (isDemo) return []; // Handled in main fetch
+
     const appointmentService = new AppointmentService();
 
     try {
@@ -141,75 +196,75 @@ const Dashboard: React.FC = () => {
 
     // Mock data fallback when backend is not available
     console.warn('Backend bağlantısı yok, mock data kullanılıyor');
-    return [
-      {
-        appointmentId: 1,
-        animalId: 1,
-        animalName: 'Mock Hayvan',
-        dateTime: new Date().toISOString(),
-        subject: 'Mock Randevu',
-        veterinarianId: 1,
-        veterinarianName: 'Mock Veteriner',
-        ownerName: 'Mock Sahip',
-        status: 'SCHEDULED',
-        notes: 'Mock randevu',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      }
-    ];
-  }, []);
+    return [];
+  }, [isDemo]);
 
   const fetchDashboardData = useCallback(async () => {
     try {
       startLoading('Dashboard verileri yükleniyor...');
 
-      const animalService = new AnimalService();
-      const [animalResponse, appointmentItems] = await Promise.all([
-        animalService.getAnimals(0, 8),
-        loadTodayAppointments(),
-      ]);
-
       let animalItems: AnimalRecord[] = [];
+      let appointmentItems: AppointmentRecord[] = [];
+      let stockItems: StockAlert[] = [];
+      let labItems: PendingLabTest[] = [];
+      let totalAnimalsCount = 0;
 
-      if (animalResponse.success && animalResponse.data) {
-        animalItems = animalResponse.data.items || [];
+      if (isDemo) {
+        // DEMO MODE: USE MOCK DATA
+        await new Promise(resolve => setTimeout(resolve, 800)); // Simulate network delay
+        const mocks = generateMockData();
+        animalItems = mocks.mockAnimals;
+        appointmentItems = mocks.mockAppointments;
+        stockItems = mocks.mockStock;
+        labItems = mocks.mockLab;
+        totalAnimalsCount = 154; // Fake total
+        setStockAlerts(stockItems);
+        setPendingLabTests(labItems);
       } else {
-        // Mock data fallback when backend is not available
-        console.warn('Backend bağlantısı yok, mock animal data kullanılıyor');
-        animalItems = [
-          {
-            id: 1,
-            name: 'Mock Hayvan 1',
-            species: { id: 1, name: 'Kedi' },
-            breed: { id: 1, name: 'Tekir' },
-            owner: { id: 1, name: 'Mock Sahip 1' },
-            gender: 'Erkek',
-            birthDate: '2020-01-01',
-            weight: 4.5,
-            color: 'Gri',
-            microchipNumber: 'MOCK001',
-            allergies: undefined,
-            chronicDiseases: undefined,
-            notes: 'Mock hayvan',
-          },
-          {
-            id: 2,
-            name: 'Mock Hayvan 2',
-            species: { id: 2, name: 'Köpek' },
-            breed: { id: 2, name: 'Golden Retriever' },
-            owner: { id: 2, name: 'Mock Sahip 2' },
-            gender: 'Dişi',
-            birthDate: '2019-05-15',
-            weight: 25.0,
-            color: 'Altın',
-            microchipNumber: 'MOCK002',
-            allergies: undefined,
-            chronicDiseases: undefined,
-            notes: 'Mock hayvan',
+        // REAL MODE
+        const animalService = new AnimalService();
+        const [animalResponse, appointments] = await Promise.all([
+          animalService.getAnimals(0, 8),
+          loadTodayAppointments(),
+        ]);
+
+        if (animalResponse.success && animalResponse.data) {
+          animalItems = animalResponse.data.items || [];
+          totalAnimalsCount = animalResponse.data.total;
+        }
+
+        appointmentItems = appointments;
+
+        // Fetch stock alerts
+        try {
+          const stockResponse = await apiClient.get<StockAlert[]>(API_ENDPOINTS.STOCK_ALERTS);
+          if (stockResponse.success && stockResponse.data) {
+            setStockAlerts(stockResponse.data);
           }
-        ];
+        } catch (stockErr) {
+          console.warn('Stock alerts could not be fetched:', stockErr);
+        }
+
+        // Fetch pending lab tests
+        try {
+          const labResponse = await apiClient.get<any[]>(`${API_ENDPOINTS.LAB_TESTS}/pending`);
+          if (labResponse.success && labResponse.data) {
+            const mappedLabTests: PendingLabTest[] = labResponse.data.map((test: any) => ({
+              testId: test.testId,
+              testName: test.testName,
+              animalName: test.animal?.name || 'Bilinmiyor',
+              animalSpecies: test.animal?.species?.name || '',
+              date: test.date,
+              status: test.status,
+            }));
+            setPendingLabTests(mappedLabTests);
+          }
+        } catch (labErr) {
+          console.warn('Pending lab tests could not be fetched:', labErr);
+        }
       }
 
+      // Process Data for UI
       const patients: HospitalizedPatient[] = (animalItems || []).slice(0, 5).map((animal, index) => ({
         id: animal.id ? animal.id.toString() : `${Date.now()}-${index}`,
         animalId: animal.id ? animal.id.toString() : '',
@@ -246,69 +301,58 @@ const Dashboard: React.FC = () => {
         });
 
       setStats({
-        totalAnimals: animalResponse.data?.total ?? animalItems.length,
+        totalAnimals: totalAnimalsCount,
         todaysAppointments: appointmentArray.length,
         clinicAnimals: patients.length,
       });
       setHospitalizedPatients(patients);
       setRecentActivities(activities);
 
-      // Fetch stock alerts
-      try {
-        const stockResponse = await apiClient.get<StockAlert[]>(API_ENDPOINTS.STOCK_ALERTS);
-        if (stockResponse.success && stockResponse.data) {
-          setStockAlerts(stockResponse.data);
-        }
-      } catch (stockErr) {
-        console.warn('Stock alerts could not be fetched:', stockErr);
+      if (!isDemo) {
+        showSuccess('Dashboard verileri başarıyla yüklendi');
       }
-
-      // Fetch pending lab tests
-      try {
-        const labResponse = await apiClient.get<any[]>(`${API_ENDPOINTS.LAB_TESTS}/pending`);
-        if (labResponse.success && labResponse.data) {
-          const mappedLabTests: PendingLabTest[] = labResponse.data.map((test: any) => ({
-            testId: test.testId,
-            testName: test.testName,
-            animalName: test.animal?.name || 'Bilinmiyor',
-            animalSpecies: test.animal?.species?.name || '',
-            date: test.date,
-            status: test.status,
-          }));
-          setPendingLabTests(mappedLabTests);
-        }
-      } catch (labErr) {
-        console.warn('Pending lab tests could not be fetched:', labErr);
-      }
-
-      showSuccess('Dashboard verileri başarıyla yüklendi');
     } catch (err) {
       console.error('Dashboard verileri alınırken hata:', err);
-      const errorMessage = err instanceof Error ? err.message : 'Bilinmeyen hata';
-      addError(
-        'Dashboard verileri alınırken bir hata oluştu',
-        'error',
-        errorMessage,
-        {
-          label: 'Tekrar Dene',
-          onClick: () => fetchDashboardData(),
-        }
-      );
+      if (!isDemo) {
+        const errorMessage = err instanceof Error ? err.message : 'Bilinmeyen hata';
+        addError(
+          'Dashboard verileri alınırken bir hata oluştu',
+          'error',
+          errorMessage,
+          {
+            label: 'Tekrar Dene',
+            onClick: () => fetchDashboardData(),
+          }
+        );
+      }
     } finally {
       stopLoading();
     }
-  }, [loadTodayAppointments, startLoading, stopLoading, addError, showSuccess]);
+  }, [loadTodayAppointments, startLoading, stopLoading, addError, showSuccess, isDemo, generateMockData]);
 
   useEffect(() => {
     fetchDashboardData();
   }, [fetchDashboardData]);
 
   const handleQuickAppointmentCreated = useCallback(async () => {
+    if (isDemo) {
+      openRegistrationGate();
+      return;
+    }
     await fetchDashboardData();
     setCalendarRefreshKey((prev) => prev + 1);
-  }, [fetchDashboardData]);
+  }, [fetchDashboardData, isDemo, openRegistrationGate]);
 
   const handleAnimalClick = (animalId: string) => {
+    if (isDemo) {
+      // Allow navigation in demo but maybe show limited view? 
+      // For now let's just allow it, subsequent pages might need mock data too.
+      // Or better: show registration gate for deep linking in demo
+      // navigate(`/animals/${animalId}`); // Or block
+      openRegistrationGate(); // Let's block detail view for now to keep it simple, or implement read-only detail later
+      return;
+    }
+
     if (!animalId) {
       return;
     }
@@ -330,6 +374,11 @@ const Dashboard: React.FC = () => {
     chronicDiseases?: string;
     notes?: string;
   }) => {
+    if (isDemo) {
+      openRegistrationGate();
+      return;
+    }
+
     try {
       startLoading('Hayvan ekleniyor...');
 
@@ -389,6 +438,22 @@ const Dashboard: React.FC = () => {
     }
   };
 
+  const handleOpenFastAppointment = () => {
+    if (isDemo) {
+      openRegistrationGate();
+      return;
+    }
+    setIsFastModalOpen(true);
+  };
+
+  const handleOpenQuickAppointment = () => {
+    if (isDemo) {
+      openRegistrationGate();
+      return;
+    }
+    setIsQuickModalOpen(true);
+  };
+
   return (
     <div className="dashboard">
       <LoadingSpinner
@@ -404,7 +469,7 @@ const Dashboard: React.FC = () => {
           type="button"
           className="fast-appointment-btn"
           style={{ marginRight: 8 }}
-          onClick={() => setIsFastModalOpen(true)}
+          onClick={handleOpenFastAppointment}
         >
           <span className="fast-appointment-btn__sparkle">✨</span>
           <span>Hızlı Randevu</span>
@@ -413,7 +478,7 @@ const Dashboard: React.FC = () => {
           type="button"
           className="ui-button"
           style={{ marginRight: 8 }}
-          onClick={() => setIsQuickModalOpen(true)}
+          onClick={handleOpenQuickAppointment}
         >
           <span className="icon icon-plus"></span>
           Yeni Randevu

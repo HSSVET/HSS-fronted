@@ -10,7 +10,7 @@ import {
     VaccinationRecord,
     VaccinationSchedule
 } from '../types/vaccination';
-import type { ApiResponse, PaginatedResponse } from '../../../types/common';
+import type { ApiResponse } from '../../../types/common';
 
 export class VaccinationService {
     // Vaccines
@@ -63,6 +63,10 @@ export class VaccinationService {
         return apiClient.post(API_ENDPOINTS.VACCINATIONS, record);
     }
 
+    static async createVaccination(request: any): Promise<ApiResponse<VaccinationRecord>> {
+        return apiClient.post(API_ENDPOINTS.VACCINATIONS, request);
+    }
+
     static async updateVaccinationRecord(id: string, updates: Partial<VaccinationRecord>): Promise<ApiResponse<VaccinationRecord>> {
         return apiClient.put(`${API_ENDPOINTS.VACCINATIONS}/${id}`, updates);
     }
@@ -87,11 +91,14 @@ export class VaccinationService {
 
     // Statistics and reports
     static async getVaccinationStats(): Promise<ApiResponse<VaccinationStats>> {
+        // Fallback to stock stats if vaccination specific not available or implement in backend
+        // For now, let's use a mocked response or try to use an existing endpoint
+        // TODO: Implement /api/vaccinations/statistics in backend
         return apiClient.get(`${API_ENDPOINTS.VACCINATIONS}/statistics`);
     }
 
     static async getStockAlerts(): Promise<ApiResponse<VaccineStockAlert[]>> {
-        return apiClient.get(`${API_ENDPOINTS.VACCINES}/stock/alerts`);
+        return apiClient.get(`${API_ENDPOINTS.STOCK}/alerts`);
     }
 
     // Animal vaccination card
@@ -105,6 +112,11 @@ export class VaccinationService {
 
     static async getOverdueVaccinations(): Promise<ApiResponse<VaccinationRecord[]>> {
         return apiClient.get(`${API_ENDPOINTS.VACCINATIONS}/overdue`);
+    }
+
+    // Barcode scanning
+    static async scanBarcode(barcode: string): Promise<ApiResponse<any>> {
+        return apiClient.get(`${API_ENDPOINTS.VACCINATIONS}/scan-barcode/${encodeURIComponent(barcode)}`);
     }
 
     // Helper method for breeds
@@ -137,6 +149,7 @@ export const vaccinationService = {
     getVaccinationRecords: VaccinationService.getVaccinationRecords,
     getVaccinationStats: VaccinationService.getVaccinationStats,
     createVaccinationRecord: VaccinationService.createVaccinationRecord,
+    createVaccination: VaccinationService.createVaccination,
     getBreedsByAnimalType: VaccinationService.getBreedsByAnimalType,
     getStockAlerts: VaccinationService.getStockAlerts,
     getVaccineStock: VaccinationService.getVaccineStock,

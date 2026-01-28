@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { vaccinationService } from '../services/vaccinationService';
 import { VaccinationStats, VaccineStockAlert } from '../types/vaccination';
 import VaccineStockInfo from './VaccineStockInfo';
@@ -14,6 +15,7 @@ const VaccinationDashboard: React.FC = () => {
     const [stats, setStats] = useState<VaccinationStats | null>(null);
     const [stockAlerts, setVaccineStockAlerts] = useState<VaccineStockAlert[]>([]);
     const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchData = async () => {
@@ -81,11 +83,29 @@ const VaccinationDashboard: React.FC = () => {
         );
     }
 
+
+
     return (
         <div className="vaccination-container">
             {/* Header */}
-            <div className="vaccination-header">
+            <div className="vaccination-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <h1 className="vaccination-title">Aşı Yönetim Sistemi</h1>
+                <button
+                    className="new-vaccination-btn" // You might want to define this class in CSS or use inline styles for now
+                    style={{
+                        padding: '10px 20px',
+                        backgroundColor: '#92A78C', // Primary color match
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '8px',
+                        cursor: 'pointer',
+                        fontSize: '15px',
+                        fontWeight: 600
+                    }}
+                    onClick={() => navigate('new')}
+                >
+                    + Yeni Aşı Kaydı
+                </button>
             </div>
 
             {/* Stats Overview */}

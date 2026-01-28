@@ -38,6 +38,12 @@ export interface AnimalRecord {
   primaryVeterinarianName?: string;
   hasChronicDiseases?: boolean;
   hasAllergies?: boolean;
+  status?: 'ACTIVE' | 'FOLLOW_UP' | 'DECEASED' | 'ARCHIVED';
+  behaviorNotes?: string;
+  profileImageUrl?: string;
+  height?: number;
+  sterilized?: boolean;
+  conditions?: any[]; // Using any[] to avoid circular dependency, ideally should be AnimalCondition[]
 }
 
 export interface BasicAnimalRecord {
@@ -48,14 +54,6 @@ export interface BasicAnimalRecord {
   breedName?: string;
   microchipNumber?: string;
 }
-
-const normalizeSpringPage = <T>(page: SpringPage<T>): PaginatedResponse<T> => ({
-  items: page.content,
-  total: page.totalElements,
-  page: page.number,
-  limit: page.size,
-  totalPages: page.totalPages,
-});
 
 const emptyPage = <T>(page: number, limit: number): PaginatedResponse<T> => ({
   items: [],
@@ -93,6 +91,12 @@ export class AnimalService {
       notes: backend.notes,
       lastVisitDate: backend.lastVisitDate ? (typeof backend.lastVisitDate === 'string' ? backend.lastVisitDate : backend.lastVisitDate.toString()) : undefined,
       nextVaccinationDate: backend.nextVaccinationDate ? (typeof backend.nextVaccinationDate === 'string' ? backend.nextVaccinationDate : backend.nextVaccinationDate.toString()) : undefined,
+      status: backend.status,
+      behaviorNotes: backend.behaviorNotes,
+      profileImageUrl: backend.profileImageUrl,
+      height: backend.height,
+      sterilized: backend.sterilized,
+      conditions: backend.conditions,
     };
 
     return mapped;
@@ -326,6 +330,24 @@ export class AnimalService {
     const { apiClient } = await import('../../../services/api');
     const response = await apiClient.get<AnimalRecord[]>(`/api/animals?microchipNumber=${encodeURIComponent(microchip)}`);
     return response;
+  }
+
+  // Unified search - searches by name, owner name, and microchip
+  async searchAnimals(query: string): Promise<ApiResponse<AnimalRecord[]>> {
+    const { apiClient } = await import('../../../services/api');
+    const response = await apiClient.get<any[]>(`/api/animals/search?query=${encodeURIComponent(query)}`);
+    
+    if (response.success && response.data) {
+      const mappedAnimals = response.data.map(this.mapBackendToAnimalRecord);
+      return { success: true, data: mappedAnimals, status: response.status };
+    }
+    
+    return {
+      success: false,
+      data: [],
+      error: response.error || 'Failed to search animals',
+      status: response.status
+    };
   }
 
   // Get animal by microchip number

@@ -5,8 +5,10 @@ import {
   Button,
   Box,
   FormHelperText,
-  Typography
+  Typography,
+  Grid
 } from '@mui/material';
+import { Business as BusinessIcon } from '@mui/icons-material';
 
 interface OwnerFormProps {
   owner?: OwnerData;
@@ -22,6 +24,12 @@ interface OwnerData {
   phone: string;
   email: string;
   address?: string;
+  type?: 'INDIVIDUAL' | 'CORPORATE';
+  corporateName?: string;
+  taxNo?: string;
+  taxOffice?: string;
+  notes?: string;
+  warnings?: string;
 }
 
 interface OwnerFormData {
@@ -30,6 +38,12 @@ interface OwnerFormData {
   phone: string;
   email: string;
   address: string;
+  type: 'INDIVIDUAL' | 'CORPORATE';
+  corporateName: string;
+  taxNo: string;
+  taxOffice: string;
+  notes: string;
+  warnings: string;
 }
 
 const OwnerForm: React.FC<OwnerFormProps> = ({
@@ -42,14 +56,21 @@ const OwnerForm: React.FC<OwnerFormProps> = ({
     control,
     handleSubmit,
     formState: { errors },
-    reset
+    reset,
+    watch
   } = useForm<OwnerFormData>({
     defaultValues: {
       firstName: '',
       lastName: '',
       phone: '',
       email: '',
-      address: ''
+      address: '',
+      type: 'INDIVIDUAL',
+      corporateName: '',
+      taxNo: '',
+      taxOffice: '',
+      notes: '',
+      warnings: ''
     }
   });
 
@@ -74,10 +95,73 @@ const OwnerForm: React.FC<OwnerFormProps> = ({
           </Typography>
         </Box>
 
+        <Box sx={{ mb: 3 }}>
+          <Typography variant="subtitle1" gutterBottom>Müşteri Tipi</Typography>
+          <Controller
+            name="type"
+            control={control}
+            render={({ field }) => (
+              <Box sx={{ display: 'flex', gap: 2 }}>
+                <Button
+                  variant={field.value !== 'CORPORATE' ? 'contained' : 'outlined'}
+                  onClick={() => field.onChange('INDIVIDUAL')}
+                >
+                  Bireysel
+                </Button>
+                <Button
+                  variant={field.value === 'CORPORATE' ? 'contained' : 'outlined'}
+                  onClick={() => field.onChange('CORPORATE')}
+                >
+                  Kurumsal
+                </Button>
+              </Box>
+            )}
+          />
+        </Box>
+
+        {/* Kurumsal Bilgiler */}
+        {watch('type') === 'CORPORATE' && (
+          <Box sx={{ mb: 3, p: 2, border: '1px solid #eee', borderRadius: 2 }}>
+            <Typography variant="subtitle1" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <BusinessIcon /> Kurumsal Bilgiler
+            </Typography>
+            <Grid container spacing={2}>
+              <Grid size={{ xs: 12 }}>
+                <Controller
+                  name="corporateName"
+                  control={control}
+                  rules={{ required: 'Kurumsal Ünvan gereklidir' }}
+                  render={({ field }) => (
+                    <TextField {...field} label="Kurumsal Ünvan / Şirket Adı" fullWidth error={!!errors.corporateName} helperText={errors.corporateName?.message} />
+                  )}
+                />
+              </Grid>
+              <Grid size={{ xs: 12, md: 6 }}>
+                <Controller
+                  name="taxOffice"
+                  control={control}
+                  render={({ field }) => (
+                    <TextField {...field} label="Vergi Dairesi" fullWidth />
+                  )}
+                />
+              </Grid>
+              <Grid size={{ xs: 12, md: 6 }}>
+                <Controller
+                  name="taxNo"
+                  control={control}
+                  render={({ field }) => (
+                    <TextField {...field} label="Vergi No" fullWidth />
+                  )}
+                />
+              </Grid>
+            </Grid>
+          </Box>
+        )}
+
         {/* Kişisel Bilgiler */}
         <Box>
           <Typography variant="subtitle1" gutterBottom>
-            Kişisel Bilgiler
+            {watch('type') === 'CORPORATE' ? 'Yetkili Kişi Bilgileri' : 'Kişisel Bilgiler'}
           </Typography>
         </Box>
 
@@ -85,11 +169,11 @@ const OwnerForm: React.FC<OwnerFormProps> = ({
           <Controller
             name="firstName"
             control={control}
-            rules={{ 
+            rules={{
               required: 'Ad gereklidir',
               minLength: { value: 2, message: 'Ad en az 2 karakter olmalıdır' }
             }}
-            render={({ field }: any) => (
+            render={({ field }) => (
               <TextField
                 {...field}
                 label="Ad"
@@ -103,11 +187,11 @@ const OwnerForm: React.FC<OwnerFormProps> = ({
           <Controller
             name="lastName"
             control={control}
-            rules={{ 
+            rules={{
               required: 'Soyad gereklidir',
               minLength: { value: 2, message: 'Soyad en az 2 karakter olmalıdır' }
             }}
-            render={({ field }: any) => (
+            render={({ field }) => (
               <TextField
                 {...field}
                 label="Soyad"
@@ -130,14 +214,14 @@ const OwnerForm: React.FC<OwnerFormProps> = ({
           <Controller
             name="phone"
             control={control}
-            rules={{ 
+            rules={{
               required: 'Telefon numarası gereklidir',
               pattern: {
                 value: /^[+]?[0-9\s\-()]*$/,
                 message: 'Geçerli bir telefon numarası giriniz'
               }
             }}
-            render={({ field }: any) => (
+            render={({ field }) => (
               <TextField
                 {...field}
                 label="Telefon"
@@ -152,13 +236,13 @@ const OwnerForm: React.FC<OwnerFormProps> = ({
           <Controller
             name="email"
             control={control}
-            rules={{ 
+            rules={{
               pattern: {
                 value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
                 message: 'Geçerli bir e-posta adresi giriniz'
               }
             }}
-            render={({ field }: any) => (
+            render={({ field }) => (
               <TextField
                 {...field}
                 label="E-posta"
@@ -176,7 +260,7 @@ const OwnerForm: React.FC<OwnerFormProps> = ({
           <Controller
             name="address"
             control={control}
-            render={({ field }: any) => (
+            render={({ field }) => (
               <TextField
                 {...field}
                 label="Adres"
@@ -184,6 +268,39 @@ const OwnerForm: React.FC<OwnerFormProps> = ({
                 rows={3}
                 fullWidth
                 placeholder="Tam adres bilgisi"
+              />
+            )}
+          />
+        </Box>
+
+        {/* Notlar ve Uyarılar */}
+        <Box sx={{ mt: 3, display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <Controller
+            name="notes"
+            control={control}
+            render={({ field }) => (
+              <TextField
+                {...field}
+                label="Müşteri Notları"
+                multiline
+                rows={2}
+                fullWidth
+                placeholder="Genel notlar..."
+              />
+            )}
+          />
+          <Controller
+            name="warnings"
+            control={control}
+            render={({ field }) => (
+              <TextField
+                {...field}
+                label="Özel Uyarılar"
+                multiline
+                rows={2}
+                fullWidth
+                placeholder="Örn: Agresif olabilir, ödeme sorunu vb."
+                sx={{ '& .MuiOutlinedInput-root': { color: 'error.main' }, '& .MuiInputLabel-root': { color: 'error.main' } }}
               />
             )}
           />

@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient, UseQueryOptions } from '@tanstack/react-query';
 import { queryKeys } from '../../../lib/react-query';
 import { LaboratoryService } from '../services/laboratoryService';
-import type { ApiResponse, PaginatedResponse } from '../../../types/common';
+import type { ApiResponse, PaginatedResponse, SpringPage } from '../../../types/common';
 import type { LabTest, TestType, CreateLabTestRequest } from '../types/laboratory';
 
 /**
@@ -12,7 +12,7 @@ export function useLabTests(
     limit: number = 10,
     status?: string,
     category?: string,
-    options?: Omit<UseQueryOptions<ApiResponse<PaginatedResponse<LabTest>>>, 'queryKey' | 'queryFn'>
+    options?: Omit<UseQueryOptions<ApiResponse<SpringPage<LabTest>>>, 'queryKey' | 'queryFn'>
 ) {
     return useQuery({
         queryKey: [...queryKeys.laboratory.tests(), 'list', { page, limit, status, category }],
@@ -257,6 +257,24 @@ export function useUpdateTestResults() {
 }
 
 /**
+ * Hook to upload lab result file
+ */
+export function useUploadLabResult() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: ({ id, formData }: { id: string; formData: FormData }) =>
+            LaboratoryService.uploadTestResult(id, formData),
+
+        onSuccess: (data, variables) => {
+            queryClient.invalidateQueries({ queryKey: queryKeys.laboratory.test(variables.id) });
+            queryClient.invalidateQueries({ queryKey: queryKeys.laboratory.tests() });
+            queryClient.invalidateQueries({ queryKey: queryKeys.laboratory.pending() });
+        },
+    });
+}
+
+/**
  * Hook to complete a lab test
  */
 export function useCompleteLabTest() {
@@ -354,5 +372,16 @@ export function useCreateLabResult() {
         onSettled: () => {
             queryClient.invalidateQueries({ queryKey: queryKeys.laboratory.results() });
         },
+    });
+}
+
+/**
+ * Hook to fetch lab statistics
+ */
+export function useLabStats() {
+    return useQuery({
+        queryKey: [...queryKeys.laboratory.all, 'stats'],
+        queryFn: () => LaboratoryService.getStatistics(),
+        refetchInterval: 30000 // Refetch every 30 seconds
     });
 }

@@ -101,7 +101,7 @@ const StockSettings: React.FC = () => {
                         <label className="toggle-switch">
                             <input
                                 type="checkbox"
-                                checked={settings.autoAlerts.lowStock}
+                                checked={settings?.autoAlerts?.lowStock ?? false}
                                 onChange={(e) => updateSetting('autoAlerts.lowStock', e.target.checked)}
                             />
                             <span className="toggle-slider"></span>
@@ -116,7 +116,7 @@ const StockSettings: React.FC = () => {
                         <label className="toggle-switch">
                             <input
                                 type="checkbox"
-                                checked={settings.autoAlerts.expiration}
+                                checked={settings?.autoAlerts?.expiration ?? false}
                                 onChange={(e) => updateSetting('autoAlerts.expiration', e.target.checked)}
                             />
                             <span className="toggle-slider"></span>

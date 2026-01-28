@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { ThemeProvider, CssBaseline, createTheme, Box, CircularProgress } from '@mui/material';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ErrorProvider } from './context/ErrorContext';
@@ -18,22 +18,27 @@ import SurgeryDetails from './features/surgery/components/SurgeryDetails';
 import HospitalizationDetails from './features/hospitalization/components/HospitalizationDetails';
 import SuperAdminLayout from './shared/components/SuperAdminLayout';
 import ClinicsPage from './features/super-admin/ClinicsPage';
+import { OwnerPage, OwnerDetailPage } from './features/owners';
 import LoginPage from './components/auth/LoginPage';
+import RegisterPage from './components/auth/RegisterPage';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import Toast from './components/Toast';
 import VaccinationDashboard from './features/vaccinations/components/VaccinationDashboard';
+import NewVaccinationPage from './features/vaccinations/pages/NewVaccinationPage';
 import SmsPage from './features/sms/components/SmsPage';
 import StockSystem from './features/stock/components/StockSystem';
-import ReportsPage from './features/reports/components/ReportsPage';
 import SettingsPage from './features/settings/components/SettingsPage';
+import { QueueDashboard, PatientCheckIn } from './features/queue';
 
 // Error Boundaries
+
 import {
   GlobalErrorBoundary,
   PageErrorBoundary,
 } from './components/common/ErrorBoundary';
-
 import './shared/styles/App.css';
+import { LandingPage, ProductsPage, AboutPage, DemoPage } from './features/landing';
+import GlobalConfirmDialog from './components/common/GlobalConfirmDialog';
 
 const theme = createTheme({
   palette: {
@@ -92,7 +97,7 @@ const theme = createTheme({
   },
 });
 
-const RootRedirect = () => {
+const AuthRedirector = ({ children }: { children: React.ReactNode }) => {
   const { state } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -101,6 +106,10 @@ const RootRedirect = () => {
     if (!state.isInitialized) return;
 
     if (!state.isAuthenticated) {
+      // If not authenticated and not already at login, redirect to login
+      // ProtectedRoute handles this usually, but this is root level
+      // navigate('/login', { replace: true }); 
+      // We let <Navigate to="/login" /> handle this in routes usually
       return;
     }
 
@@ -108,9 +117,7 @@ const RootRedirect = () => {
       const { userType, clinicId, roles } = state.user;
 
       if (roles?.includes('SUPER_ADMIN')) {
-        if (location.pathname === '/' || location.pathname === '/dashboard' || location.pathname === '/login') {
-          navigate('/super-admin/clinics', { replace: true });
-        }
+        navigate('/super-admin/clinics', { replace: true });
         return;
       }
 
@@ -120,6 +127,7 @@ const RootRedirect = () => {
         } else if (userType === 'STAFF' && state.user.clinicSlug) {
           navigate(`/clinic/${state.user.clinicSlug}/dashboard`, { replace: true });
         } else if (userType === 'OWNER') {
+          // If Owner has no clinicId, redirect to generic portal or '0'
           const targetClinicId = clinicId || '0';
           navigate(`/portal/${targetClinicId}/dashboard`, { replace: true });
         }
@@ -127,14 +135,16 @@ const RootRedirect = () => {
     }
   }, [state.isInitialized, state.isAuthenticated, state.user, navigate, location.pathname]);
 
-  if (!state.isInitialized || (state.isAuthenticated && !state.user)) {
+  if (!state.isInitialized) {
     return <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}><CircularProgress /></Box>;
   }
 
   if (!state.isAuthenticated) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
+    // For public routes, just render the content
+    return <>{children}</>;
   }
 
+  // Fallback if authenticated but no redirect happened (e.g. unknown role)
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: '100vh', gap: 2 }}>
       <CircularProgress />
@@ -158,8 +168,13 @@ function App() {
                 <Routes>
                   <Route path="/login" element={<LoginPage />} />
 
-                  {/* Root Redirector */}
-                  <Route path="/" element={<RootRedirect />} />
+                  {/* Public Routes - Wrapped in AuthRedirector to auto-redirect if logged in */}
+                  <Route path="/" element={<AuthRedirector><LandingPage /></AuthRedirector>} />
+                  <Route path="/products" element={<AuthRedirector><ProductsPage /></AuthRedirector>} />
+                  <Route path="/about" element={<AuthRedirector><AboutPage /></AuthRedirector>} />
+                  <Route path="/demo" element={<AuthRedirector><DemoPage /></AuthRedirector>} />
+                  <Route path="/dashboard" element={<AuthRedirector><LandingPage /></AuthRedirector>} />
+                  <Route path="/register" element={<AuthRedirector><RegisterPage /></AuthRedirector>} />
 
                   {/* ========================================================= */}
                   {/* SUPER ADMIN ROUTES */}
@@ -200,6 +215,15 @@ function App() {
                               </PageErrorBoundary>
                             } />
 
+                            <Route path="owners/*" element={
+                              <PageErrorBoundary pageName="Owners">
+                                <Routes>
+                                  <Route index element={<OwnerPage />} />
+                                  <Route path=":id" element={<OwnerDetailPage />} />
+                                </Routes>
+                              </PageErrorBoundary>
+                            } />
+
                             <Route path="appointments" element={
                               <PageErrorBoundary pageName="Appointments">
                                 <AppointmentPage />
@@ -227,15 +251,19 @@ function App() {
                               </PageErrorBoundary>
                             } />
 
+
                             <Route path="reminders" element={
                               <PageErrorBoundary pageName="Reminders">
                                 <RemindersPage />
                               </PageErrorBoundary>
                             } />
 
-                            <Route path="vaccinations" element={
+                            <Route path="vaccinations/*" element={
                               <PageErrorBoundary pageName="Vaccinations">
-                                <VaccinationDashboard />
+                                <Routes>
+                                  <Route index element={<VaccinationDashboard />} />
+                                  <Route path="new" element={<NewVaccinationPage />} />
+                                </Routes>
                               </PageErrorBoundary>
                             } />
 
@@ -251,15 +279,10 @@ function App() {
                               </PageErrorBoundary>
                             } />
 
-                            <Route path="reports" element={
-                              <PageErrorBoundary pageName="Reports">
-                                <ReportsPage />
-                              </PageErrorBoundary>
-                            } />
-
                             <Route path="settings" element={
                               <PageErrorBoundary pageName="Settings">
                                 <SettingsPage />
+
                               </PageErrorBoundary>
                             } />
 
@@ -272,6 +295,18 @@ function App() {
                             <Route path="hospitalizations/:id" element={
                               <PageErrorBoundary pageName="HospitalizationDetails">
                                 <HospitalizationDetails />
+                              </PageErrorBoundary>
+                            } />
+
+                            <Route path="queue" element={
+                              <PageErrorBoundary pageName="Queue">
+                                <QueueDashboard />
+                              </PageErrorBoundary>
+                            } />
+
+                            <Route path="check-in" element={
+                              <PageErrorBoundary pageName="CheckIn">
+                                <PatientCheckIn />
                               </PageErrorBoundary>
                             } />
 
@@ -310,6 +345,7 @@ function App() {
                 </Routes>
               </Router>
               <Toast />
+              <GlobalConfirmDialog />
             </ErrorProvider>
           </AuthProvider>
         </GlobalErrorBoundary>

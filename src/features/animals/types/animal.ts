@@ -4,7 +4,7 @@ export type AnimalSpecies = 'Köpek' | 'Kedi' | 'Kuş' | 'Tavşan' | 'Hamster' |
 
 export type AnimalGender = 'Erkek' | 'Dişi';
 
-export type HealthStatus = 'İyi' | 'Tedavi Altında' | 'Kontrol Gerekli' | 'Kritik';
+export type HealthStatus = 'İyi' | 'Tedavi Altında' | 'Kontrol Gerekli' | 'Kritik' | 'Vefat' | 'Arşiv';
 
 // Temporary interface for the list view (simplified)
 export interface AnimalListItem {
@@ -32,10 +32,28 @@ export interface Animal extends BaseEntity {
   notes?: string;
   microchipId?: string;
   vaccinations?: Vaccination[];
+  priorityStatus?: string;
+  behaviorNotes?: string;
+  profileImageUrl?: string;
+  height?: number;
+  sterilized?: boolean;
+  conditions?: AnimalCondition[];
   // Additional fields for backward compatibility
   health?: HealthStatus;
   lastCheckup?: string;
   nextVaccine?: string;
+}
+
+export interface AnimalCondition {
+  id: number;
+  animalId: number;
+  type: 'ALLERGY' | 'CHRONIC_CONDITION';
+  name: string;
+  severity: 'MILD' | 'MODERATE' | 'SEVERE';
+  diagnosisDate?: string;
+  diagnosedBy?: string;
+  status: 'ACTIVE' | 'MANAGED' | 'RESOLVED';
+  notes?: string;
 }
 
 export interface AnimalOwner {
