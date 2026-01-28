@@ -28,6 +28,7 @@ import NewVaccinationPage from './features/vaccinations/pages/NewVaccinationPage
 import SmsPage from './features/sms/components/SmsPage';
 import StockSystem from './features/stock/components/StockSystem';
 import SettingsPage from './features/settings/components/SettingsPage';
+import { QueueDashboard, PatientCheckIn } from './features/queue';
 
 // Error Boundaries
 
@@ -294,6 +295,18 @@ function App() {
                             <Route path="hospitalizations/:id" element={
                               <PageErrorBoundary pageName="HospitalizationDetails">
                                 <HospitalizationDetails />
+                              </PageErrorBoundary>
+                            } />
+
+                            <Route path="queue" element={
+                              <PageErrorBoundary pageName="Queue">
+                                <QueueDashboard />
+                              </PageErrorBoundary>
+                            } />
+
+                            <Route path="check-in" element={
+                              <PageErrorBoundary pageName="CheckIn">
+                                <PatientCheckIn />
                               </PageErrorBoundary>
                             } />
 

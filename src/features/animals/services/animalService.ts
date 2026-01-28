@@ -55,14 +55,6 @@ export interface BasicAnimalRecord {
   microchipNumber?: string;
 }
 
-const normalizeSpringPage = <T>(page: SpringPage<T>): PaginatedResponse<T> => ({
-  items: page.content,
-  total: page.totalElements,
-  page: page.number,
-  limit: page.size,
-  totalPages: page.totalPages,
-});
-
 const emptyPage = <T>(page: number, limit: number): PaginatedResponse<T> => ({
   items: [],
   total: 0,
@@ -338,6 +330,24 @@ export class AnimalService {
     const { apiClient } = await import('../../../services/api');
     const response = await apiClient.get<AnimalRecord[]>(`/api/animals?microchipNumber=${encodeURIComponent(microchip)}`);
     return response;
+  }
+
+  // Unified search - searches by name, owner name, and microchip
+  async searchAnimals(query: string): Promise<ApiResponse<AnimalRecord[]>> {
+    const { apiClient } = await import('../../../services/api');
+    const response = await apiClient.get<any[]>(`/api/animals/search?query=${encodeURIComponent(query)}`);
+    
+    if (response.success && response.data) {
+      const mappedAnimals = response.data.map(this.mapBackendToAnimalRecord);
+      return { success: true, data: mappedAnimals, status: response.status };
+    }
+    
+    return {
+      success: false,
+      data: [],
+      error: response.error || 'Failed to search animals',
+      status: response.status
+    };
   }
 
   // Get animal by microchip number
