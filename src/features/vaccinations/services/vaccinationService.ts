@@ -114,6 +114,11 @@ export class VaccinationService {
         return apiClient.get(`${API_ENDPOINTS.VACCINATIONS}/overdue`);
     }
 
+    // Barcode scanning
+    static async scanBarcode(barcode: string): Promise<ApiResponse<any>> {
+        return apiClient.get(`${API_ENDPOINTS.VACCINATIONS}/scan-barcode/${encodeURIComponent(barcode)}`);
+    }
+
     // Helper method for breeds
     static getBreedsByAnimalType(animalType: string): string[] {
         return animalBreeds[animalType as keyof typeof animalBreeds] || [];
