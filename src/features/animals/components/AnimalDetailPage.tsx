@@ -59,7 +59,7 @@ const theme = createTheme({
 });
 
 const AnimalDetailPage: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
+  const { id, slug } = useParams<{ id: string; slug: string }>();
   const navigate = useNavigate();
   const location = useLocation();
   const [selectedTab, setSelectedTab] = useState(0);
@@ -296,7 +296,7 @@ const AnimalDetailPage: React.FC = () => {
     return (
       <Box sx={{ p: 3 }}>
         <Typography color="error">{error || 'Animal not found'}</Typography>
-        <Button onClick={() => navigate('..')}>Back to List</Button>
+        <Button onClick={() => navigate(`/clinic/${slug}/animals`)}>Back to List</Button>
       </Box>
     );
   }
@@ -309,7 +309,7 @@ const AnimalDetailPage: React.FC = () => {
           <Box sx={{ mb: 2 }}>
             <Button
               startIcon={<ArrowBack />}
-              onClick={() => navigate('..')}
+              onClick={() => navigate(`/clinic/${slug}/animals`)}
               sx={{
                 color: 'primary.main',
                 '&:hover': {

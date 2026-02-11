@@ -4,7 +4,20 @@ export type AnimalSpecies = 'Köpek' | 'Kedi' | 'Kuş' | 'Tavşan' | 'Hamster' |
 
 export type AnimalGender = 'Erkek' | 'Dişi';
 
-export type HealthStatus = 'İyi' | 'Tedavi Altında' | 'Kontrol Gerekli' | 'Kritik' | 'Vefat' | 'Arşiv';
+export type HealthStatus = 
+  | 'İyi' 
+  | 'Sağlıklı' 
+  | 'Kontrol Gerekli' 
+  | 'İzleme Gerektiriyor' 
+  | 'Tedavi Altında' 
+  | 'Hastalıklı' 
+  | 'İyileşiyor' 
+  | 'Toparlanma' 
+  | 'Ameliyat Sonrası' 
+  | 'Kritik' 
+  | 'Acil'
+  | 'Vefat' 
+  | 'Arşiv';
 
 // Temporary interface for the list view (simplified)
 export interface AnimalListItem {

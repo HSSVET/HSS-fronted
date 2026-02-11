@@ -225,28 +225,28 @@ const AppointmentPage: React.FC = () => {
               errorMessage={!isLoading ? error : null}
             />
           </Paper>
-
-          {showForm && (
-            <Dialog
-              open={showForm}
-              onClose={handleCancelForm}
-              maxWidth="sm"
-              fullWidth
-            >
-              <Paper elevation={0}>
-                <AppointmentForm
-                  appointment={editingAppointment}
-                  selectedDate={selectedDate}
-                  onSave={editingAppointment ? updateAppointment : addAppointment}
-                  onCancel={handleCancelForm}
-                />
-              </Paper>
-            </Dialog>
-          )}
         </Box>
       </Box>
+
+      {showForm && (
+        <Dialog
+          open={showForm}
+          onClose={handleCancelForm}
+          maxWidth="sm"
+          fullWidth
+        >
+          <Paper elevation={0}>
+            <AppointmentForm
+              appointment={editingAppointment}
+              selectedDate={selectedDate}
+              onSave={editingAppointment ? updateAppointment : addAppointment}
+              onCancel={handleCancelForm}
+            />
+          </Paper>
+        </Dialog>
+      )}
     </Container>
   );
 };
 
-export default AppointmentPage; 
+export default AppointmentPage;

@@ -18,12 +18,15 @@ import {
   Tooltip
 } from '@mui/material';
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { List } from 'react-window';
 import { AnimalService, type AnimalRecord } from '../services/animalService';
 import { useError } from '../../../context/ErrorContext';
 import { useLoading } from '../../../hooks/useLoading';
 import LoadingSpinner from '../../../components/LoadingSpinner';
+import EditAnimalDialog from './EditAnimalDialog';
+import AnimalAppointmentsDialog from './AnimalAppointmentsDialog';
+import AnimalReportsDialog from './AnimalReportsDialog';
 import '../styles/AnimalList.css';
 import { AnimalListItem } from '../types/animal';
 
@@ -53,25 +56,133 @@ const formatDisplayDate = (value: string) => {
   return date ? date.toLocaleDateString('tr-TR') : '—';
 };
 
+// Tür isimlerini Türkçe'ye çevir
+const translateSpeciesToTurkish = (species: string | undefined): string => {
+  if (!species) return 'Diğer';
+  
+  const translations: Record<string, string> = {
+    'Dog': 'Köpek',
+    'dog': 'Köpek',
+    'Kopek': 'Köpek',
+    'kopek': 'Köpek',
+    'Cat': 'Kedi',
+    'cat': 'Kedi',
+    'Bird': 'Kuş',
+    'bird': 'Kuş',
+    'Kus': 'Kuş',
+    'kus': 'Kuş',
+    'Rabbit': 'Tavşan',
+    'rabbit': 'Tavşan',
+    'Tavsan': 'Tavşan',
+    'tavsan': 'Tavşan',
+    'Hamster': 'Hamster',
+    'hamster': 'Hamster',
+    'Guinea Pig': 'Kobay',
+    'guinea pig': 'Kobay',
+    'Reptile': 'Sürüngen',
+    'reptile': 'Sürüngen',
+    'Surungen': 'Sürüngen',
+    'surungen': 'Sürüngen',
+    'Fish': 'Balık',
+    'fish': 'Balık',
+    'Balik': 'Balık',
+    'balik': 'Balık',
+    'Horse': 'At',
+    'horse': 'At',
+    'Cow': 'İnek',
+    'cow': 'İnek',
+    'Inek': 'İnek',
+    'inek': 'İnek',
+    'Sheep': 'Koyun',
+    'sheep': 'Koyun',
+    'Goat': 'Keçi',
+    'goat': 'Keçi',
+    'Keci': 'Keçi',
+    'keci': 'Keçi',
+    'Pig': 'Domuz',
+    'pig': 'Domuz',
+  };
+  
+  return translations[species] || species;
+};
+
+// Irk isimlerini Türkçe'ye çevir (yaygın ırklar için)
+const translateBreedToTurkish = (breed: string | undefined): string => {
+  if (!breed) return 'Bilinmiyor';
+  
+  const translations: Record<string, string> = {
+    'Golden Retriever': 'Golden Retriever',
+    'golden retriever': 'Golden Retriever',
+    'Labrador': 'Labrador',
+    'labrador': 'Labrador',
+    'German Shepherd': 'Alman Çoban Köpeği',
+    'german shepherd': 'Alman Çoban Köpeği',
+    'Alman Coban Kopegi': 'Alman Çoban Köpeği',
+    'Poodle': 'Kaniş',
+    'poodle': 'Kaniş',
+    'Kanis': 'Kaniş',
+    'Bulldog': 'Bulldog',
+    'bulldog': 'Bulldog',
+    'Beagle': 'Beagle',
+    'beagle': 'Beagle',
+    'Persian': 'İran Kedisi',
+    'persian': 'İran Kedisi',
+    'Iran Kedisi': 'İran Kedisi',
+    'Siamese': 'Siyam Kedisi',
+    'siamese': 'Siyam Kedisi',
+    'Siyam': 'Siyam Kedisi',
+    'Maine Coon': 'Maine Coon',
+    'maine coon': 'Maine Coon',
+    'British Shorthair': 'British Shorthair',
+    'british shorthair': 'British Shorthair',
+    'Tekir': 'Tekir',
+    'tekir': 'Tekir',
+    'Van Cat': 'Van Kedisi',
+    'van cat': 'Van Kedisi',
+    'Van Kedisi': 'Van Kedisi',
+    'Bilinmiyor': 'Bilinmiyor',
+    'Unknown': 'Bilinmiyor',
+    'unknown': 'Bilinmiyor',
+  };
+  
+  return translations[breed] || breed;
+};
+
 const mapToAnimalListItem = (animal: AnimalRecord): AnimalListItem => {
-  // Mock verilerden health status'u belirle
-  // Status mapping
+  // Sağlık durumunu belirle
   let healthStatus: AnimalListItem['health'] = 'İyi';
+  
+  // Önce status'e göre kontrol et
   if (animal.status) {
     switch (animal.status) {
-      case 'FOLLOW_UP': healthStatus = 'Tedavi Altında'; break; // Mapped to Treatment
-      case 'DECEASED': healthStatus = 'Vefat'; break;
-      case 'ARCHIVED': healthStatus = 'Arşiv'; break;
+      case 'FOLLOW_UP': 
+        healthStatus = 'Tedavi Altında'; 
+        break;
+      case 'DECEASED': 
+        healthStatus = 'Vefat'; 
+        break;
+      case 'ARCHIVED': 
+        healthStatus = 'Arşiv'; 
+        break;
       case 'ACTIVE':
       default:
-        if (animal.hasChronicDiseases) healthStatus = 'Tedavi Altında';
-        else if (animal.hasAllergies) healthStatus = 'Kontrol Gerekli';
-        else healthStatus = 'İyi';
+        // Active durumda hastalık ve alerji durumuna göre belirle
+        if (animal.hasChronicDiseases && animal.hasAllergies) {
+          healthStatus = 'Kritik';
+        } else if (animal.hasChronicDiseases) {
+          healthStatus = 'Tedavi Altında';
+        } else if (animal.hasAllergies) {
+          healthStatus = 'Kontrol Gerekli';
+        } else {
+          healthStatus = 'İyi';
+        }
         break;
     }
   } else {
-    // Fallback if status missing or null
-    if (animal.hasChronicDiseases) {
+    // Status yoksa hastalık durumuna göre belirle
+    if (animal.hasChronicDiseases && animal.hasAllergies) {
+      healthStatus = 'Kritik';
+    } else if (animal.hasChronicDiseases) {
       healthStatus = 'Tedavi Altında';
     } else if (animal.hasAllergies) {
       healthStatus = 'Kontrol Gerekli';
@@ -81,8 +192,8 @@ const mapToAnimalListItem = (animal: AnimalRecord): AnimalListItem => {
   return {
     id: animal.id ? animal.id.toString() : '0',
     name: animal.name || 'İsimsiz',
-    species: (animal.species?.name as AnimalListItem['species']) || 'Diğer',
-    breed: animal.breed?.name || 'Bilinmiyor',
+    species: translateSpeciesToTurkish(animal.species?.name) as AnimalListItem['species'],
+    breed: translateBreedToTurkish(animal.breed?.name),
     health: healthStatus,
     lastCheckup: animal.lastVisitDate || formatDateValue(animal.birthDate),
     owner: animal.owner?.fullName || animal.owner?.name || 'Bilinmiyor',
@@ -97,14 +208,15 @@ interface AnimalRowProps {
   animals: AnimalListItem[];
   onAnimalClick: (id: string) => void;
   onEditClick: (id: string) => void;
-  onAppointmentClick: (id: string) => void;
+  onAppointmentClick: (id: string, name: string) => void;
+  onReportsClick: (id: string, name: string) => void;
   getHealthChipClass: (health: string) => string;
 }
 
 // Props that will be passed via rowProps (index and style are added automatically by react-window)
 type AnimalRowCustomProps = Omit<AnimalRowProps, 'index' | 'style'>;
 
-const AnimalRowComponent = React.memo<AnimalRowProps>(({ index, style, animals, onAnimalClick, onEditClick, onAppointmentClick, getHealthChipClass }) => {
+const AnimalRowComponent = React.memo<AnimalRowProps>(({ index, style, animals, onAnimalClick, onEditClick, onAppointmentClick, onReportsClick, getHealthChipClass }) => {
   const animal = animals[index];
 
   if (!animal) {
@@ -124,7 +236,7 @@ const AnimalRowComponent = React.memo<AnimalRowProps>(({ index, style, animals, 
         </div>
         <div className="animal-table-cell owner">{animal.owner}</div>
         <div className="animal-table-cell health">
-          <span className={`badge ${getHealthChipClass(animal.health).includes('good') ? 'badge--ok' : getHealthChipClass(animal.health).includes('treatment') ? 'badge--danger' : 'badge--warning'}`}>
+          <span className={getHealthChipClass(animal.health)}>
             {animal.health}
           </span>
         </div>
@@ -135,21 +247,30 @@ const AnimalRowComponent = React.memo<AnimalRowProps>(({ index, style, animals, 
           </span>
         </div>
         <div className="animal-table-cell actions" onClick={(e) => e.stopPropagation()}>
-          <Tooltip title="Randevu Oluştur">
-            <IconButton size="small" className="action-icon-button" onClick={() => onAppointmentClick(animal.id)}>
-              <EventIcon />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Düzenle">
-            <IconButton size="small" className="action-icon-button" onClick={() => onEditClick(animal.id)}>
-              <EditIcon />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Detaylar">
-            <IconButton size="small" className="action-icon-button" onClick={() => onAnimalClick(animal.id)}>
-              <DescriptionIcon />
-            </IconButton>
-          </Tooltip>
+          <IconButton 
+            size="small" 
+            className="action-icon-button"
+            onClick={() => onAppointmentClick(animal.id, animal.name)}
+            title="Geçmiş Randevular"
+          >
+            <EventIcon />
+          </IconButton>
+          <IconButton 
+            size="small" 
+            className="action-icon-button"
+            onClick={() => onEditClick(animal.id)}
+            title="Düzenle"
+          >
+            <EditIcon />
+          </IconButton>
+          <IconButton 
+            size="small" 
+            className="action-icon-button" 
+            onClick={() => onReportsClick(animal.id, animal.name)}
+            title="Geçmiş Raporlar"
+          >
+            <DescriptionIcon />
+          </IconButton>
         </div>
       </div>
     </div>
@@ -165,10 +286,12 @@ const AnimalRow = (props: AnimalRowProps): React.ReactElement => {
 
 const AnimalList: React.FC<AnimalListProps> = ({ onAddAnimal }) => {
   const navigate = useNavigate();
+  const { slug } = useParams<{ slug: string }>();
   const { addError, showSuccess } = useError();
   const { loading, startLoading, stopLoading } = useLoading();
 
   const [animals, setAnimals] = useState<AnimalListItem[]>([]);
+  const [allAnimalsData, setAllAnimalsData] = useState<AnimalRecord[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortAnchorEl, setSortAnchorEl] = useState<null | HTMLElement>(null);
   const [sortBy, setSortBy] = useState<string>('name');
@@ -179,6 +302,12 @@ const AnimalList: React.FC<AnimalListProps> = ({ onAddAnimal }) => {
     startDate: '',
     endDate: ''
   });
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [selectedAnimal, setSelectedAnimal] = useState<AnimalRecord | null>(null);
+  const [appointmentsDialogOpen, setAppointmentsDialogOpen] = useState(false);
+  const [reportsDialogOpen, setReportsDialogOpen] = useState(false);
+  const [selectedAnimalId, setSelectedAnimalId] = useState<string>('');
+  const [selectedAnimalName, setSelectedAnimalName] = useState<string>('');
 
   const fetchAnimals = React.useCallback(async () => {
     try {
@@ -219,6 +348,7 @@ const AnimalList: React.FC<AnimalListProps> = ({ onAddAnimal }) => {
 
         const formattedAnimals = allAnimals.map(mapToAnimalListItem);
         setAnimals(formattedAnimals);
+        setAllAnimalsData(allAnimals);
         showSuccess(`${total} hayvan başarıyla yüklendi`);
       } else {
         console.error('🐶 First API response failed:', firstResponse);
@@ -361,45 +491,131 @@ const AnimalList: React.FC<AnimalListProps> = ({ onAddAnimal }) => {
   );
 
   const uniqueSpecies = useMemo(
-    () => Array.from(new Set(animals.map(a => a.species))),
+    () => {
+      const speciesSet = new Set(animals.map(a => a.species));
+      return Array.from(speciesSet).sort();
+    },
     [animals]
   );
+  
   const uniqueBreeds = useMemo(
-    () => Array.from(new Set(animals.map(a => a.breed).filter(Boolean))) as string[],
+    () => {
+      const breedsSet = new Set(animals.map(a => a.breed).filter(Boolean));
+      return Array.from(breedsSet).sort() as string[];
+    },
     [animals]
   );
+  
   const uniqueHealth = useMemo(
-    () => Array.from(new Set(animals.map(a => a.health))),
+    () => {
+      // Tüm olası sağlık durumları
+      const allHealthStatuses: AnimalListItem['health'][] = [
+        'İyi',
+        'Sağlıklı',
+        'Kontrol Gerekli',
+        'İzleme Gerektiriyor',
+        'Tedavi Altında',
+        'Hastalıklı',
+        'İyileşiyor',
+        'Toparlanma',
+        'Ameliyat Sonrası',
+        'Kritik',
+        'Acil'
+      ];
+      
+      // Mevcut hayvanların sağlık durumları
+      const existingStatuses = new Set(animals.map(a => a.health));
+      
+      // Hem mevcut hem de tüm seçenekleri birleştir, sadece mevcut olanları göster
+      return allHealthStatuses.filter(status => existingStatuses.has(status));
+    },
     [animals]
   );
 
   const getHealthChipClass = useCallback((health: string) => {
     switch (health) {
       case 'İyi':
+      case 'Sağlıklı':
         return 'health-chip good';
       case 'Tedavi Altında':
+      case 'Hastalıklı':
         return 'health-chip treatment';
       case 'Kontrol Gerekli':
+      case 'İzleme Gerektiriyor':
         return 'health-chip monitor';
+      case 'Kritik':
+      case 'Acil':
+        return 'health-chip critical';
+      case 'İyileşiyor':
+      case 'Toparlanma':
+        return 'health-chip recovering';
+      case 'Ameliyat Sonrası':
+        return 'health-chip post-surgery';
       default:
         return 'health-chip';
     }
   }, []);
 
   const handleAnimalClick = useCallback((animalId: string) => {
-    navigate(animalId);
-  }, [navigate]);
+    navigate(`/clinic/${slug}/animals/${animalId}`);
+  }, [navigate, slug]);
 
   const handleEditClick = useCallback((animalId: string) => {
-    // Navigate to detail page with edit state or just detail for now
-    // Ideally open an edit dialog or toggle edit mode in detail
-    navigate(`${animalId}?action=edit`);
-  }, [navigate]);
+    const animal = allAnimalsData.find(a => a.id.toString() === animalId);
+    if (animal) {
+      setSelectedAnimal(animal);
+      setEditDialogOpen(true);
+    }
+  }, [allAnimalsData]);
 
-  const handleAppointmentClick = useCallback((animalId: string) => {
-    // Navigate to detail page and switch to appointment tab (index 3)
-    navigate(`${animalId}?tab=3`);
-  }, [navigate]);
+  const handleAppointmentClick = useCallback((animalId: string, animalName: string) => {
+    setSelectedAnimalId(animalId);
+    setSelectedAnimalName(animalName);
+    setAppointmentsDialogOpen(true);
+  }, []);
+
+  const handleReportsClick = useCallback((animalId: string, animalName: string) => {
+    setSelectedAnimalId(animalId);
+    setSelectedAnimalName(animalName);
+    setReportsDialogOpen(true);
+  }, []);
+
+  const handleUpdateAnimal = async (animalId: number, data: any) => {
+    try {
+      startLoading('Hayvan güncelleniyor...');
+      const animalService = new AnimalService();
+      
+      // Backend formatına uygun request oluştur
+      const updateRequest = {
+        ownerId: data.ownerId,
+        name: data.name,
+        speciesId: data.speciesId,
+        breedId: data.breedId,
+        gender: data.gender,
+        birthDate: data.birthDate,
+        weight: data.weight,
+        color: data.color,
+        microchipNo: data.microchipNo,
+        allergies: data.allergies,
+        chronicDiseases: data.chronicDiseases,
+        notes: data.notes,
+      };
+      
+      const response = await animalService.updateAnimal(animalId.toString(), updateRequest);
+      
+      if (response.success) {
+        showSuccess('Hayvan başarıyla güncellendi');
+        fetchAnimals(); // Listeyi yenile
+      } else {
+        addError('Hayvan güncellenirken hata oluştu', 'error', response.error || 'Bilinmeyen hata');
+      }
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Bilinmeyen hata';
+      addError('Hayvan güncellenirken hata oluştu', 'error', errorMessage);
+    } finally {
+      stopLoading();
+    }
+  };
 
   if (loading.isLoading) {
     return (
@@ -609,6 +825,7 @@ const AnimalList: React.FC<AnimalListProps> = ({ onAddAnimal }) => {
                 onAnimalClick: handleAnimalClick,
                 onEditClick: handleEditClick,
                 onAppointmentClick: handleAppointmentClick,
+                onReportsClick: handleReportsClick,
                 getHealthChipClass: getHealthChipClass,
               }}
             />
@@ -619,6 +836,41 @@ const AnimalList: React.FC<AnimalListProps> = ({ onAddAnimal }) => {
           )}
         </Paper>
       </div>
+
+      {/* Edit Animal Dialog */}
+      <EditAnimalDialog
+        open={editDialogOpen}
+        onClose={() => {
+          setEditDialogOpen(false);
+          setSelectedAnimal(null);
+        }}
+        animal={selectedAnimal}
+        onUpdate={handleUpdateAnimal}
+      />
+
+      {/* Animal Appointments Dialog */}
+      <AnimalAppointmentsDialog
+        open={appointmentsDialogOpen}
+        onClose={() => {
+          setAppointmentsDialogOpen(false);
+          setSelectedAnimalId('');
+          setSelectedAnimalName('');
+        }}
+        animalId={selectedAnimalId}
+        animalName={selectedAnimalName}
+      />
+
+      {/* Animal Reports Dialog */}
+      <AnimalReportsDialog
+        open={reportsDialogOpen}
+        onClose={() => {
+          setReportsDialogOpen(false);
+          setSelectedAnimalId('');
+          setSelectedAnimalName('');
+        }}
+        animalId={selectedAnimalId}
+        animalName={selectedAnimalName}
+      />
     </div>
   );
 };
