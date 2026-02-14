@@ -30,6 +30,7 @@ import SmsPage from './features/sms/components/SmsPage';
 import StockSystem from './features/stock/components/StockSystem';
 import SettingsPage from './features/settings/components/SettingsPage';
 import { QueueDashboard, PatientCheckIn } from './features/queue';
+import ProfilePage from './features/profile/components/ProfilePage';
 
 // Error Boundaries
 
@@ -285,6 +286,12 @@ function App() {
                               <PageErrorBoundary pageName="Settings">
                                 <SettingsPage />
 
+                              </PageErrorBoundary>
+                            } />
+
+                            <Route path="profile" element={
+                              <PageErrorBoundary pageName="Profile">
+                                <ProfilePage />
                               </PageErrorBoundary>
                             } />
 

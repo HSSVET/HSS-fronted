@@ -232,6 +232,32 @@
   color: #fbc02d;
 }
 
+.health-chip.critical {
+  background-color: #ffebee;
+  color: #c62828;
+  font-weight: var(--font-weight-bold);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.health-chip.recovering {
+  background-color: #e1f5fe;
+  color: #0277bd;
+}
+
+.health-chip.post-surgery {
+  background-color: #f3e5f5;
+  color: #7b1fa2;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
 /* Vaccine Date Chips */
 .vaccine-chip {
   font-size: 12px;

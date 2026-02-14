@@ -156,7 +156,8 @@ export class AnimalService {
   async getBasicAnimals(): Promise<ApiResponse<BasicAnimalRecord[]>> {
     // Use the main animals endpoint and transform the data
     const { apiClient } = await import('../../../services/api');
-    const response = await apiClient.get<SpringPage<any>>('/api/animals?page=0&limit=1000');
+    // Spring Boot uses 'size' not 'limit'
+    const response = await apiClient.get<SpringPage<any>>('/api/animals?page=0&size=1000');
 
     if (response.success && response.data) {
       const basicAnimals: BasicAnimalRecord[] = (response.data.content || []).map(a => ({
@@ -170,7 +171,7 @@ export class AnimalService {
       return { success: true, data: basicAnimals };
     }
 
-    return { success: false, data: [], error: 'Failed to fetch basic animals' };
+    return { success: false, data: [], error: response.error || 'Failed to fetch basic animals' };
   }
 
   // Get animal by ID

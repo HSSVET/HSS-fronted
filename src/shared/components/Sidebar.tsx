@@ -65,6 +65,9 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, toggleSidebar }) => {
     { icon: <SettingsIcon />, text: 'Ayarlar', path: '/settings', permission: 'settings:read' },
   ];
 
+  // Profile menu item (always visible for staff)
+  const profileMenuItem = { icon: 'icon-user', text: 'Profil', path: '/profile', permission: 'profile:read' };
+
   // Helper to construct path
   const getFullPath = (path: string) => {
     if (slug) {
@@ -121,7 +124,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, toggleSidebar }) => {
       </div>
 
       <div className="user-container">
-        <div className="user-profile">
+        <Link to={getFullPath(profileMenuItem.path)} className={`user-profile ${location.pathname.startsWith(getFullPath(profileMenuItem.path)) ? 'active' : ''}`}>
           <span className="icon"><AccountCircleIcon /></span>
           {!collapsed && (
             <div className="user-info">
@@ -140,7 +143,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, toggleSidebar }) => {
               </span>
             </div>
           )}
-        </div>
+        </Link>
         <button className="logout" onClick={handleLogout} title={collapsed ? 'Çıkış' : ''}>
           <span className="icon"><LogoutIcon /></span>
           {!collapsed && <span className="text">Çıkış</span>}

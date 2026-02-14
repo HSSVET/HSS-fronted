@@ -21,108 +21,43 @@ const FastAppointmentModal: React.FC<FastAppointmentModalProps> = ({ isOpen, onC
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Otomatik hekim seçimi: En az randevusu olan hekimi seç
-  const selectBestVeterinarian = async (): Promise<VeterinarianRecord | null> => {
-    if (veterinarians.length === 0) {
+  // Otomatik hekim seçimi: İlk uygun hekimi seç
+  // TODO: Gelecekte available slots endpoint'i eklendiğinde en az randevusu olan hekimi seçecek şekilde güncellenebilir
+  const selectBestVeterinarian = async (vets: VeterinarianRecord[]): Promise<VeterinarianRecord | null> => {
+    if (vets.length === 0) {
       return null;
     }
 
-    try {
-      const appointmentService = new AppointmentService();
-      const now = new Date();
-      const tomorrow = new Date(now);
-      tomorrow.setDate(tomorrow.getDate() + 7); // Önümüzdeki 7 gün
-
-      // Her hekim için randevu sayısını hesapla
-      const vetAppointmentCounts = await Promise.all(
-        veterinarians.map(async (vet) => {
-          try {
-            const response = await appointmentService.getAppointmentsByDateRange(now, tomorrow, vet.id.toString());
-            const count = response.success && response.data ? response.data.length : 0;
-            return { vet, count };
-          } catch {
-            return { vet, count: 999 }; // Hata durumunda yüksek sayı ver
-          }
-        })
-      );
-
-      // En az randevusu olan hekimi seç
-      const bestVet = vetAppointmentCounts.reduce((min, current) => 
-        current.count < min.count ? current : min
-      );
-
-      return bestVet.vet;
-    } catch (err) {
-      console.error('Hekim seçimi hatası:', err);
-      // Hata durumunda ilk hekimi seç
-      return veterinarians.length > 0 ? veterinarians[0] : null;
-    }
+    // Şimdilik basitçe ilk aktif hekimi seç
+    // Backend'de available slots endpoint'i olmadığı için karmaşık seçim algoritması kullanamıyoruz
+    return vets[0];
   };
 
   // Otomatik tarih/saat seçimi: En yakın uygun slot'u bul
   const findNextAvailableSlot = async (vetId?: number): Promise<string> => {
     const now = new Date();
-    try {
-      const appointmentService = new AppointmentService();
-      
-      // Bugünden itibaren 7 gün içinde uygun slot ara
-      for (let dayOffset = 0; dayOffset < 7; dayOffset++) {
-        const checkDate = new Date(now);
-        checkDate.setDate(checkDate.getDate() + dayOffset);
-        checkDate.setHours(0, 0, 0, 0);
-
-        try {
-          const slotsResponse = await appointmentService.getAvailableSlots(checkDate, vetId?.toString());
-          
-          if (slotsResponse.success && slotsResponse.data && slotsResponse.data.length > 0) {
-            // Müsait slotları filtrele
-            const availableSlots = slotsResponse.data.filter(slot => {
-              if (!slot.available) return false;
-              
-              // Bugünse, geçmiş saatleri filtrele
-              if (dayOffset === 0) {
-                const slotDate = new Date(slot.date);
-                const [hours, minutes] = slot.startTime.split(':').map(Number);
-                slotDate.setHours(hours, minutes || 0, 0, 0);
-                return slotDate > now;
-              }
-              return true;
-            });
-
-            if (availableSlots.length > 0) {
-              const firstSlot = availableSlots[0];
-              const slotDate = new Date(firstSlot.date);
-              const [hours, minutes] = firstSlot.startTime.split(':').map(Number);
-              slotDate.setHours(hours, minutes || 0, 0, 0);
-              return slotDate.toISOString();
-            }
-          }
-        } catch {
-          // Bu tarih için slot bulunamadı, devam et
-          continue;
-        }
-      }
-
-      // Slot bulunamazsa, bugün 1 saat sonrasını kullan
-      const fallbackTime = new Date(now);
-      fallbackTime.setHours(fallbackTime.getHours() + 1);
-      // Saati yarım saatlik dilimlere yuvarla
-      const minutes = fallbackTime.getMinutes();
-      fallbackTime.setMinutes(minutes < 30 ? 30 : 60, 0, 0);
-      if (fallbackTime.getHours() >= 18) {
-        // 18:00'den sonraki saatler için yarın sabah 9:00'u seç
-        fallbackTime.setDate(fallbackTime.getDate() + 1);
-        fallbackTime.setHours(9, 0, 0);
-      }
-      return fallbackTime.toISOString();
-    } catch (err) {
-      console.error('Slot bulma hatası:', err);
-      // Hata durumunda bugün 1 saat sonrasını kullan
-      const fallbackTime = new Date(now);
-      fallbackTime.setHours(fallbackTime.getHours() + 1);
+    
+    // Backend @Future validation için en az 2 dakika sonrasını seç
+    // Available slots endpoint'i henüz backend'de yok, bu yüzden basit bir algoritma kullanıyoruz
+    const fallbackTime = new Date(now);
+    fallbackTime.setHours(fallbackTime.getHours() + 1);
+    
+    // Saati yarım saatlik dilimlere yuvarla
+    const minutes = fallbackTime.getMinutes();
+    if (minutes < 30) {
       fallbackTime.setMinutes(30, 0, 0);
-      return fallbackTime.toISOString();
+    } else {
+      fallbackTime.setMinutes(0, 0, 0);
+      fallbackTime.setHours(fallbackTime.getHours() + 1);
     }
+    
+    // Eğer çalışma saatleri dışındaysa (18:00'den sonra veya 9:00'dan önce), bir sonraki iş günü sabah 9:00'u seç
+    if (fallbackTime.getHours() >= 18 || fallbackTime.getHours() < 9) {
+      fallbackTime.setDate(fallbackTime.getDate() + 1);
+      fallbackTime.setHours(9, 0, 0, 0);
+    }
+    
+    return fallbackTime.toISOString();
   };
 
   useEffect(() => {
@@ -146,9 +81,17 @@ const FastAppointmentModal: React.FC<FastAppointmentModalProps> = ({ isOpen, onC
         setError(null);
 
         const animalService = new AnimalService();
+        
+        // Hayvan ve hekim listelerini paralel olarak al
         const [animalResponse, veterinarianResponse] = await Promise.all([
-          animalService.getBasicAnimals(),
-          VeterinarianService.getActiveVeterinarians(),
+          animalService.getBasicAnimals().catch(err => {
+            console.error('Hayvan listesi alınamadı:', err);
+            return { success: false, data: [], error: 'Hayvan listesi alınamadı' };
+          }),
+          VeterinarianService.getActiveVeterinarians().catch(err => {
+            console.error('Hekim listesi alınamadı:', err);
+            return { success: false, data: [], error: 'Hekim listesi alınamadı' };
+          }),
         ]);
 
         if (!isMounted) {
@@ -162,24 +105,35 @@ const FastAppointmentModal: React.FC<FastAppointmentModalProps> = ({ isOpen, onC
           ? veterinarianResponse.data
           : [];
 
+        // Eğer hayvan listesi boşsa, kullanıcıya bilgi ver
+        if (loadedAnimals.length === 0) {
+          setError('Sistemde kayıtlı hayvan bulunamadı. Önce bir hayvan kaydı oluşturun.');
+          setAnimals([]);
+          setVeterinarians(loadedVets);
+          return;
+        }
+
         setAnimals(loadedAnimals);
         setVeterinarians(loadedVets);
 
         // Otomatik olarak en uygun hekimi seç
-        const bestVet = await selectBestVeterinarian();
-        if (bestVet) {
-          setSelectedVeterinarian(bestVet);
-          
-          // Uygun tarih/saat bul
-          const availableSlot = await findNextAvailableSlot(bestVet.id);
-          setSelectedDateTime(availableSlot);
-        } else if (loadedVets.length > 0) {
-          // Hekim bulundu ama seçim yapılamadı, ilkini kullan
-          setSelectedVeterinarian(loadedVets[0]);
-          const availableSlot = await findNextAvailableSlot(loadedVets[0].id);
-          setSelectedDateTime(availableSlot);
+        if (loadedVets.length > 0) {
+          const bestVet = await selectBestVeterinarian(loadedVets);
+          if (bestVet) {
+            setSelectedVeterinarian(bestVet);
+            
+            // Uygun tarih/saat bul
+            const availableSlot = await findNextAvailableSlot(bestVet.id);
+            setSelectedDateTime(availableSlot);
+          } else {
+            // Hekim bulundu ama seçim yapılamadı, ilkini kullan
+            setSelectedVeterinarian(loadedVets[0]);
+            const availableSlot = await findNextAvailableSlot(loadedVets[0].id);
+            setSelectedDateTime(availableSlot);
+          }
         } else {
-          // Hekim yok, sadece tarih/saat bul
+          // Hekim yok, sadece tarih/saat bul (hekim ataması olmadan randevu oluşturulabilir)
+          console.warn('Sistemde kayıtlı hekim bulunamadı. Hekim ataması olmadan randevu oluşturulacak.');
           const availableSlot = await findNextAvailableSlot();
           setSelectedDateTime(availableSlot);
         }
@@ -229,15 +183,32 @@ const FastAppointmentModal: React.FC<FastAppointmentModalProps> = ({ isOpen, onC
       return;
     }
 
-    const payload: CreateAppointmentRequest = {
+    // Backend LocalDateTime formatı bekliyor (timezone bilgisi olmadan)
+    // ISO 8601 formatını LocalDateTime formatına çevir: "2026-01-20T22:00:00"
+    const formatDateTimeForBackend = (isoString: string): string => {
+      const date = new Date(isoString);
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      const hours = String(date.getHours()).padStart(2, '0');
+      const minutes = String(date.getMinutes()).padStart(2, '0');
+      const seconds = String(date.getSeconds()).padStart(2, '0');
+      return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
+    };
+
+    // Payload oluştur - undefined değerleri göndermemek için conditional olarak ekle
+    const payload: any = {
       animalId: Number(animalId),
-      dateTime: selectedDateTime,
+      dateTime: formatDateTimeForBackend(selectedDateTime),
       subject: 'Hızlı Randevu',
     };
 
-    if (selectedVeterinarian) {
+    // veterinarianId varsa ekle, yoksa hiç gönderme
+    if (selectedVeterinarian && selectedVeterinarian.id) {
       payload.veterinarianId = selectedVeterinarian.id;
     }
+
+    console.log('Randevu oluşturma payload:', payload);
 
     try {
       setIsSubmitting(true);
@@ -348,7 +319,7 @@ const FastAppointmentModal: React.FC<FastAppointmentModalProps> = ({ isOpen, onC
             </div>
           )}
 
-          {selectedVeterinarian && (
+          {selectedVeterinarian ? (
             <div className="fast-appointment-modal__auto-selected">
               <div className="fast-appointment-modal__auto-badge">
                 <span className="fast-appointment-modal__sparkle">✨</span>
@@ -365,6 +336,24 @@ const FastAppointmentModal: React.FC<FastAppointmentModalProps> = ({ isOpen, onC
                     <span className="fast-appointment-modal__info-value">{formatDateTime(selectedDateTime)}</span>
                   </div>
                 )}
+              </div>
+            </div>
+          ) : selectedDateTime && (
+            <div className="fast-appointment-modal__auto-selected">
+              <div className="fast-appointment-modal__auto-badge">
+                <span className="fast-appointment-modal__sparkle">✨</span>
+                Otomatik Seçildi
+              </div>
+              <div className="fast-appointment-modal__info-card">
+                <div className="fast-appointment-modal__info-row">
+                  <span className="fast-appointment-modal__info-label">Randevu Zamanı:</span>
+                  <span className="fast-appointment-modal__info-value">{formatDateTime(selectedDateTime)}</span>
+                </div>
+                <div className="fast-appointment-modal__info-row">
+                  <span className="fast-appointment-modal__info-label" style={{ fontSize: '12px', color: '#666' }}>
+                    (Hekim daha sonra atanacak)
+                  </span>
+                </div>
               </div>
             </div>
           )}
