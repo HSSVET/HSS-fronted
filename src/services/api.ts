@@ -38,6 +38,7 @@ export class ApiClient {
   private defaultRetryDelay = 1000;
   private tokenFetchPromise: Promise<void> | null = null;
   private useCache: boolean = true;
+  private clinicContext: { clinicId?: number; clinicSlug?: string } = {};
 
   constructor(useCache: boolean = true) {
     this.tokenManager = TokenManager.getInstance();
@@ -69,6 +70,14 @@ export class ApiClient {
    */
   clearAllCache(): void {
     apiCache.clearAll();
+  }
+
+  /**
+   * Set clinic context for API requests (X-Clinic-Id / X-Clinic-Slug).
+   * Backend uses this when JWT does not contain clinic_id (e.g. after login before token refresh).
+   */
+  setClinicContext(clinicId?: number, clinicSlug?: string): void {
+    this.clinicContext = { clinicId, clinicSlug };
   }
 
   // Interceptor Management
@@ -117,6 +126,15 @@ export class ApiClient {
         } else {
           console.warn('⚠️ Authorization header eklenemedi - token yok');
         }
+        // Clinic context: backend uses this when JWT has no clinic_id
+        const headers = { ...config.headers } as Record<string, string>;
+        if (this.clinicContext.clinicId != null) {
+          headers['X-Clinic-Id'] = String(this.clinicContext.clinicId);
+        }
+        if (this.clinicContext.clinicSlug) {
+          headers['X-Clinic-Slug'] = this.clinicContext.clinicSlug;
+        }
+        config.headers = headers;
         return config;
       },
     });

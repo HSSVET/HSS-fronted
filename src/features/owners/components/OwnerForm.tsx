@@ -81,7 +81,13 @@ const OwnerForm: React.FC<OwnerFormProps> = ({
         lastName: owner.lastName || '',
         phone: owner.phone || '',
         email: owner.email || '',
-        address: owner.address || ''
+        address: owner.address || '',
+        type: owner.type || 'INDIVIDUAL',
+        corporateName: owner.corporateName || '',
+        taxNo: owner.taxNo || '',
+        taxOffice: owner.taxOffice || '',
+        notes: owner.notes || '',
+        warnings: owner.warnings || '',
       });
     }
   }, [owner, reset]);

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   Box,
   Tabs,
@@ -17,7 +17,13 @@ import {
   ListItemIcon,
   Avatar,
   CircularProgress,
-  Alert
+  Alert,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow
 } from '@mui/material';
 import {
   Person as PersonIcon,
@@ -34,7 +40,11 @@ import {
 } from '@mui/icons-material';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { ownerService } from '../../../services/ownerService';
+import { ownerService, type OwnerInvoice, type OwnerPayment } from '../../../services/ownerService';
+import { animalService, type AnimalRecord } from '../../animals/services/animalService';
+import { BillingProvider } from '../../billing/hooks/useBilling';
+import { CreatePaymentModal } from '../../billing/components/payments/CreatePaymentModal';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -62,10 +72,21 @@ function TabPanel(props: TabPanelProps) {
   );
 }
 
+type FinancialActivity = {
+  type: 'invoice' | 'payment';
+  date: string;
+  description: string;
+  amount: number;
+  id: number;
+  invoiceNumber?: string;
+};
+
 const OwnerDetailPage = () => {
-  const { id } = useParams<{ id: string }>();
+  const { id, slug } = useParams<{ id: string; slug?: string }>();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [value, setValue] = useState(0);
+  const [openPaymentModal, setOpenPaymentModal] = useState(false);
 
   const ownerId = parseInt(id || '0', 10);
 
@@ -83,13 +104,54 @@ const OwnerDetailPage = () => {
     enabled: !!ownerId
   });
 
+  // Fetch pets (animals) for this owner
+  const { data: petsWrapper } = useQuery({
+    queryKey: ['animals', 'owner', ownerId],
+    queryFn: () => animalService.getAnimalsByOwnerId(ownerId.toString()),
+    enabled: !!ownerId
+  });
+  const pets: AnimalRecord[] = petsWrapper?.success && Array.isArray(petsWrapper.data) ? petsWrapper.data : [];
+
+  // Fetch owner invoices and payments for Finans tab
+  const { data: invoicesWrapper } = useQuery({
+    queryKey: ['owner-invoices', ownerId],
+    queryFn: () => ownerService.getInvoicesByOwnerId(ownerId),
+    enabled: !!ownerId && value === 2
+  });
+  const { data: paymentsWrapper } = useQuery({
+    queryKey: ['owner-payments', ownerId],
+    queryFn: () => ownerService.getPaymentsByOwnerId(ownerId),
+    enabled: !!ownerId && value === 2
+  });
+  const ownerInvoices: OwnerInvoice[] = invoicesWrapper?.success && Array.isArray(invoicesWrapper.data) ? invoicesWrapper.data : [];
+  const ownerPayments: OwnerPayment[] = paymentsWrapper?.success && Array.isArray(paymentsWrapper.data) ? paymentsWrapper.data : [];
+
+  const financialActivities = useMemo((): FinancialActivity[] => {
+    const list: FinancialActivity[] = [];
+    ownerInvoices.forEach((inv) => {
+      const invId = inv.id ?? inv.invoiceId ?? 0;
+      const date = inv.issueDate ?? inv.date ?? '';
+      const amount = Number(inv.total ?? inv.totalAmount ?? inv.amount ?? 0);
+      list.push({ type: 'invoice', date, description: `Fatura ${inv.invoiceNumber}`, amount, id: invId, invoiceNumber: inv.invoiceNumber });
+    });
+    ownerPayments.forEach((pay) => {
+      const payId = pay.id ?? pay.paymentId ?? 0;
+      const date = pay.paymentDate ?? '';
+      const amount = Number(pay.amount ?? 0);
+      list.push({ type: 'payment', date, description: `Ödeme #${payId}`, amount, id: payId });
+    });
+    list.sort((a, b) => (b.date.localeCompare(a.date)));
+    return list;
+  }, [ownerInvoices, ownerPayments]);
+
   const owner = ownerWrapper?.success ? ownerWrapper.data : null;
   const financial = financialWrapper?.success ? financialWrapper.data : null;
 
-  // Mock pets for now until we have that endpoint
-  const pets: any[] = [
-    // { id: 101, name: 'Boncuk', species: 'Cat', breed: 'Tekir', age: 3 },
-  ];
+  const refetchFinancial = () => {
+    queryClient.invalidateQueries({ queryKey: ['owner-financial', ownerId] });
+    queryClient.invalidateQueries({ queryKey: ['owner-invoices', ownerId] });
+    queryClient.invalidateQueries({ queryKey: ['owner-payments', ownerId] });
+  };
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
@@ -217,7 +279,11 @@ const OwnerDetailPage = () => {
         {/* Pets Tab */}
         <TabPanel value={value} index={1}>
           <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
-            <Button variant="contained" startIcon={<PetsIcon />}>
+            <Button
+              variant="contained"
+              startIcon={<PetsIcon />}
+              onClick={() => navigate(`/clinic/${slug}/animals/new?ownerId=${ownerId}`)}
+            >
               Yeni Pet Ekle
             </Button>
           </Box>
@@ -225,30 +291,34 @@ const OwnerDetailPage = () => {
             <Alert severity="info">Henüz kayıtlı evcil hayvan bulunmuyor.</Alert>
           ) : (
             <Grid container spacing={2}>
-              {pets.map((pet: any) => (
-                <Grid size={{ xs: 12, sm: 6, md: 4 }} key={pet.id}>
+              {pets.map((pet) => {
+                const petId = pet.id ?? (pet as { animalId?: number }).animalId ?? 0;
+                return (
+                <Grid size={{ xs: 12, sm: 6, md: 4 }} key={petId}>
                   <Card variant="outlined">
                     <CardContent>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-                        <Avatar src={`/api/animals/${pet.id}/photo`} alt={pet.name} sx={{ width: 56, height: 56 }}>
-                          {pet.name[0]}
+                        <Avatar src={pet.profileImageUrl ? `/api/animals/${petId}/photo` : undefined} alt={pet.name} sx={{ width: 56, height: 56 }}>
+                          {pet.name?.[0] ?? '?'}
                         </Avatar>
                         <Box>
                           <Typography variant="h6">{pet.name}</Typography>
-                          <Typography variant="body2" color="text.secondary">{pet.species} - {pet.breed}</Typography>
+                          <Typography variant="body2" color="text.secondary">
+                            {pet.species?.name ?? '-'} - {pet.breed?.name ?? '-'}
+                          </Typography>
                         </Box>
                       </Box>
                       <Divider sx={{ my: 1 }} />
-                      <Typography variant="body2">Yaş: {pet.age}</Typography>
+                      <Typography variant="body2">Yaş: {pet.ageInYears ?? '-'}</Typography>
                       <Box sx={{ mt: 2, display: 'flex', gap: 1 }}>
-                        <Button size="small" variant="outlined" fullWidth onClick={() => navigate(`/clinic/demo/animals/${pet.id}`)}>
+                        <Button size="small" variant="outlined" fullWidth onClick={() => navigate(`/clinic/${slug}/animals/${petId}`)}>
                           Detay
                         </Button>
                       </Box>
                     </CardContent>
                   </Card>
                 </Grid>
-              ))}
+              );})}
             </Grid>
           )}
         </TabPanel>
@@ -280,7 +350,13 @@ const OwnerDetailPage = () => {
                 </Grid>
                 <Grid size={{ xs: 12, sm: 4 }}>
                   <Box sx={{ height: '100%', display: 'flex', alignItems: 'center' }}>
-                    <Button variant="contained" size="large" fullWidth startIcon={<MoneyIcon />}>
+                    <Button
+                      variant="contained"
+                      size="large"
+                      fullWidth
+                      startIcon={<MoneyIcon />}
+                      onClick={() => setOpenPaymentModal(true)}
+                    >
                       Ödeme Al
                     </Button>
                   </Box>
@@ -288,8 +364,36 @@ const OwnerDetailPage = () => {
               </Grid>
 
               <Typography variant="h6" gutterBottom>Son Hareketler</Typography>
-              {/* List or Table of invoices/payments */}
-              <Typography variant="body2" color="text.secondary">Finansal hareket geçmişi burada listelenecek... (API Bekleniyor)</Typography>
+              {financialActivities.length === 0 ? (
+                <Typography variant="body2" color="text.secondary">Henüz fatura veya ödeme kaydı yok.</Typography>
+              ) : (
+                <TableContainer component={Paper} variant="outlined" sx={{ mt: 1 }}>
+                  <Table size="small">
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>Tarih</TableCell>
+                        <TableCell>Tür</TableCell>
+                        <TableCell>Açıklama</TableCell>
+                        <TableCell align="right">Tutar</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {financialActivities.map((row) => (
+                        <TableRow key={`${row.type}-${row.id}`}>
+                          <TableCell>{row.date}</TableCell>
+                          <TableCell>
+                            <Chip label={row.type === 'invoice' ? 'Fatura' : 'Ödeme'} size="small" variant={row.type === 'invoice' ? 'outlined' : 'filled'} color={row.type === 'payment' ? 'success' : 'default'} />
+                          </TableCell>
+                          <TableCell>{row.description}</TableCell>
+                          <TableCell align="right">
+                            {(row.amount ?? 0).toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' })}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              )}
             </>
           )}
         </TabPanel>
@@ -305,9 +409,24 @@ const OwnerDetailPage = () => {
             </Button>
           </Box>
           <Typography variant="h6" gutterBottom>İletişim Geçmişi</Typography>
-          <Typography variant="body2" color="text.secondary">Geçmiş SMS ve E-Posta gönderimleri burada listelenecek...</Typography>
+          <Typography variant="body2" color="text.secondary">
+            İletişim geçmişi ve SMS/E-posta gönderimi yakında eklenecek.
+          </Typography>
         </TabPanel>
       </Paper>
+
+      {openPaymentModal && (
+        <BillingProvider>
+          <CreatePaymentModal
+            onClose={() => setOpenPaymentModal(false)}
+            onSuccess={() => {
+              refetchFinancial();
+              setOpenPaymentModal(false);
+            }}
+            ownerInvoices={ownerInvoices}
+          />
+        </BillingProvider>
+      )}
     </Box>
   );
 };

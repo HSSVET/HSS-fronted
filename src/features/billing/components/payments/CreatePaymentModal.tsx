@@ -3,21 +3,40 @@ import { useBilling } from '../../hooks/useBilling';
 import { POSTerminal, CardInfo } from '../../types';
 import { billingService } from '../../services/billingService';
 
+export interface OwnerInvoiceOption {
+  id?: number;
+  invoiceId?: number;
+  invoiceNumber: string;
+  totalAmount?: number;
+  amount?: number;
+  status?: string;
+}
+
 interface CreatePaymentModalProps {
   onClose: () => void;
   onSuccess: () => void;
   invoiceId?: number;
+  /** When provided (e.g. from owner detail page), only these invoices are shown in the dropdown */
+  ownerInvoices?: OwnerInvoiceOption[];
 }
 
 export const CreatePaymentModal: React.FC<CreatePaymentModalProps> = ({ 
   onClose, 
   onSuccess, 
-  invoiceId 
+  invoiceId,
+  ownerInvoices 
 }) => {
   const { invoices, createPayment } = useBilling();
   const [loading, setLoading] = useState(false);
   const [posTerminals, setPosTerminals] = useState<POSTerminal[]>([]);
   const [processingCard, setProcessingCard] = useState(false);
+  
+  const invoiceList = ownerInvoices?.length ? ownerInvoices : invoices;
+  const getInvoiceId = (inv: { id?: number; invoiceId?: number }) => inv.id ?? inv.invoiceId ?? 0;
+  const getInvoiceAmount = (inv: { total?: number; totalAmount?: number; amount?: number }) => Number(inv.total ?? inv.totalAmount ?? inv.amount ?? 0);
+  const unpaidInvoices = ownerInvoices
+    ? ownerInvoices.filter(inv => (inv.status ?? '').toUpperCase() !== 'PAID')
+    : invoices.filter(inv => inv.status !== 'paid');
   
   // Form state
   const [selectedInvoiceId, setSelectedInvoiceId] = useState<number>(invoiceId || 0);
@@ -61,13 +80,15 @@ export const CreatePaymentModal: React.FC<CreatePaymentModalProps> = ({
   }, []);
 
   useEffect(() => {
-    if (selectedInvoiceId) {
-      const invoice = invoices.find(inv => inv.id === selectedInvoiceId);
+    if (selectedInvoiceId && invoiceList.length) {
+      const invoice = ownerInvoices
+        ? ownerInvoices.find(inv => getInvoiceId(inv) === selectedInvoiceId)
+        : invoices.find(inv => inv.id === selectedInvoiceId);
       if (invoice) {
-        setAmount(invoice.total);
+        setAmount(ownerInvoices ? getInvoiceAmount(invoice) : (invoice as { total?: number }).total ?? 0);
       }
     }
-  }, [selectedInvoiceId, invoices]);
+  }, [selectedInvoiceId, invoiceList, ownerInvoices, invoices]);
 
   useEffect(() => {
     // Nakit ödeme için para üstü hesaplama
@@ -180,7 +201,9 @@ export const CreatePaymentModal: React.FC<CreatePaymentModalProps> = ({
     }
   };
 
-  const selectedInvoice = invoices.find(inv => inv.id === selectedInvoiceId);
+  const selectedInvoice = ownerInvoices
+    ? ownerInvoices.find(inv => getInvoiceId(inv) === selectedInvoiceId)
+    : invoices.find(inv => inv.id === selectedInvoiceId);
 
   return (
     <div className="modal-overlay">
@@ -189,24 +212,39 @@ export const CreatePaymentModal: React.FC<CreatePaymentModalProps> = ({
           <h2 className="modal-title">Ödeme Kaydet</h2>
           <button className="close-button" onClick={onClose}>×</button>
         </div>
+        <p className="form-label" style={{ padding: '0 1rem', margin: '0 0 1rem', fontSize: '0.9rem', color: 'var(--text-secondary, #666)' }}>
+          Ödeme, aşağıda seçtiğiniz faturaya işlenir.
+        </p>
 
         <form onSubmit={handleSubmit} className="billing-form">
           {/* Fatura Seçimi */}
           <div className="form-group">
             <label className="form-label">Fatura</label>
-            <select
-              className="form-select"
-              value={selectedInvoiceId}
-              onChange={(e) => setSelectedInvoiceId(Number(e.target.value))}
-              required
-            >
-              <option value="">Fatura Seçin</option>
-              {invoices.filter(inv => inv.status !== 'paid').map(invoice => (
-                <option key={invoice.id} value={invoice.id}>
-                  {invoice.invoiceNumber} - {invoice.patient.name} - {invoice.total.toFixed(2)} TL
-                </option>
-              ))}
-            </select>
+            {ownerInvoices && unpaidInvoices.length === 0 ? (
+              <div role="alert" style={{ padding: '1rem', background: '#fff3cd', borderRadius: 'var(--border-radius-sm)', marginBottom: '1rem', border: '1px solid #ffc107' }}>
+                Bu müşteri için fatura bulunmuyor. Önce fatura oluşturun (Faturalar sayfasından veya ilgili işlemden).
+              </div>
+            ) : (
+              <select
+                className="form-select"
+                value={selectedInvoiceId}
+                onChange={(e) => setSelectedInvoiceId(Number(e.target.value))}
+                required
+              >
+                <option value="">Fatura Seçin</option>
+                {ownerInvoices
+                  ? unpaidInvoices.map(inv => (
+                      <option key={getInvoiceId(inv)} value={getInvoiceId(inv)}>
+                        {inv.invoiceNumber} - {(getInvoiceAmount(inv)).toFixed(2)} TL
+                      </option>
+                    ))
+                  : invoices.filter(inv => inv.status !== 'paid').map(invoice => (
+                      <option key={invoice.id} value={invoice.id}>
+                        {invoice.invoiceNumber} - {invoice.patient?.name ?? '-'} - {invoice.total.toFixed(2)} TL
+                      </option>
+                    ))}
+              </select>
+            )}
           </div>
 
           {selectedInvoice && (
@@ -216,9 +254,13 @@ export const CreatePaymentModal: React.FC<CreatePaymentModalProps> = ({
               borderRadius: 'var(--border-radius-sm)',
               marginBottom: 'var(--spacing-2)'
             }}>
-              <strong>Seçilen Fatura:</strong> {selectedInvoice.invoiceNumber}<br/>
-              <strong>Hasta:</strong> {selectedInvoice.patient.name} ({selectedInvoice.patient.ownerName})<br/>
-              <strong>Toplam Tutar:</strong> {selectedInvoice.total.toFixed(2)} TL
+              <strong>Seçilen Fatura:</strong> {(selectedInvoice as { invoiceNumber?: string }).invoiceNumber ?? ''}<br/>
+              {!ownerInvoices && (selectedInvoice as { patient?: { name?: string; ownerName?: string } }).patient && (
+                <>
+                  <strong>Hasta:</strong> {(selectedInvoice as { patient: { name?: string; ownerName?: string } }).patient.name} ({(selectedInvoice as { patient: { ownerName?: string } }).patient.ownerName})<br/>
+                </>
+              )}
+              <strong>Toplam Tutar:</strong> {(ownerInvoices ? getInvoiceAmount(selectedInvoice as OwnerInvoiceOption) : (selectedInvoice as { total?: number }).total ?? 0).toFixed(2)} TL
             </div>
           )}
 
@@ -448,7 +490,7 @@ export const CreatePaymentModal: React.FC<CreatePaymentModalProps> = ({
             <button
               type="submit"
               className="action-button"
-              disabled={loading || processingCard}
+              disabled={loading || processingCard || (!!ownerInvoices && unpaidInvoices.length === 0)}
             >
               {loading ? '⏳ Kaydediliyor...' : processingCard ? '💳 POS İşlemi...' : '💰 Ödeme Kaydet'}
             </button>

@@ -8,6 +8,12 @@ export interface Owner {
   phone?: string;
   email?: string;
   address?: string;
+  type?: 'INDIVIDUAL' | 'CORPORATE';
+  corporateName?: string;
+  taxNo?: string;
+  taxOffice?: string;
+  notes?: string;
+  warnings?: string;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -18,6 +24,12 @@ export interface OwnerCreateRequest {
   phone?: string;
   email?: string;
   address?: string;
+  type?: 'INDIVIDUAL' | 'CORPORATE';
+  corporateName?: string;
+  taxNo?: string;
+  taxOffice?: string;
+  notes?: string;
+  warnings?: string;
 }
 
 const normalizeSpringPage = <T>(page: SpringPage<T>): PaginatedResponse<T> => ({
@@ -42,6 +54,32 @@ export interface OwnerFinancialSummary {
   totalPaid: number;
   balance: number;
   overdueAmount: number;
+}
+
+/** Owner-scoped invoice list item (from GET /api/owners/{id}/invoices) */
+export interface OwnerInvoice {
+  id?: number;
+  invoiceId?: number;
+  invoiceNumber: string;
+  date?: string;
+  issueDate?: string;
+  totalAmount?: number;
+  amount?: number;
+  total?: number;
+  status?: string;
+  ownerId?: number;
+}
+
+/** Owner-scoped payment list item (from GET /api/owners/{id}/payments) */
+export interface OwnerPayment {
+  id?: number;
+  paymentId?: number;
+  invoiceId?: number;
+  amount: number;
+  paymentDate: string;
+  paymentMethod?: string;
+  notes?: string;
+  ownerId?: number;
 }
 
 export class OwnerService {
@@ -88,6 +126,16 @@ export class OwnerService {
 
   async getFinancialSummary(id: number): Promise<ApiResponse<OwnerFinancialSummary>> {
     const response = await apiClient.get<OwnerFinancialSummary>(`/api/owners/${id}/financial-summary`);
+    return response;
+  }
+
+  async getInvoicesByOwnerId(ownerId: number): Promise<ApiResponse<OwnerInvoice[]>> {
+    const response = await apiClient.get<OwnerInvoice[]>(`/api/owners/${ownerId}/invoices`);
+    return response;
+  }
+
+  async getPaymentsByOwnerId(ownerId: number): Promise<ApiResponse<OwnerPayment[]>> {
+    const response = await apiClient.get<OwnerPayment[]>(`/api/owners/${ownerId}/payments`);
     return response;
   }
 }

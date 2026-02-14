@@ -1,5 +1,7 @@
 import React, { useState, useCallback } from 'react';
+import { useParams } from 'react-router-dom';
 import Sidebar from './Sidebar';
+import { apiClient } from '../../services/api';
 import '../styles/components/Layout.css';
 
 interface LayoutProps {
@@ -7,7 +9,13 @@ interface LayoutProps {
 }
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
+  const { slug } = useParams<{ slug?: string }>();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
+
+  // Render sırasında set et: child (örn. OwnerPage) useQuery ile ilk isteği atarken header hazır olsun
+  if (slug) {
+    apiClient.setClinicContext(undefined, slug);
+  }
   const [sidebarHovered, setSidebarHovered] = useState(false);
 
   // useCallback ile fonksiyonları memoize et

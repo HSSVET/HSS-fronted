@@ -83,7 +83,8 @@ export class BillingService {
   }
 
   static async createPayment(paymentData: Omit<Payment, 'id' | 'createdAt' | 'transactionNumber'>): Promise<ApiResponse<Payment>> {
-    return apiClient.post(`${API_ENDPOINTS.INVOICES}/payments`, paymentData);
+    const { invoiceId, ...body } = paymentData;
+    return apiClient.post(`${API_ENDPOINTS.INVOICES}/payments?invoiceId=${invoiceId}`, body);
   }
 
   // POS Terminal operations

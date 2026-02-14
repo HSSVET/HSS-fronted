@@ -9,6 +9,7 @@ import CustomerLayout from './shared/components/CustomerLayout';
 import { Dashboard } from './features/dashboard';
 import CustomerDashboard from './features/dashboard/components/CustomerDashboard';
 import { AnimalPage, AnimalDetailPage } from './features/animals';
+import NewAnimalPage from './features/animals/pages/NewAnimalPage';
 import { AppointmentPage } from './features/appointments';
 import { LabDashboard, LabTestTypes } from './features/laboratory';
 import { Billing } from './features/billing';
@@ -210,6 +211,7 @@ function App() {
                               <PageErrorBoundary pageName="Animals">
                                 <Routes>
                                   <Route index element={<AnimalPage />} />
+                                  <Route path="new" element={<NewAnimalPage />} />
                                   <Route path=":id" element={<AnimalDetailPage />} />
                                 </Routes>
                               </PageErrorBoundary>

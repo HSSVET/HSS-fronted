@@ -3,6 +3,7 @@ import { User } from 'firebase/auth';
 import { auth } from '../config/firebase';
 import { onAuthStateChanged, signOut, getIdTokenResult } from 'firebase/auth';
 import { useIdleTimeout } from '../hooks/useIdleTimeout';
+import { apiClient } from '../services/api';
 
 // ============================================================================
 // Types & Interfaces
@@ -182,6 +183,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     return () => unsubscribe();
   }, [syncUserWithBackend]);
+
+  // API client'a clinic context ver (JWT'de clinic_id yoksa backend X-Clinic-Id/Slug header kullanır)
+  useEffect(() => {
+    const id = state.user?.clinicId;
+    const slug = state.user?.clinicSlug;
+    const validId = id != null && !Number.isNaN(Number(id)) ? Number(id) : undefined;
+    if (validId != null || slug) {
+      apiClient.setClinicContext(validId, slug);
+    } else {
+      apiClient.setClinicContext(undefined, undefined);
+    }
+  }, [state.user?.clinicId, state.user?.clinicSlug]);
 
   const login = useCallback((redirectUrl?: string) => {
     // Ideally use navigate here but we are in context
