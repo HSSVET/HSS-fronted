@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   Typography,
@@ -8,12 +8,17 @@ import {
   IconButton,
   Tooltip,
   Chip,
+  CircularProgress,
+  Alert,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import PrintIcon from '@mui/icons-material/Print';
 import SearchIcon from '@mui/icons-material/Search';
 import AutorenewIcon from '@mui/icons-material/Autorenew';
 import VaccinesIcon from '@mui/icons-material/Vaccines';
+import DownloadIcon from '@mui/icons-material/Download';
+import { vaccineCardService } from '../../services/vaccineCardService';
+import { useParams } from 'react-router-dom';
 
 interface Vaccine {
   name: string;
@@ -51,9 +56,28 @@ const mockVaccinations: VaccinationAppointment[] = [
 ];
 
 const Vaccinations: React.FC = () => {
+  const { id } = useParams<{ id: string }>();
+  const [downloadingCard, setDownloadingCard] = useState(false);
+  const [downloadError, setDownloadError] = useState<string | null>(null);
+
   const handleNewVaccination = () => {
     // TODO: Implement new vaccination functionality
     console.log('New vaccination clicked');
+  };
+
+  const handleDownloadVaccineCard = async () => {
+    if (!id) return;
+    
+    try {
+      setDownloadingCard(true);
+      setDownloadError(null);
+      await vaccineCardService.downloadVaccineCard(parseInt(id));
+    } catch (error) {
+      setDownloadError('Aşı karnesi indirilirken hata oluştu');
+      console.error('Vaccine card download error:', error);
+    } finally {
+      setDownloadingCard(false);
+    }
   };
 
   const handlePrint = (vaccinationId: string) => {
@@ -98,20 +122,44 @@ const Vaccinations: React.FC = () => {
     <Box sx={{ p: 2 }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Typography variant="h6">Aşı Takip Sistemi</Typography>
-        <Button
-          variant="contained"
-          startIcon={<AddIcon />}
-          onClick={handleNewVaccination}
-          sx={{
-            backgroundColor: '#4caf50',
-            '&:hover': {
-              backgroundColor: '#388e3c',
-            },
-          }}
-        >
-          Yeni Aşı Ekle
-        </Button>
+        <Box sx={{ display: 'flex', gap: 2 }}>
+          <Button
+            variant="outlined"
+            startIcon={downloadingCard ? <CircularProgress size={16} /> : <DownloadIcon />}
+            onClick={handleDownloadVaccineCard}
+            disabled={downloadingCard}
+            sx={{
+              borderColor: '#92A78C',
+              color: '#92A78C',
+              '&:hover': {
+                backgroundColor: 'rgba(146, 167, 140, 0.08)',
+                borderColor: '#7a8f76',
+              },
+            }}
+          >
+            {downloadingCard ? 'İndiriliyor...' : 'Aşı Karnesi İndir (PDF)'}
+          </Button>
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={handleNewVaccination}
+            sx={{
+              backgroundColor: '#4caf50',
+              '&:hover': {
+                backgroundColor: '#388e3c',
+              },
+            }}
+          >
+            Yeni Aşı Ekle
+          </Button>
+        </Box>
       </Box>
+
+      {downloadError && (
+        <Alert severity="error" onClose={() => setDownloadError(null)} sx={{ mb: 2 }}>
+          {downloadError}
+        </Alert>
+      )}
 
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
         {mockVaccinations.map((vaccination) => (

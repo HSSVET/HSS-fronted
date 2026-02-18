@@ -36,6 +36,8 @@ import SurgeryForm from '../../surgery/components/SurgeryForm';
 import HospitalizationList from '../../hospitalization/components/HospitalizationList';
 import AdmissionForm from '../../hospitalization/components/AdmissionForm';
 import { Dialog, DialogContent, DialogTitle } from '@mui/material';
+import TreatmentHistory from './detail/TreatmentHistory';
+import BehaviorNotes from './detail/BehaviorNotes';
 import '../styles/AnimalDetail.css';
 import { animalService, AnimalRecord } from '../services/animalService';
 
@@ -204,6 +206,16 @@ const AnimalDetailPage: React.FC = () => {
       label: 'Kilo Takibi',
       icon: <MonitorWeightIcon />,
     },
+    {
+      id: 'treatment',
+      label: 'Tedavi Geçmişi',
+      icon: <HealingIcon />,
+    },
+    {
+      id: 'behavior-notes',
+      label: 'Davranış Notları',
+      icon: <NoteIcon />,
+    },
   ];
 
   const renderContent = () => {
@@ -279,6 +291,10 @@ const AnimalDetailPage: React.FC = () => {
         );
       case 13: // Kilo Takibi
         return <WeightHistory />;
+      case 14: // Tedavi Geçmişi
+        return <TreatmentHistory animalId={parseInt(id || '0')} />;
+      case 15: // Davranış Notları
+        return <BehaviorNotes animalId={parseInt(id || '0')} />;
       default:
         return <ImportantAlerts animal={animalData} />;
     }

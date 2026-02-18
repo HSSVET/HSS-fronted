@@ -34,7 +34,7 @@ interface AnimalListProps {
   onAddAnimal?: (animal: AnimalListItem) => void;
 }
 
-type FilterFields = 'species' | 'breed' | 'health';
+type FilterFields = 'species' | 'breed' | 'health' | 'status';
 
 type NullableDate = Date | null;
 
@@ -299,6 +299,7 @@ const AnimalList: React.FC<AnimalListProps> = ({ onAddAnimal }) => {
     species: [] as string[],
     breed: [] as string[],
     health: [] as string[],
+    status: [] as string[], // Yeni: Status filtresi
     startDate: '',
     endDate: ''
   });
@@ -472,6 +473,10 @@ const AnimalList: React.FC<AnimalListProps> = ({ onAddAnimal }) => {
       const matchesSpecies = filters.species.length === 0 || filters.species.includes(animal.species);
       const matchesBreed = filters.breed.length === 0 || (animal.breed && filters.breed.includes(animal.breed));
       const matchesHealth = filters.health.length === 0 || filters.health.includes(animal.health);
+      
+      // Yeni: Status filtresi - backend'den gelen status'e göre filtrele
+      const animalRecord = allAnimalsData.find(a => a.id.toString() === animal.id);
+      const matchesStatus = filters.status.length === 0 || (animalRecord && filters.status.includes(animalRecord.status || 'ACTIVE'));
 
       const checkupDate = parseDate(animal.lastCheckup);
       const matchesDateRange = !checkupDate || (!startDate && !endDate)
@@ -481,7 +486,7 @@ const AnimalList: React.FC<AnimalListProps> = ({ onAddAnimal }) => {
           (!endDate || (checkupDate && checkupDate <= endDate))
         );
 
-      return matchesSearch && matchesSpecies && matchesBreed && matchesHealth && matchesDateRange;
+      return matchesSearch && matchesSpecies && matchesBreed && matchesHealth && matchesStatus && matchesDateRange;
     });
   };
 
@@ -692,6 +697,44 @@ const AnimalList: React.FC<AnimalListProps> = ({ onAddAnimal }) => {
                 <Typography>{health}</Typography>
               </div>
             ))}
+          </div>
+        </div>
+
+        <div className="filter-section">
+          <h3>Hasta Durumu</h3>
+          <div className="filter-options">
+            <div className="filter-checkbox-item">
+              <Checkbox
+                checked={filters.status.includes('ACTIVE')}
+                onChange={() => handleCheckboxChange('status', 'ACTIVE')}
+                sx={{ color: 'var(--primary-color)' }}
+              />
+              <Typography>Aktif</Typography>
+            </div>
+            <div className="filter-checkbox-item">
+              <Checkbox
+                checked={filters.status.includes('FOLLOW_UP')}
+                onChange={() => handleCheckboxChange('status', 'FOLLOW_UP')}
+                sx={{ color: 'var(--primary-color)' }}
+              />
+              <Typography>Takip</Typography>
+            </div>
+            <div className="filter-checkbox-item">
+              <Checkbox
+                checked={filters.status.includes('DECEASED')}
+                onChange={() => handleCheckboxChange('status', 'DECEASED')}
+                sx={{ color: 'var(--primary-color)' }}
+              />
+              <Typography>Vefat</Typography>
+            </div>
+            <div className="filter-checkbox-item">
+              <Checkbox
+                checked={filters.status.includes('ARCHIVED')}
+                onChange={() => handleCheckboxChange('status', 'ARCHIVED')}
+                sx={{ color: 'var(--primary-color)' }}
+              />
+              <Typography>Arşiv</Typography>
+            </div>
           </div>
         </div>
 
