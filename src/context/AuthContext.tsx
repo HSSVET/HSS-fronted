@@ -124,7 +124,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const token = await firebaseUser.getIdToken();
 
-      const response = await fetch('/api/auth/sync', {
+      const backendUrl = process.env.REACT_APP_API_URL || 'http://localhost:8090';
+      const response = await fetch(`${backendUrl}/api/auth/sync`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
