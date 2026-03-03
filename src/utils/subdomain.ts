@@ -175,7 +175,7 @@ export const validateUserSubdomainAccess = (userRoles: string[]): {
     return {
       isValid: false,
       shouldRedirect: true,
-      redirectUrl: getAdminPortalUrl() + '/super-admin/clinics',
+      redirectUrl: '/admin/clinics',
     };
   }
 
@@ -184,7 +184,7 @@ export const validateUserSubdomainAccess = (userRoles: string[]): {
     return {
       isValid: false,
       shouldRedirect: true,
-      redirectUrl: getCustomerPortalUrl() + '/login',
+      redirectUrl: '/portal/dashboard',
     };
   }
 

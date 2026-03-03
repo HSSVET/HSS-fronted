@@ -57,8 +57,8 @@ const SuperAdminLayout: React.FC = () => {
   };
 
   const menuItems = [
-    { text: 'Clinics', icon: <ClinicIcon />, path: '/super-admin/clinics' },
-    { text: 'System Settings', icon: <SettingsIcon />, path: '/super-admin/settings' },
+    { text: 'Clinics', icon: <ClinicIcon />, path: '/admin/clinics' },
+    { text: 'System Settings', icon: <SettingsIcon />, path: '/admin/settings' },
   ];
 
   const drawerContent = (
