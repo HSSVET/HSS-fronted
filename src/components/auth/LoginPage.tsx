@@ -244,42 +244,23 @@ const LoginPage: React.FC<LoginPageProps> = ({
         }
       }
 
-      // Build the correct target URL based on user type and subdomain
+      // Build the correct target URL based on user type
       const buildRedirectUrl = (): string => {
-        const protocol = window.location.protocol;
-        const port = window.location.port ? `:${window.location.port}` : '';
-        const hostname = window.location.hostname;
-        const parts = hostname.split('.');
-        const hasSubdomain = parts.length > 2 || (parts.length > 1 && parts[1] === 'localhost');
-        const baseDomain = hasSubdomain ? parts.slice(1).join('.') : parts.join('.');
-
         const user = state.user;
 
-        // SUPER_ADMIN → admin.xxx/clinics
+        // SUPER_ADMIN → /admin/clinics
         if (user?.roles?.includes('SUPER_ADMIN')) {
-          const adminHost = `admin.${baseDomain}`;
-          if (hostname !== adminHost) {
-            return `${protocol}//${adminHost}${port}/clinics`;
-          }
-          return '/clinics';
+          return '/admin/clinics';
         }
 
-        // STAFF with clinicSlug → clinicSlug.xxx/dashboard
+        // STAFF with clinicSlug → /:clinicSlug/dashboard
         if (user?.userType === 'STAFF' && user?.clinicSlug) {
-          const clinicHost = `${user.clinicSlug}.${baseDomain}`;
-          if (hostname !== clinicHost) {
-            return `${protocol}//${clinicHost}${port}/dashboard`;
-          }
-          return '/dashboard';
+          return `/${user.clinicSlug}/dashboard`;
         }
 
-        // OWNER → portal.xxx/dashboard
+        // OWNER → /portal/dashboard
         if (user?.userType === 'OWNER') {
-          const portalHost = `portal.${baseDomain}`;
-          if (hostname !== portalHost) {
-            return `${protocol}//${portalHost}${port}/dashboard`;
-          }
-          return '/dashboard';
+          return '/portal/dashboard';
         }
 
         // Fallback: use redirect param or dashboard

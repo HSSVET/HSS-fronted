@@ -19,7 +19,8 @@ export const useClinics = () => {
     adminEmail: '',
     adminFirstName: '',
     adminLastName: '',
-    adminPassword: ''
+    adminPassword: '',
+    slug: ''
   });
 
   const fetchClinicsList = async () => {
@@ -49,7 +50,8 @@ export const useClinics = () => {
         adminEmail: '',
         adminFirstName: '',
         adminLastName: '',
-        adminPassword: ''
+        adminPassword: '',
+        slug: ''
       });
       await fetchClinicsList();
     } catch (error) {

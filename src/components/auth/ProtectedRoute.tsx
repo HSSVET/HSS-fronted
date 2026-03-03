@@ -105,7 +105,7 @@ const useAccessControl = (props: ProtectedRouteProps) => {
 
   const { state } = useAuth();
   const location = useLocation();
-  const params = useParams<{ slug?: string; clinicId?: string }>(); // Extract slug or clinicId
+  const params = useParams<{ clinicSlug?: string; slug?: string; clinicId?: string }>(); // Extract slug or clinicId
 
   const [accessResult, setAccessResult] = useState<AccessResult>({
     level: 'pending',
@@ -230,33 +230,20 @@ const useAccessControl = (props: ProtectedRouteProps) => {
           return;
         }
 
-        // Step 6: Clinic Isolation Check (Subdomain)
+        // Step 6: Clinic Isolation Check (Path Router)
         if (state.user?.clinicSlug) {
-          const hostname = window.location.hostname;
-          const hostParts = hostname.split('.');
-          const subdomain = hostParts.length > 2 || (hostParts.length > 1 && hostParts[1] === 'localhost') ? hostParts[0] : null;
+          const { clinicSlug } = params;
 
-          if (subdomain && subdomain !== 'admin' && subdomain !== 'portal' && subdomain !== 'www' && subdomain !== 'localhost') {
-            if (subdomain !== state.user.clinicSlug) {
-              // Block access if Subdomain doesn't match User's clinic slug
-              if (!state.user.roles.includes('ADMIN')) {
-                setAccessResult({
-                  level: 'denied',
-                  reason: `Access to Clinic '${subdomain}' denied. You belong to '${state.user.clinicSlug}'.`,
-                  redirect: `http://${state.user.clinicSlug}.${hostParts.slice(1).join('.')}:3000/dashboard`,
-                  showModal: true
-                });
-                return;
-              } else {
-                // Even Admins restricted
-                setAccessResult({
-                  level: 'denied',
-                  reason: `Access to Clinic '${subdomain}' denied. You belong to '${state.user.clinicSlug}'.`,
-                  redirect: `http://${state.user.clinicSlug}.${hostParts.slice(1).join('.')}:3000/dashboard`,
-                  showModal: true
-                });
-                return;
-              }
+          if (clinicSlug && clinicSlug !== 'admin' && clinicSlug !== 'portal') {
+            if (clinicSlug !== state.user.clinicSlug) {
+              // Block access if path clinicSlug doesn't match User's clinic slug
+              setAccessResult({
+                level: 'denied',
+                reason: `Access to Clinic '${clinicSlug}' denied. You belong to '${state.user.clinicSlug}'.`,
+                redirect: `/${state.user.clinicSlug}/dashboard`,
+                showModal: true
+              });
+              return;
             }
           }
         }

@@ -102,7 +102,7 @@ export const ProvisionClinicModal: React.FC<ProvisionClinicModalProps> = ({
               <ClinicIcon fontSize="small" sx={{ color: '#3b82f6' }} /> Clinic Information
             </Typography>
             <Grid container spacing={2}>
-              <Grid size={{ xs: 12 }}>
+              <Grid size={{ xs: 12, sm: 8 }}>
                 <TextField
                   label="Clinic Name"
                   placeholder="e.g. Acme Veterinary"
@@ -111,6 +111,17 @@ export const ProvisionClinicModal: React.FC<ProvisionClinicModalProps> = ({
                   onChange={(e) => onChange({ ...formData, name: toEnglishChars(e.target.value) })}
                   required
                   variant="outlined"
+                />
+              </Grid>
+              <Grid size={{ xs: 12, sm: 4 }}>
+                <TextField
+                  label="URL Slug (Optional)"
+                  placeholder="e.g. acmevet"
+                  fullWidth
+                  value={formData.slug || ''}
+                  onChange={(e) => onChange({ ...formData, slug: toEnglishChars(e.target.value).toLowerCase() })}
+                  variant="outlined"
+                  helperText="Leave empty to auto-generate"
                 />
               </Grid>
               <Grid size={{ xs: 12, sm: 6 }}>
