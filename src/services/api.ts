@@ -299,9 +299,20 @@ export class ApiClient {
   }
 
   private async getHeaders(): Promise<HeadersInit> {
-    const headers: HeadersInit = {
+    const headers: Record<string, string> = {
       'Content-Type': 'application/json',
     };
+
+    // Extract subdomain and inject as X-Clinic-Slug header
+    const hostname = window.location.hostname;
+    const parts = hostname.split('.');
+    const hasSubdomain = parts.length > 2 || (parts.length > 1 && parts[1] === 'localhost');
+    if (hasSubdomain) {
+      const subdomain = parts[0];
+      if (subdomain !== 'www' && subdomain !== 'admin' && subdomain !== 'portal') {
+        headers['X-Clinic-Slug'] = subdomain;
+      }
+    }
 
     // Token yoksa veya geçersizse test token al
     try {

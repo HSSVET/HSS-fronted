@@ -241,7 +241,7 @@ const OwnerDetailPage = () => {
                       <Divider sx={{ my: 1 }} />
                       <Typography variant="body2">Yaş: {pet.age}</Typography>
                       <Box sx={{ mt: 2, display: 'flex', gap: 1 }}>
-                        <Button size="small" variant="outlined" fullWidth onClick={() => navigate(`/clinic/demo/animals/${pet.id}`)}>
+                        <Button size="small" variant="outlined" fullWidth onClick={() => navigate(`/animals/${pet.id}`)}>
                           Detay
                         </Button>
                       </Box>

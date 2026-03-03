@@ -210,17 +210,28 @@ const LoginPage: React.FC<LoginPageProps> = ({
     localStorage.removeItem('auth_redirect_url');
     localStorage.removeItem('login_redirect_in_progress');
     console.log('🧹 LoginPage: Cleaned up redirect URLs on mount');
+    // Reset redirect flag when component mounts (fresh login)
+    redirectAttempted.current = false;
   }, []);
 
   const redirectAttempted = React.useRef(false);
 
   useEffect(() => {
-    // console.log('🔄 LoginPage: Auth state change detected');
-
     // Redirect after successful authentication
     if (state.isAuthenticated && state.isInitialized && !state.isLoading && !redirectAttempted.current) {
       console.log('✅ Authentication successful, validating subdomain access...');
       redirectAttempted.current = true; // Prevent multiple redirects
+
+      // Check for access_denied error to prevent infinite loops
+      const params = new URLSearchParams(location.search);
+      if (params.get('error') === 'access_denied') {
+        const errorReason = params.get('error_reason');
+        console.log('⛔ Access Denied from Protected Route. Stopping auto-redirect.');
+        setError(`Erişim engellendi: ${errorReason || 'Bu sayfayı görüntüleme yetkiniz yok.'}`);
+        setLoading(false);
+        redirectAttempted.current = true; // Mark as attempted so it doesn't retry
+        return;
+      }
 
       // Validate user role matches subdomain
       if (state.user?.roles) {
@@ -233,20 +244,62 @@ const LoginPage: React.FC<LoginPageProps> = ({
         }
       }
 
-      const params = new URLSearchParams(location.search);
-      const redirectParam = params.get('redirect');
+      // Build the correct target URL based on user type and subdomain
+      const buildRedirectUrl = (): string => {
+        const protocol = window.location.protocol;
+        const port = window.location.port ? `:${window.location.port}` : '';
+        const hostname = window.location.hostname;
+        const parts = hostname.split('.');
+        const hasSubdomain = parts.length > 2 || (parts.length > 1 && parts[1] === 'localhost');
+        const baseDomain = hasSubdomain ? parts.slice(1).join('.') : parts.join('.');
 
-      // If no specific redirect param, go to root '/' and let RootRedirect handle it
-      // This avoids the /dashboard -> * -> / -> RootRedirect loop
-      const targetUrl = redirectParam || '/';
+        const user = state.user;
 
+        // SUPER_ADMIN → admin.xxx/clinics
+        if (user?.roles?.includes('SUPER_ADMIN')) {
+          const adminHost = `admin.${baseDomain}`;
+          if (hostname !== adminHost) {
+            return `${protocol}//${adminHost}${port}/clinics`;
+          }
+          return '/clinics';
+        }
+
+        // STAFF with clinicSlug → clinicSlug.xxx/dashboard
+        if (user?.userType === 'STAFF' && user?.clinicSlug) {
+          const clinicHost = `${user.clinicSlug}.${baseDomain}`;
+          if (hostname !== clinicHost) {
+            return `${protocol}//${clinicHost}${port}/dashboard`;
+          }
+          return '/dashboard';
+        }
+
+        // OWNER → portal.xxx/dashboard
+        if (user?.userType === 'OWNER') {
+          const portalHost = `portal.${baseDomain}`;
+          if (hostname !== portalHost) {
+            return `${protocol}//${portalHost}${port}/dashboard`;
+          }
+          return '/dashboard';
+        }
+
+        // Fallback: use redirect param or dashboard
+        const params = new URLSearchParams(location.search);
+        return params.get('redirect') || '/dashboard';
+      };
+
+      const targetUrl = buildRedirectUrl();
       console.log('🔗 Redirecting to:', targetUrl);
 
       // Set success state and redirect after a short delay
       setLoginStep('success');
       setShowSuccessMessage(true);
       setTimeout(() => {
-        navigate(targetUrl, { replace: true });
+        // Use window.location.href for cross-subdomain navigation, navigate() for same-origin
+        if (targetUrl.startsWith('http')) {
+          window.location.href = targetUrl;
+        } else {
+          navigate(targetUrl, { replace: true });
+        }
       }, 1500);
     }
   }, [state.isAuthenticated, state.isInitialized, state.isLoading, state.user, location.search, navigate]);

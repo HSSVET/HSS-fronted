@@ -64,39 +64,44 @@ const SuperAdminLayout: React.FC = () => {
   const drawerContent = (
     <Box sx={{
       height: '100%',
-      background: 'linear-gradient(180deg, #1a237e 0%, #283593 100%)',
-      color: 'white',
+      bgcolor: '#ffffff',
+      borderRight: '1px solid #e2e8f0',
+      color: '#0f172a',
       display: 'flex',
       flexDirection: 'column'
     }}>
-      <Toolbar sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', py: 2 }}>
+      <Toolbar sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', py: 3, borderBottom: '1px solid #f8fafc' }}>
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ type: "spring", stiffness: 260, damping: 20 }}
         >
-          <LogoIcon sx={{ fontSize: 40, color: '#F7CD82', mr: 1 }} />
+          <LogoIcon sx={{ fontSize: 36, color: '#3b82f6', mr: 1 }} />
         </motion.div>
-        <Typography variant="h6" sx={{ fontWeight: 'bold', letterSpacing: 1 }}>
-          HSS ADMIN
+        <Typography variant="h6" sx={{ fontWeight: 800, letterSpacing: '-0.5px', color: '#0f172a' }}>
+          HSS Admin
         </Typography>
       </Toolbar>
 
-      <Box sx={{ px: 2, mb: 4, textAlign: 'center' }}>
+      <Box sx={{ px: 3, py: 4, mb: 1, textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         <Avatar
           sx={{
-            width: 64,
-            height: 64,
-            bgcolor: 'rgba(255,255,255,0.2)',
-            margin: '0 auto',
-            mb: 1,
-            border: '2px solid rgba(255,255,255,0.3)'
+            width: 56,
+            height: 56,
+            bgcolor: '#e0f2fe',
+            color: '#0284c7',
+            mb: 1.5,
+            fontWeight: 700,
+            border: '2px solid #bae6fd'
           }}
         >
           {user?.email?.charAt(0).toUpperCase()}
         </Avatar>
-        <Typography variant="subtitle2" sx={{ opacity: 0.8 }}>
+        <Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#334155' }}>
           Super Admin
+        </Typography>
+        <Typography variant="body2" sx={{ color: '#64748b', fontSize: '0.75rem', mt: 0.5 }}>
+          {user?.email}
         </Typography>
       </Box>
 
@@ -104,53 +109,58 @@ const SuperAdminLayout: React.FC = () => {
         {menuItems.map((item) => {
           const isSelected = location.pathname === item.path;
           return (
-            <ListItem key={item.text} disablePadding sx={{ mb: 1 }}>
+            <ListItem key={item.text} disablePadding sx={{ mb: 0.5 }}>
               <ListItemButton
                 onClick={() => navigate(item.path)}
                 selected={isSelected}
                 sx={{
-                  borderRadius: 3,
-                  transition: 'all 0.3s ease',
-                  bgcolor: isSelected ? 'rgba(255, 255, 255, 0.15)' : 'transparent',
+                  borderRadius: 2,
+                  py: 1.25,
+                  transition: 'all 0.2s ease',
+                  bgcolor: isSelected ? '#eff6ff' : 'transparent',
+                  color: isSelected ? '#2563eb' : '#64748b',
+                  position: 'relative',
+                  overflow: 'hidden',
                   '&:hover': {
-                    bgcolor: 'rgba(255, 255, 255, 0.25)',
-                    transform: 'translateX(5px)'
+                    bgcolor: isSelected ? '#eff6ff' : '#f8fafc',
+                    color: isSelected ? '#2563eb' : '#0f172a'
                   },
                   '&.Mui-selected': {
-                    bgcolor: 'rgba(255, 255, 255, 0.2)',
-                    '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.25)' }
+                    bgcolor: '#eff6ff',
+                    '&:hover': { bgcolor: '#eff6ff' }
                   }
                 }}
               >
-                <ListItemIcon sx={{ color: isSelected ? '#F7CD82' : 'rgba(255,255,255,0.7)', minWidth: 40 }}>
+                {isSelected && (
+                  <motion.div layoutId="active-pill" style={{ width: 4, height: '60%', background: '#3b82f6', borderRadius: 4, position: 'absolute', left: 4 }} />
+                )}
+                <ListItemIcon sx={{ color: 'inherit', minWidth: 40, ml: 1 }}>
                   {item.icon}
                 </ListItemIcon>
                 <ListItemText
                   primary={item.text}
                   primaryTypographyProps={{
-                    fontWeight: isSelected ? 600 : 400,
-                    color: isSelected ? 'white' : 'rgba(255,255,255,0.9)'
+                    fontWeight: isSelected ? 600 : 500,
+                    fontSize: '0.9rem'
                   }}
                 />
-                {isSelected && (
-                  <motion.div layoutId="active-pill" style={{ width: 4, height: 24, background: '#F7CD82', borderRadius: 2 }} />
-                )}
               </ListItemButton>
             </ListItem>
           );
         })}
       </List>
 
-      <Box sx={{ p: 2 }}>
+      <Box sx={{ p: 2, borderTop: '1px solid #f8fafc' }}>
         <ListItemButton
           onClick={handleLogout}
           sx={{
-            borderRadius: 3,
-            color: '#ffcdd2',
-            '&:hover': { bgcolor: 'rgba(255, 235, 238, 0.1)' }
+            borderRadius: 2,
+            color: '#ef4444',
+            '&:hover': { bgcolor: '#fef2f2' },
+            py: 1.25
           }}>
-          <ListItemIcon sx={{ color: '#ef5350', minWidth: 40 }}><LogoutIcon /></ListItemIcon>
-          <ListItemText primary="Logout" />
+          <ListItemIcon sx={{ color: 'inherit', minWidth: 40, ml: 1 }}><LogoutIcon /></ListItemIcon>
+          <ListItemText primary="Logout" primaryTypographyProps={{ fontWeight: 500, fontSize: '0.9rem' }} />
         </ListItemButton>
       </Box>
     </Box>
@@ -160,38 +170,40 @@ const SuperAdminLayout: React.FC = () => {
     <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: '#f4f6f8' }}>
       <CssBaseline />
 
-      {/* Mobile Drawer */}
-      <Drawer
-        variant="temporary"
-        open={mobileOpen}
-        onClose={handleDrawerToggle}
-        ModalProps={{ keepMounted: true }}
-        sx={{
-          display: { xs: 'block', sm: 'none' },
-          '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
-        }}
-      >
-        {drawerContent}
-      </Drawer>
+      <Box component="nav" sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}>
+        {/* Mobile Drawer */}
+        <Drawer
+          variant="temporary"
+          open={mobileOpen}
+          onClose={handleDrawerToggle}
+          ModalProps={{ keepMounted: true }}
+          sx={{
+            display: { xs: 'block', sm: 'none' },
+            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+          }}
+        >
+          {drawerContent}
+        </Drawer>
 
-      {/* Desktop Drawer */}
-      <Drawer
-        variant="permanent"
-        sx={{
-          display: { xs: 'none', sm: 'block' },
-          '& .MuiDrawer-paper': {
-            boxSizing: 'border-box',
-            width: drawerWidth,
-            border: 'none',
-            boxShadow: '4px 0 20px rgba(0,0,0,0.05)'
-          },
-        }}
-        open
-      >
-        {drawerContent}
-      </Drawer>
+        {/* Desktop Drawer */}
+        <Drawer
+          variant="permanent"
+          sx={{
+            display: { xs: 'none', sm: 'block' },
+            '& .MuiDrawer-paper': {
+              boxSizing: 'border-box',
+              width: drawerWidth,
+              border: 'none',
+              boxShadow: '4px 0 20px rgba(0,0,0,0.05)'
+            },
+          }}
+          open
+        >
+          {drawerContent}
+        </Drawer>
+      </Box>
 
-      <Box component="main" sx={{ flexGrow: 1, height: '100vh', overflow: 'auto', position: 'relative' }}>
+      <Box component="main" sx={{ flexGrow: 1, height: '100vh', overflow: 'auto', position: 'relative', width: { sm: `calc(100% - ${drawerWidth}px)` } }}>
         {/* Modern Header */}
         <AppBar
           position="sticky"

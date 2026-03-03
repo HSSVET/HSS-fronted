@@ -67,10 +67,6 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, toggleSidebar }) => {
 
   // Helper to construct path
   const getFullPath = (path: string) => {
-    if (slug) {
-      return `/clinic/${slug}${path}`;
-    }
-    // Fallback if not in clinic context (though Sidebar is mainly used there)
     return path;
   };
 

@@ -161,7 +161,16 @@ const useAccessControl = (props: ProtectedRouteProps) => {
   useEffect(() => {
     const validateAccess = async () => {
       try {
-        // Step 0: Firebase Auth token check (if tokenValidation is enabled)
+        // Step 0: Initialization Check - MUST BE FIRST
+        if (!state.isInitialized) {
+          setAccessResult({
+            level: 'pending',
+            reason: 'Initializing authentication...'
+          });
+          return;
+        }
+
+        // Step 1: Firebase Auth token check (if tokenValidation is enabled)
         if (props.tokenValidation !== false) {
           const token = localStorage.getItem('hss_id_token');
           if (!token && requireAuth !== false) {
@@ -175,22 +184,13 @@ const useAccessControl = (props: ProtectedRouteProps) => {
           }
         }
 
-        // Step 1: Authentication Check
+        // Step 2: Authentication Check
         if (requireAuth !== false && !state.isAuthenticated) {
           setAccessResult({
             level: 'denied',
             reason: 'Authentication required',
             redirect: '/login',
             showModal: true
-          });
-          return;
-        }
-
-        // Step 2: Initialization Check
-        if (!state.isInitialized) {
-          setAccessResult({
-            level: 'pending',
-            reason: 'Initializing authentication...'
           });
           return;
         }
@@ -230,31 +230,33 @@ const useAccessControl = (props: ProtectedRouteProps) => {
           return;
         }
 
-        // Step 6: Clinic Isolation Check (New)
-        // Step 6: Clinic Isolation Check (Semantic URL)
+        // Step 6: Clinic Isolation Check (Subdomain)
         if (state.user?.clinicSlug) {
-          const urlSlug = params.slug;
+          const hostname = window.location.hostname;
+          const hostParts = hostname.split('.');
+          const subdomain = hostParts.length > 2 || (hostParts.length > 1 && hostParts[1] === 'localhost') ? hostParts[0] : null;
 
-          if (urlSlug && urlSlug !== state.user.clinicSlug) {
-            // Block access if URL slug doesn't match User's clinic slug
-            // Exception: Super Admin might be allowed, but for now we enforce strict isolation
-            if (!state.user.roles.includes('ADMIN')) {
-              setAccessResult({
-                level: 'denied',
-                reason: `Access to Clinic '${urlSlug}' denied. You belong to '${state.user.clinicSlug}'.`,
-                redirect: `/clinic/${state.user.clinicSlug}/dashboard`,
-                showModal: true
-              });
-              return;
-            } else {
-              // Even Admins restricted
-              setAccessResult({
-                level: 'denied',
-                reason: `Access to Clinic '${urlSlug}' denied. You belong to '${state.user.clinicSlug}'.`,
-                redirect: `/clinic/${state.user.clinicSlug}/dashboard`,
-                showModal: true
-              });
-              return;
+          if (subdomain && subdomain !== 'admin' && subdomain !== 'portal' && subdomain !== 'www' && subdomain !== 'localhost') {
+            if (subdomain !== state.user.clinicSlug) {
+              // Block access if Subdomain doesn't match User's clinic slug
+              if (!state.user.roles.includes('ADMIN')) {
+                setAccessResult({
+                  level: 'denied',
+                  reason: `Access to Clinic '${subdomain}' denied. You belong to '${state.user.clinicSlug}'.`,
+                  redirect: `http://${state.user.clinicSlug}.${hostParts.slice(1).join('.')}:3000/dashboard`,
+                  showModal: true
+                });
+                return;
+              } else {
+                // Even Admins restricted
+                setAccessResult({
+                  level: 'denied',
+                  reason: `Access to Clinic '${subdomain}' denied. You belong to '${state.user.clinicSlug}'.`,
+                  redirect: `http://${state.user.clinicSlug}.${hostParts.slice(1).join('.')}:3000/dashboard`,
+                  showModal: true
+                });
+                return;
+              }
             }
           }
         }
@@ -366,6 +368,16 @@ const ProtectedRoute = (props: ProtectedRouteProps): React.ReactElement | null =
   // Handle redirection
   if (accessResult.level === 'denied' || accessResult.level === 'expired') {
     if (accessResult.redirect) {
+      // Cross-subdomain redirect: use window.location.href, not React Router Navigate
+      if (accessResult.redirect.startsWith('http')) {
+        const sep = accessResult.redirect.includes('?') ? '&' : '?';
+        const redirectUrl = preserveRedirectUrl
+          ? `${accessResult.redirect}${sep}redirect=${encodeURIComponent(location.pathname + location.search)}`
+          : accessResult.redirect;
+        window.location.href = redirectUrl;
+        return null;
+      }
+
       const redirectUrl = preserveRedirectUrl
         ? `${accessResult.redirect}?redirect=${encodeURIComponent(location.pathname + location.search)}`
         : accessResult.redirect;
@@ -374,9 +386,10 @@ const ProtectedRoute = (props: ProtectedRouteProps): React.ReactElement | null =
     }
 
     if (redirectTo) {
+      const reasonParam = accessResult.reason ? `&error_reason=${encodeURIComponent(accessResult.reason)}` : '';
       const redirectUrl = preserveRedirectUrl
-        ? `${redirectTo}?redirect=${encodeURIComponent(location.pathname + location.search)}`
-        : redirectTo;
+        ? `${redirectTo}?redirect=${encodeURIComponent(location.pathname + location.search)}&error=access_denied${reasonParam}`
+        : `${redirectTo}?error=access_denied${reasonParam}`;
 
       return <Navigate to={redirectUrl} replace />;
     }

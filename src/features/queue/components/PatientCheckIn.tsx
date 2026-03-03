@@ -90,7 +90,7 @@ const PatientCheckIn: React.FC = () => {
         setQueueNumber(response.data.queueNumber);
         // Redirect to queue after 3 seconds
         setTimeout(() => {
-          navigate('/clinic/' + window.location.pathname.split('/')[2] + '/queue');
+          navigate('/queue');
         }, 3000);
       } else {
         setError(response.error || 'Giriş işlemi başarısız');

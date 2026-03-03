@@ -170,13 +170,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (firebaseUser) {
         try {
           const user = await syncUserWithBackend(firebaseUser);
+          const currentToken = await firebaseUser.getIdToken();
+          localStorage.setItem('hss_id_token', currentToken);
           dispatch({ type: 'AUTH_INIT_SUCCESS', payload: { user } });
         } catch (error) {
           console.error("Auth sync error", error);
           dispatch({ type: 'AUTH_INIT_FAILURE', payload: { error: 'Backend sync failed' } });
+          localStorage.removeItem('hss_id_token');
           signOut(auth);
         }
       } else {
+        localStorage.removeItem('hss_id_token');
         dispatch({ type: 'AUTH_INIT_SUCCESS', payload: { user: null } });
       }
     });

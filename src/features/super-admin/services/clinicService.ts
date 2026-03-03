@@ -24,6 +24,7 @@ export interface ClinicCreateRequest {
   adminEmail?: string;
   adminFirstName?: string;
   adminLastName?: string;
+  adminPassword?: string;
 }
 
 const getHeaders = async () => {

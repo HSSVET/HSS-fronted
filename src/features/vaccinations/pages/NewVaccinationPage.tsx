@@ -108,7 +108,7 @@ const NewVaccinationPage: React.FC = () => {
         deductStock: !!selectedStockId
       });
 
-      navigate(`/clinic/dashboard/animals/${selectedAnimal.id}`); // Assuming this route exists or redirect to list
+      navigate(`/animals/${selectedAnimal.id}`); // Assuming this route exists or redirect to list
     } catch (err) {
       console.error(err);
       setError('Aşı kaydedilirken bir hata oluştu.');

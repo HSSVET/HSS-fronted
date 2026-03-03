@@ -356,8 +356,7 @@ const Dashboard: React.FC = () => {
     if (!animalId) {
       return;
     }
-    const basePath = slug ? `/clinic/${slug}/animals` : '/animals';
-    navigate(`${basePath}/${animalId}`);
+    navigate(`/animals/${animalId}`);
   };
 
   const handleAddAnimal = async (form: {
@@ -525,8 +524,8 @@ const Dashboard: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {hospitalizedPatients.map((patient) => (
-                    <tr key={patient.id}>
+                  {hospitalizedPatients.map((patient, index) => (
+                    <tr key={`${patient.id || index}-${index}`}>
                       <td>
                         <span
                           className="clickable-animal-name"
@@ -557,8 +556,8 @@ const Dashboard: React.FC = () => {
               <div className="muted">Bugün gerçekleşen kayıt bulunmuyor.</div>
             ) : (
               <ul className="activity-list">
-                {recentActivities.map((activity) => (
-                  <li key={activity.id}>
+                {recentActivities.map((activity, index) => (
+                  <li key={`${activity.id || index}-${index}`}>
                     <div className="activity-info">
                       <span className="activity-time">{activity.time}</span>
                       <span
@@ -585,7 +584,7 @@ const Dashboard: React.FC = () => {
           <CalendarWidget refreshKey={calendarRefreshKey} />
         </div>
 
-        <div className="widget ui-card panel low-stock-widget clickable-widget" onClick={() => navigate(slug ? `/clinic/${slug}/inventory` : '/inventory')}>
+        <div className="widget ui-card panel low-stock-widget clickable-widget" onClick={() => navigate('/inventory')}>
           <div className="widget-header card-header">
             <h2 className="ui-section-title"><span className="icon icon-warning"></span> Düşük Stok Uyarıları</h2>
           </div>
@@ -604,8 +603,8 @@ const Dashboard: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {stockAlerts.slice(0, 5).map((item) => (
-                    <tr key={item.productId} className={item.currentStock <= item.minStock / 2 ? 'critical' : 'warning'}>
+                  {stockAlerts.slice(0, 5).map((item, index) => (
+                    <tr key={`stock-${item.productId || index}-${index}`} className={item.currentStock <= item.minStock / 2 ? 'critical' : 'warning'}>
                       <td>{item.name}</td>
                       <td>{item.currentStock}</td>
                       <td>{item.minStock}</td>
@@ -617,7 +616,7 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
 
-        <div className="widget ui-card panel lab-results-widget clickable-widget" onClick={() => navigate(slug ? `/clinic/${slug}/laboratory` : '/laboratory')}>
+        <div className="widget ui-card panel lab-results-widget clickable-widget" onClick={() => navigate('/laboratory')}>
           <div className="widget-header card-header">
             <h2 className="ui-section-title"><span className="icon icon-lab"></span> Bekleyen Laboratuvar Sonuçları</h2>
           </div>
@@ -628,8 +627,8 @@ const Dashboard: React.FC = () => {
               <div className="muted">Bekleyen test bulunmuyor.</div>
             ) : (
               <ul className="lab-list">
-                {pendingLabTests.slice(0, 5).map((test) => (
-                  <li key={test.testId}>
+                {pendingLabTests.slice(0, 5).map((test, index) => (
+                  <li key={`test-${test.testId || index}-${index}`}>
                     <div className="lab-info">
                       <span className="lab-patient">{test.animalName} {test.animalSpecies && `(${test.animalSpecies})`}</span>
                       <span className="lab-test">{test.testName}</span>
