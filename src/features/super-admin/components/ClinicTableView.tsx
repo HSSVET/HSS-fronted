@@ -104,6 +104,20 @@ export const ClinicTableView: React.FC<ClinicTableViewProps> = ({ clinics, onDel
       }
     },
     {
+      field: 'createdAt',
+      headerName: 'Oluşturulma Tarihi',
+      width: 160,
+      renderCell: (params: GridRenderCellParams) => {
+        if (!params.value) return <Typography variant="body2" color="text.secondary">—</Typography>;
+        const date = new Date(params.value);
+        return (
+          <Typography variant="body2" sx={{ color: '#475569' }}>
+            {date.toLocaleDateString('tr-TR', { day: '2-digit', month: 'short', year: 'numeric' })}
+          </Typography>
+        );
+      }
+    },
+    {
       field: 'actions',
       headerName: '',
       width: 60,

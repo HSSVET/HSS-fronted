@@ -12,6 +12,8 @@ export interface Clinic {
   licenseType: string;
   licenseStatus: string;
   slug: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface ClinicCreateRequest {

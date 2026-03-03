@@ -14,8 +14,7 @@ import {
   MenuItem,
   CssBaseline,
   AppBar,
-  Toolbar,
-  useTheme
+  Toolbar
 } from '@mui/material';
 import {
   Business as ClinicIcon,
@@ -34,7 +33,6 @@ const SuperAdminLayout: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { logout, user } = useAuth();
-  const theme = useTheme();
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
