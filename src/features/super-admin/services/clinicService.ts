@@ -1,6 +1,6 @@
 import { getAuth } from 'firebase/auth';
 
-const API_URL = 'http://localhost:8090/api/clinics';
+const API_URL = `${process.env.REACT_APP_API_URL || 'http://localhost:8090'}/api/clinics`;
 
 export interface Clinic {
   clinicId: number;
