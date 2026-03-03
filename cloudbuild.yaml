@@ -264,7 +264,7 @@ substitutions:
   _ENVIRONMENT: 'dev'
   _TAG_NAME: 'dev'
   _BACKEND_URL: 'https://hss-backend-dev-296268886725.europe-west3.run.app'  # Development/Staging backend URL
-  _BACKEND_URL_PROD: 'https://hss-backend-2ez5rneaua-ey.a.run.app'  # Production backend URL
+  _BACKEND_URL_PROD: 'https://hss-backend-dev-296268886725.europe-west3.run.app'  # Production backend URL (şimdilik dev backend'e işaret ediyor)
   _FIREBASE_PROJECT_ID: 'hss-cloud-473511'  # Firebase project ID
   _FIREBASE_API_KEY: ''  # Firebase Web API key (trigger'da doldurulacak)
   _FIREBASE_AUTH_DOMAIN: ''  # Firebase auth domain
