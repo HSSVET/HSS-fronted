@@ -75,8 +75,8 @@ steps:
         if [ "${_ENVIRONMENT}" = "prod" ]; then
           export NODE_ENV=production
           export REACT_APP_ENV=production
-          # Production backend URL
-          LOCAL_BACKEND_URL="${_BACKEND_URL_PROD:-https://hss-backend-2ez5rneaua-ey.a.run.app}"
+          # Production backend URL (tamamen _BACKEND_URL_PROD substitution'ına bağlı)
+          LOCAL_BACKEND_URL="${_BACKEND_URL_PROD}"
           echo "🔗 Production backend URL: $$LOCAL_BACKEND_URL"
         else
           # Development/Staging için de production build alıyoruz ama env farklı
