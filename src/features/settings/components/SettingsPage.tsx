@@ -12,20 +12,20 @@ const SettingsPage: React.FC = () => {
 
       <div className="settings-layout">
         <nav className="settings-nav">
-          <NavLink 
-            to="/settings/profile" 
+          <NavLink
+            to="profile"
             className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}
           >
             Profil Ayarları
           </NavLink>
-          <NavLink 
-            to="/settings/clinic" 
+          <NavLink
+            to="clinic"
             className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}
           >
             Klinik Ayarları
           </NavLink>
-          <NavLink 
-            to="/settings/users" 
+          <NavLink
+            to="users"
             className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}
           >
             Kullanıcı Yönetimi

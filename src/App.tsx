@@ -300,7 +300,7 @@ function App() {
                               </PageErrorBoundary>
                             } />
 
-                            <Route path="settings" element={
+                            <Route path="settings/*" element={
                               <PageErrorBoundary pageName="Settings">
                                 <SettingsPage />
 
