@@ -803,9 +803,14 @@ const LoginPage: React.FC<LoginPageProps> = ({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundImage: customBackground || `
-            linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)),
-            url('https://images.unsplash.com/photo-1623366302587-b38b1ddaefd9?q=80&w=2525&auto=format&fit=crop')
+        backgroundColor: '#f7fbf8',
+        backgroundImage:
+          customBackground ||
+          `
+            radial-gradient(circle at 15% 10%, rgba(76, 175, 80, 0.18) 0%, rgba(76, 175, 80, 0.0) 55%),
+            radial-gradient(circle at 85% 20%, rgba(0, 121, 107, 0.16) 0%, rgba(0, 121, 107, 0.0) 55%),
+            radial-gradient(circle at 25% 85%, rgba(46, 125, 50, 0.14) 0%, rgba(46, 125, 50, 0.0) 60%),
+            linear-gradient(135deg, rgba(232, 245, 233, 0.85) 0%, rgba(224, 242, 241, 0.75) 45%, rgba(255, 255, 255, 0.92) 100%)
           `,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
@@ -821,11 +826,11 @@ const LoginPage: React.FC<LoginPageProps> = ({
           position: 'absolute',
           top: -100,
           left: -100,
-          width: 300,
-          height: 300,
+          width: 420,
+          height: 420,
           borderRadius: '50%',
-          background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%)',
-          filter: 'blur(50px)',
+          background: 'linear-gradient(135deg, rgba(76, 175, 80, 0.22) 0%, rgba(0, 121, 107, 0.18) 100%)',
+          filter: 'blur(70px)',
           animation: `${pulseAnimation} 4s ease-in-out infinite`
         }}
       />
@@ -834,12 +839,26 @@ const LoginPage: React.FC<LoginPageProps> = ({
           position: 'absolute',
           bottom: -50,
           right: -50,
-          width: 200,
-          height: 200,
+          width: 360,
+          height: 360,
           borderRadius: '50%',
-          background: 'linear-gradient(135deg, rgba(118, 75, 162, 0.2) 0%, rgba(102, 126, 234, 0.2) 100%)',
-          filter: 'blur(30px)',
+          background: 'linear-gradient(135deg, rgba(0, 121, 107, 0.18) 0%, rgba(46, 125, 50, 0.18) 100%)',
+          filter: 'blur(60px)',
           animation: `${floatAnimation} 5s ease-in-out infinite`
+        }}
+      />
+      <Box
+        sx={{
+          position: 'absolute',
+          top: '35%',
+          left: '55%',
+          width: 520,
+          height: 520,
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(76, 175, 80, 0.14) 0%, rgba(76, 175, 80, 0.0) 65%)',
+          filter: 'blur(80px)',
+          transform: 'translate(-50%, -50%)',
+          animation: `${floatAnimation} 6s ease-in-out infinite`
         }}
       />
 

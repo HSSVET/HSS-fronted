@@ -1,147 +1,270 @@
-/* Calendar Widget Styles */
+/* Calendar Widget Styles (Dashboard) */
 .calendar-widget {
-  background: white;
-  border-radius: 8px;
-  padding: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  border: 1px solid #e0e0e0;
-}
-
-.calendar-widget-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
-}
-
-.calendar-widget-title {
-  font-size: 16px;
-  font-weight: 600;
-  color: #333;
-  margin: 0;
-}
-
-.calendar-widget-nav {
-  display: flex;
-  gap: 8px;
-}
-
-.calendar-nav-btn {
-  background: none;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  width: 28px;
-  height: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.calendar-nav-btn:hover {
-  background: #f5f5f5;
-  border-color: #ccc;
-}
-
-.calendar-widget-month {
-  font-size: 14px;
-  font-weight: 500;
-  color: #555;
-  text-align: center;
-  margin-bottom: 8px;
-}
-
-.calendar-widget-grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 4px;
-}
-
-.calendar-widget-day {
-  aspect-ratio: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  position: relative;
-}
-
-.calendar-widget-day:hover {
-  background: #f0f0f0;
-}
-
-.calendar-widget-day.today {
-  background: var(--primary-color, #92A78C);
-  color: white;
-  font-weight: 600;
-}
-
-.calendar-widget-day.selected {
-  background: var(--secondary-color, #F7CD82);
-  color: #333;
-  font-weight: 600;
-}
-
-.calendar-widget-day.has-events::after {
-  content: '';
-  position: absolute;
-  bottom: 2px;
-  right: 2px;
-  width: 4px;
-  height: 4px;
-  background: #e74c3c;
-  border-radius: 50%;
-}
-
-.calendar-widget-day.other-month {
-  color: #ccc;
-  pointer-events: none;
-}
-
-.calendar-weekdays {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 4px;
-  margin-bottom: 4px;
-}
-
-.calendar-weekday {
-  text-align: center;
-  font-size: 11px;
-  font-weight: 600;
-  color: #666;
-  padding: 4px 0;
-} 
-
-/* Calendar overall height - extend white box to cover more of the blue area */
-.calendar-widget {
-  min-height: 720px; /* beyaz kutuyu aşağı uzat */
   display: flex;
   flex-direction: column;
+  min-height: 0;
+}
+
+.calendar-widget__header {
+  padding: 14px 16px;
 }
 
 .calendar-widget .widget-content {
-  flex: 1;
+  padding: 12px 14px 14px;
   display: flex;
   flex-direction: column;
-  min-height: 600px; /* içerik alanını da uzat */
+  gap: 12px;
+  min-height: 0;
+}
+
+.calendar-container {
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.75);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  padding: 10px 10px 12px;
+}
+
+/* react-calendar base reset */
+.calendar-container .react-calendar {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  font-family: inherit;
+  line-height: 1.2;
+}
+
+/* Header / navigation */
+.calendar-container .react-calendar__navigation {
+  display: grid;
+  grid-template-columns: 36px 36px 1fr 36px 36px;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.calendar-container .react-calendar__navigation button {
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 12px;
+  height: 36px;
+  min-width: 36px;
+  cursor: pointer;
+  transition: transform 150ms ease, box-shadow 150ms ease, background-color 150ms ease, border-color 150ms ease;
+}
+
+.calendar-container .react-calendar__navigation button:enabled:hover {
+  transform: translateY(-1px);
+  border-color: rgba(46, 125, 50, 0.25);
+  background: rgba(232, 245, 233, 0.9);
+  box-shadow: 0 10px 20px rgba(46, 125, 50, 0.10);
+}
+
+.calendar-container .react-calendar__navigation button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.calendar-container .react-calendar__navigation__label {
+  font-weight: 700;
+  letter-spacing: -0.2px;
+  border-radius: 14px;
+}
+
+.calendar-container .react-calendar__navigation__label:enabled:hover {
+  transform: none;
+}
+
+/* Weekdays */
+.calendar-container .react-calendar__month-view__weekdays {
+  text-transform: uppercase;
+  font-size: 11px;
+  color: rgba(0, 0, 0, 0.55);
+}
+
+.calendar-container .react-calendar__month-view__weekdays__weekday {
+  padding: 6px 0 10px;
+}
+
+.calendar-container .react-calendar__month-view__weekdays__weekday abbr {
+  text-decoration: none;
+  font-weight: 700;
+}
+
+/* Tiles */
+.calendar-container .react-calendar__tile {
+  position: relative;
+  height: 44px;
+  border-radius: 14px;
+  padding: 8px 6px;
+  background: transparent;
+  transition: background-color 150ms ease, transform 150ms ease, box-shadow 150ms ease;
+}
+
+.calendar-container .react-calendar__tile:enabled:hover {
+  background: rgba(232, 245, 233, 0.65);
+  transform: translateY(-1px);
+  box-shadow: 0 10px 18px rgba(46, 125, 50, 0.10);
+}
+
+.calendar-container .react-calendar__tile--now {
+  background: rgba(224, 242, 241, 0.65);
+  box-shadow: inset 0 0 0 1px rgba(0, 121, 107, 0.30);
+  font-weight: 700;
+}
+
+.calendar-container .react-calendar__tile--active {
+  background: linear-gradient(135deg, rgba(46, 125, 50, 0.95) 0%, rgba(0, 121, 107, 0.9) 100%);
+  color: #fff;
+  box-shadow: 0 14px 26px rgba(0, 121, 107, 0.22);
+  transform: translateY(-1px);
+}
+
+.calendar-container .react-calendar__tile--active:enabled:hover {
+  background: linear-gradient(135deg, rgba(46, 125, 50, 0.98) 0%, rgba(0, 121, 107, 0.95) 100%);
+}
+
+.calendar-container .react-calendar__month-view__days__day--neighboringMonth {
+  opacity: 0.35;
+}
+
+/* Appointment indicator (tileContent) */
+.appointment-indicator {
+  position: absolute;
+  right: 6px;
+  bottom: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: rgba(46, 125, 50, 0.12);
+  color: rgba(46, 125, 50, 1);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: -0.2px;
+}
+
+.react-calendar__tile--active .appointment-indicator {
+  background: rgba(255, 255, 255, 0.22);
+  color: #fff;
 }
 
 /* Gün detay bloğu daha uzun kalsın */
 .day-details-inline {
-  margin-top: 12px;
-  flex: 1;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.75);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  padding: 12px;
+}
+
+.day-details-header {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 2px 2px 10px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  margin-bottom: 10px;
+}
+
+.day-details-header h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: -0.2px;
+  color: rgba(0, 0, 0, 0.85);
+}
+
+.create-appointment-button {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(232, 245, 233, 0.9);
+  color: #2e7d32;
+  font-weight: 900;
+  font-size: 18px;
+  cursor: pointer;
+  transition: transform 150ms ease, box-shadow 150ms ease, background-color 150ms ease, border-color 150ms ease;
+}
+
+.create-appointment-button:hover {
+  transform: translateY(-1px);
+  border-color: rgba(46, 125, 50, 0.25);
+  box-shadow: 0 10px 20px rgba(46, 125, 50, 0.12);
+}
+
+.day-appointments h4 {
+  margin: 0 0 10px;
+  font-size: 13px;
+  font-weight: 800;
+  color: rgba(0, 0, 0, 0.65);
 }
 
 /* Randevu listesi beyaz alanı doldursun */
 .compact-appointments {
-  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.compact-appointment-item {
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  gap: 10px;
+  align-items: start;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  transition: transform 150ms ease, box-shadow 150ms ease, border-color 150ms ease;
+}
+
+.compact-appointment-item:hover {
+  transform: translateY(-1px);
+  border-color: rgba(46, 125, 50, 0.18);
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.06);
+}
+
+.appointment-time {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 28px;
+  border-radius: 10px;
+  background: rgba(224, 242, 241, 0.75);
+  color: rgba(0, 121, 107, 1);
+  font-weight: 900;
+  font-size: 12px;
+  letter-spacing: -0.2px;
+}
+
+.appointment-patient {
+  font-weight: 800;
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.85);
+}
+
+.appointment-reason {
+  margin-top: 2px;
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.60);
+}
+
+.no-appointments {
+  padding: 12px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.75);
+  border: 1px dashed rgba(0, 0, 0, 0.12);
+  color: rgba(0, 0, 0, 0.65);
 }
 
 .no-appointments.error {
@@ -162,7 +285,7 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: var(--primary-color, #4f46e5);
+  background: rgba(46, 125, 50, 0.9);
   bottom: 6px;
   right: 6px;
 }

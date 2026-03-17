@@ -31,7 +31,7 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ collapsed, toggleSidebar }) => {
   const location = useLocation();
-  const { slug } = useParams<{ slug?: string }>();
+  const { clinicSlug } = useParams<{ clinicSlug?: string }>();
   const { hasPermission } = usePermissions();
   const { user, logout } = useAuth();
 
@@ -67,8 +67,8 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, toggleSidebar }) => {
 
   // Helper to construct path
   const getFullPath = (path: string) => {
-    if (slug) {
-      return `/${slug}${path}`;
+    if (clinicSlug) {
+      return `/${clinicSlug}${path}`;
     }
     return path;
   };

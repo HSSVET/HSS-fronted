@@ -246,9 +246,9 @@ const CalendarWidget: React.FC<CalendarWidgetProps> = React.memo(({ refreshKey }
   };
 
   return (
-    <div className="widget calendar-widget">
-      <div className="widget-header">
-        <h2> Takvim</h2>
+    <div className="calendar-widget">
+      <div className="widget-header card-header calendar-widget__header">
+        <h2 className="ui-section-title">Takvim</h2>
       </div>
       <div className="widget-content with-horizontal-scroll">
         <div className="calendar-container">
