@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { FileUpload } from './FileUpload';
 import { FilePreview } from './FilePreview';
 import { documentService } from '../services/documentService';
-import { Document, DocumentCreateRequest, DocumentType } from '../types/document';
+import { Document, DocumentType } from '../types/document';
 import './DocumentPage.css';
 
 export const DocumentPage: React.FC = () => {
   const [documents, setDocuments] = useState<Document[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
   const [showUploadDialog, setShowUploadDialog] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedDocumentType, setSelectedDocumentType] = useState<DocumentType | 'ALL'>('ALL');
@@ -20,6 +21,7 @@ export const DocumentPage: React.FC = () => {
   const loadDocuments = async () => {
     setLoading(true);
     setError(null);
+    setNotice(null);
     try {
       const response = await documentService.getAllDocuments(0, 100);
       setDocuments(response.content || []);
@@ -34,11 +36,12 @@ export const DocumentPage: React.FC = () => {
   const handleFileSelect = async (file: File) => {
     try {
       setError(null);
+      setNotice(null);
       const uploadResponse = await documentService.uploadFile(file);
       
       // Here you would typically create a document record
       // For now, we'll just show success
-      alert('Dosya başarıyla yüklendi!');
+      setNotice('Dosya yüklendi. Belge listesi güncelleniyor…');
       setShowUploadDialog(false);
       loadDocuments();
     } catch (err: any) {
@@ -50,27 +53,25 @@ export const DocumentPage: React.FC = () => {
   const handleDownload = async (document: Document) => {
     try {
       if (!document.fileUrl) {
-        alert('Dosya URL bulunamadı');
+        setError('Dosya URL bulunamadı');
         return;
       }
       await documentService.downloadFile(document.fileUrl);
-      alert('Dosya başarıyla indirildi');
+      setNotice('Dosya indiriliyor…');
     } catch (err: any) {
       setError(err.message || 'Dosya indirilirken bir hata oluştu');
       console.error('Error downloading file:', err);
-      alert('Dosya indirilemedi');
     }
   };
 
   const handleDelete = async (document: Document) => {
     try {
       await documentService.deleteDocument(document.documentId);
-      alert('Belge başarıyla silindi');
+      setNotice('Belge silindi. Liste güncelleniyor…');
       loadDocuments();
     } catch (err: any) {
       setError(err.message || 'Belge silinirken bir hata oluştu');
       console.error('Error deleting document:', err);
-      alert('Belge silinemedi');
     }
   };
 
@@ -94,16 +95,54 @@ export const DocumentPage: React.FC = () => {
     { value: 'OTHER', label: 'Diğer' },
   ];
 
+  const totalCount = documents.length;
+  const archivedCount = documents.filter((d) => d.isArchived).length;
+  const contractCount = documents.filter((d) => d.documentType === DocumentType.CONTRACT).length;
+  const totalSizeBytes = documents.reduce((sum, d) => sum + (d.fileSize ?? 0), 0);
+  const formatBytes = (bytes: number): string => {
+    if (!bytes) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB'];
+    const i = Math.min(Math.floor(Math.log(bytes) / Math.log(k)), sizes.length - 1);
+    const value = bytes / Math.pow(k, i);
+    return `${value.toFixed(value >= 10 || i === 0 ? 0 : 1)} ${sizes[i]}`;
+  };
+
   return (
     <div className="document-page">
-      <div className="page-header">
-        <h1>Belge Yönetimi</h1>
-        <button
-          className="btn-primary"
-          onClick={() => setShowUploadDialog(true)}
-        >
-          + Yeni Belge
-        </button>
+      <div className="documents-hero">
+        <div className="documents-hero__content">
+          <div className="documents-hero__title-row">
+            <div>
+              <h1>Belge Yönetimi</h1>
+              <p className="documents-hero__subtitle">
+                Kontratlar, raporlar, onay formları ve klinik dokümanlarını tek yerde yönetin.
+              </p>
+            </div>
+            <button className="btn-primary" onClick={() => setShowUploadDialog(true)}>
+              + Yeni Belge
+            </button>
+          </div>
+
+          <div className="documents-stats">
+            <div className="stat-card">
+              <div className="stat-card__label">Toplam Belge</div>
+              <div className="stat-card__value">{totalCount}</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-card__label">Kontrat</div>
+              <div className="stat-card__value">{contractCount}</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-card__label">Arşiv</div>
+              <div className="stat-card__value">{archivedCount}</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-card__label">Toplam Boyut</div>
+              <div className="stat-card__value">{formatBytes(totalSizeBytes)}</div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div className="filters">
@@ -127,7 +166,23 @@ export const DocumentPage: React.FC = () => {
             </option>
           ))}
         </select>
+        <button
+          type="button"
+          className="btn-ghost"
+          onClick={() => {
+            setSearchQuery('');
+            setSelectedDocumentType('ALL');
+          }}
+        >
+          Filtreleri Temizle
+        </button>
       </div>
+
+      {notice && (
+        <div className="notice-message" role="status" aria-live="polite">
+          {notice}
+        </div>
+      )}
 
       {error && (
         <div className="error-message">
@@ -141,7 +196,41 @@ export const DocumentPage: React.FC = () => {
         <div className="documents-grid">
           {filteredDocuments.length === 0 ? (
             <div className="empty-state">
-              <p>Henüz belge bulunmuyor</p>
+              <div className="empty-state__card">
+                <div className="empty-state__icon" aria-hidden="true">📄</div>
+                <h2>Henüz belge bulunmuyor</h2>
+                <p>
+                  Kontrat, rapor veya onay formu yükleyerek arşivinizi oluşturun. Belgeler; hayvan, sahip ve tarihe göre listelenir.
+                </p>
+                <div className="empty-state__actions">
+                  <button className="btn-primary" onClick={() => setShowUploadDialog(true)}>
+                    + İlk Belgeni Yükle
+                  </button>
+                  <button
+                    className="btn-secondary"
+                    onClick={() => {
+                      setSearchQuery('');
+                      setSelectedDocumentType('ALL');
+                    }}
+                  >
+                    Filtreleri Sıfırla
+                  </button>
+                </div>
+                <div className="empty-state__tips">
+                  <div className="tip">
+                    <div className="tip__title">Önerilen formatlar</div>
+                    <div className="tip__text">PDF, PNG/JPG, DOC/DOCX</div>
+                  </div>
+                  <div className="tip">
+                    <div className="tip__title">Kontratlar</div>
+                    <div className="tip__text">“Kontrat” filtresi ile hızlı erişim</div>
+                  </div>
+                  <div className="tip">
+                    <div className="tip__title">Arşiv</div>
+                    <div className="tip__text">Eski belgeleri arşivleyip saklayın</div>
+                  </div>
+                </div>
+              </div>
             </div>
           ) : (
             filteredDocuments.map((document) => (

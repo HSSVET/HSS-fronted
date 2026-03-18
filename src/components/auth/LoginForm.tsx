@@ -7,6 +7,7 @@ import {
     IconButton,
     InputAdornment,
     CircularProgress,
+    useTheme,
 } from '@mui/material';
 import {
     Visibility,
@@ -22,6 +23,7 @@ interface LoginFormProps {
 }
 
 const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onError }) => {
+    const theme = useTheme();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
@@ -100,6 +102,20 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onError }) => {
                 required
                 disabled={loading}
                 autoComplete="email"
+                sx={{
+                    '& .MuiOutlinedInput-root': {
+                        borderRadius: 3,
+                        backgroundColor: 'rgba(255,255,255,0.75)',
+                        backdropFilter: 'blur(10px)',
+                        transition: 'box-shadow 150ms ease, border-color 150ms ease, transform 150ms ease',
+                        '& fieldset': { borderColor: 'rgba(0,0,0,0.12)' },
+                        '&:hover fieldset': { borderColor: 'rgba(46,125,50,0.25)' },
+                        '&.Mui-focused': {
+                            boxShadow: '0 0 0 4px rgba(46,125,50,0.14)',
+                        },
+                    },
+                    '& .MuiInputLabel-root.Mui-focused': { color: theme.palette.primary.dark },
+                }}
             />
 
             <TextField
@@ -125,6 +141,20 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onError }) => {
                         </InputAdornment>
                     ),
                 }}
+                sx={{
+                    '& .MuiOutlinedInput-root': {
+                        borderRadius: 3,
+                        backgroundColor: 'rgba(255,255,255,0.75)',
+                        backdropFilter: 'blur(10px)',
+                        transition: 'box-shadow 150ms ease, border-color 150ms ease, transform 150ms ease',
+                        '& fieldset': { borderColor: 'rgba(0,0,0,0.12)' },
+                        '&:hover fieldset': { borderColor: 'rgba(46,125,50,0.25)' },
+                        '&.Mui-focused': {
+                            boxShadow: '0 0 0 4px rgba(46,125,50,0.14)',
+                        },
+                    },
+                    '& .MuiInputLabel-root.Mui-focused': { color: theme.palette.primary.dark },
+                }}
             />
 
             <Button
@@ -134,7 +164,23 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onError }) => {
                 size="large"
                 disabled={loading}
                 startIcon={loading ? <CircularProgress size={20} /> : <LoginIcon />}
-                sx={{ mt: 3, mb: 2 }}
+                sx={{
+                    mt: 3,
+                    mb: 2,
+                    py: 1.35,
+                    borderRadius: 3,
+                    fontWeight: 900,
+                    letterSpacing: '-0.2px',
+                    background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
+                    boxShadow: '0 14px 30px rgba(0,0,0,0.14)',
+                    transition: 'transform 150ms ease, box-shadow 150ms ease, filter 150ms ease',
+                    '&:hover': {
+                        filter: 'brightness(1.02)',
+                        transform: 'translateY(-1px)',
+                        boxShadow: '0 18px 40px rgba(0,0,0,0.18)',
+                        background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
+                    },
+                }}
             >
                 {loading ? 'Giriş yapılıyor...' : 'Giriş Yap'}
             </Button>

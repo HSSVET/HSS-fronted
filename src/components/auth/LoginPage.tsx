@@ -23,7 +23,8 @@ import {
   Paper,
   Avatar,
   Container,
-  Snackbar
+  Snackbar,
+  useTheme
 } from '@mui/material';
 import {
   Info,
@@ -47,6 +48,7 @@ import {
 import { keyframes } from '@mui/system';
 import LoginForm from './LoginForm';
 import { getSubdomainInfo, validateUserSubdomainAccess } from '../../utils/subdomain';
+import loginIllustration from '../../assets/images/login-page.png';
 
 // ============================================================================
 // Types & Interfaces
@@ -160,6 +162,7 @@ const LoginPage: React.FC<LoginPageProps> = ({
   companyName = 'HSS - Hayvan Sağlığı Sistemi',
   loginMethods = ['sso', 'password', 'mfa']
 }) => {
+  const theme = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
   const { state } = useAuth();
@@ -354,19 +357,20 @@ const LoginPage: React.FC<LoginPageProps> = ({
   // ============================================================================
 
   const renderHeader = () => (
-    <Box sx={{ textAlign: 'center', mb: 4 }}>
+    <Box sx={{ textAlign: 'center', mb: 3.5 }}>
       <Fade in={animationStep >= 1} timeout={800}>
         <Box>
           <Zoom in={animationStep >= 1} timeout={1000}>
             <Avatar
               sx={{
-                width: 80,
-                height: 80,
+                width: 72,
+                height: 72,
                 margin: 'auto',
                 mb: 2,
                 background: isAdminPortal
-                  ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
-                  : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  ? `linear-gradient(135deg, ${theme.palette.secondary.main} 0%, ${theme.palette.primary.main} 100%)`
+                  : `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
+                boxShadow: '0 14px 30px rgba(0,0,0,0.12)',
                 animation: `${floatAnimation} 3s ease-in-out infinite`,
               }}
             >
@@ -377,14 +381,10 @@ const LoginPage: React.FC<LoginPageProps> = ({
             variant="h4"
             component="h1"
             sx={{
-              fontWeight: 'bold',
-              mb: 1,
-              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-              backgroundClip: 'text',
-              WebkitBackgroundClip: 'text',
-              color: 'transparent',
-              animation: `${gradientAnimation} 3s ease infinite`,
-              backgroundSize: '200% 200%'
+              fontWeight: 900,
+              mb: 0.75,
+              letterSpacing: '-0.6px',
+              color: 'text.primary',
             }}
           >
             {isAdminPortal ? 'Admin Portal' : companyName}
@@ -402,15 +402,23 @@ const LoginPage: React.FC<LoginPageProps> = ({
                 icon={<Shield />}
                 label="Güvenli"
                 size="small"
-                variant="outlined"
-                color="primary"
+                sx={{
+                  borderRadius: 999,
+                  bgcolor: 'rgba(255,255,255,0.6)',
+                  borderColor: 'rgba(0,0,0,0.10)',
+                  backdropFilter: 'blur(10px)',
+                }}
               />
               <Chip
                 icon={<AdminPanelSettings />}
                 label="Yönetici"
                 size="small"
-                variant="outlined"
-                color="secondary"
+                sx={{
+                  borderRadius: 999,
+                  bgcolor: 'rgba(255,255,255,0.6)',
+                  borderColor: 'rgba(0,0,0,0.10)',
+                  backdropFilter: 'blur(10px)',
+                }}
               />
             </Box>
           ) : (
@@ -419,22 +427,34 @@ const LoginPage: React.FC<LoginPageProps> = ({
                 icon={<MedicalServices />}
                 label="Sağlık"
                 size="small"
-                variant="outlined"
-                color="primary"
+                sx={{
+                  borderRadius: 999,
+                  bgcolor: 'rgba(255,255,255,0.6)',
+                  borderColor: 'rgba(0,0,0,0.10)',
+                  backdropFilter: 'blur(10px)',
+                }}
               />
               <Chip
                 icon={<Schedule />}
                 label="Randevu"
                 size="small"
-                variant="outlined"
-                color="secondary"
+                sx={{
+                  borderRadius: 999,
+                  bgcolor: 'rgba(255,255,255,0.6)',
+                  borderColor: 'rgba(0,0,0,0.10)',
+                  backdropFilter: 'blur(10px)',
+                }}
               />
               <Chip
                 icon={<Analytics />}
                 label="Analiz"
                 size="small"
-                variant="outlined"
-                color="success"
+                sx={{
+                  borderRadius: 999,
+                  bgcolor: 'rgba(255,255,255,0.6)',
+                  borderColor: 'rgba(0,0,0,0.10)',
+                  backdropFilter: 'blur(10px)',
+                }}
               />
             </Box>
           )}
@@ -803,14 +823,14 @@ const LoginPage: React.FC<LoginPageProps> = ({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#f7fbf8',
+        backgroundColor: theme.palette.background.default,
         backgroundImage:
           customBackground ||
           `
-            radial-gradient(circle at 15% 10%, rgba(76, 175, 80, 0.18) 0%, rgba(76, 175, 80, 0.0) 55%),
-            radial-gradient(circle at 85% 20%, rgba(0, 121, 107, 0.16) 0%, rgba(0, 121, 107, 0.0) 55%),
-            radial-gradient(circle at 25% 85%, rgba(46, 125, 50, 0.14) 0%, rgba(46, 125, 50, 0.0) 60%),
-            linear-gradient(135deg, rgba(232, 245, 233, 0.85) 0%, rgba(224, 242, 241, 0.75) 45%, rgba(255, 255, 255, 0.92) 100%)
+            radial-gradient(circle at 12% 12%, rgba(146, 167, 140, 0.34) 0%, rgba(146, 167, 140, 0) 52%),
+            radial-gradient(circle at 88% 18%, rgba(180, 199, 175, 0.28) 0%, rgba(180, 199, 175, 0) 56%),
+            radial-gradient(circle at 22% 86%, rgba(247, 205, 130, 0.22) 0%, rgba(247, 205, 130, 0) 55%),
+            linear-gradient(135deg, rgba(232, 245, 233, 0.95) 0%, rgba(224, 242, 241, 0.86) 45%, rgba(255, 255, 255, 0.94) 100%)
           `,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
@@ -829,7 +849,7 @@ const LoginPage: React.FC<LoginPageProps> = ({
           width: 420,
           height: 420,
           borderRadius: '50%',
-          background: 'linear-gradient(135deg, rgba(76, 175, 80, 0.22) 0%, rgba(0, 121, 107, 0.18) 100%)',
+          background: `linear-gradient(135deg, ${theme.palette.primary.light}55 0%, ${theme.palette.primary.main}33 100%)`,
           filter: 'blur(70px)',
           animation: `${pulseAnimation} 4s ease-in-out infinite`
         }}
@@ -842,7 +862,7 @@ const LoginPage: React.FC<LoginPageProps> = ({
           width: 360,
           height: 360,
           borderRadius: '50%',
-          background: 'linear-gradient(135deg, rgba(0, 121, 107, 0.18) 0%, rgba(46, 125, 50, 0.18) 100%)',
+          background: `linear-gradient(135deg, ${theme.palette.secondary.light}55 0%, ${theme.palette.secondary.main}33 100%)`,
           filter: 'blur(60px)',
           animation: `${floatAnimation} 5s ease-in-out infinite`
         }}
@@ -855,41 +875,248 @@ const LoginPage: React.FC<LoginPageProps> = ({
           width: 520,
           height: 520,
           borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(76, 175, 80, 0.14) 0%, rgba(76, 175, 80, 0.0) 65%)',
+          background: `radial-gradient(circle, ${theme.palette.primary.main}33 0%, rgba(0,0,0,0) 65%)`,
           filter: 'blur(80px)',
           transform: 'translate(-50%, -50%)',
           animation: `${floatAnimation} 6s ease-in-out infinite`
         }}
       />
 
-      <Container maxWidth="xs" sx={{ position: 'relative', zIndex: 1 }}>
+      <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1, py: { xs: 3, md: 5 } }}>
         <Fade in timeout={800}>
-          <Paper
-            elevation={24}
+          <Box
             sx={{
-              p: { xs: 3, sm: 4 },
-              borderRadius: 4,
-              background: 'rgba(255, 255, 255, 0.8)',
-              backdropFilter: 'blur(20px)',
-              border: '1px solid rgba(255, 255, 255, 0.3)',
-              boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.15)',
+              display: 'grid',
+              gridTemplateColumns: { xs: '1fr', md: '1.1fr 0.9fr' },
+              gap: { xs: 2, md: 2.5 },
+              alignItems: 'stretch',
             }}
           >
-            {renderHeader()}
-            {renderErrorAlert()}
+            {/* Brand / Value Panel */}
+            <Paper
+              elevation={0}
+              sx={{
+                display: { xs: 'none', md: 'block' },
+                position: 'relative',
+                overflow: 'hidden',
+                p: 3.25,
+                borderRadius: 6,
+                background:
+                  'linear-gradient(135deg, rgba(255,255,255,0.70) 0%, rgba(255,255,255,0.55) 100%)',
+                border: '1px solid rgba(255,255,255,0.65)',
+                backdropFilter: 'blur(18px)',
+                WebkitBackdropFilter: 'blur(18px)',
+                boxShadow: '0 18px 48px rgba(0, 0, 0, 0.10)',
+                '&::before': {
+                  content: '""',
+                  position: 'absolute',
+                  inset: -2,
+                  borderRadius: 24,
+                  background: `linear-gradient(135deg, ${theme.palette.primary.main}55, ${theme.palette.secondary.main}44, ${theme.palette.primary.light}55)`,
+                  filter: 'blur(18px)',
+                  opacity: 0.9,
+                  zIndex: 0,
+                },
+                '&::after': {
+                  content: '""',
+                  position: 'absolute',
+                  inset: 0,
+                  borderRadius: 24,
+                  background:
+                    'radial-gradient(circle at 20% 20%, rgba(46,125,50,0.22) 0%, rgba(46,125,50,0) 45%), radial-gradient(circle at 85% 30%, rgba(0,121,107,0.18) 0%, rgba(0,121,107,0) 40%), radial-gradient(circle at 50% 90%, rgba(247,205,130,0.18) 0%, rgba(247,205,130,0) 40%)',
+                  zIndex: 0,
+                },
+              }}
+            >
+              <Box sx={{ position: 'relative', zIndex: 1 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
+                  <Avatar
+                    sx={{
+                      width: 44,
+                      height: 44,
+                      background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
+                      boxShadow: '0 12px 24px rgba(0,0,0,0.12)',
+                    }}
+                  >
+                    <Pets />
+                  </Avatar>
+                  <Box>
+                    <Typography sx={{ fontWeight: 900, letterSpacing: '-0.4px' }}>
+                      {companyName}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Klinik operasyonlarını tek panelde yönetin.
+                    </Typography>
+                  </Box>
+                </Box>
 
-            <Box sx={{ position: 'relative', minHeight: 200 }}>
-              {loginStep === 'initial' && renderLoginOptions()}
-              {loginStep === 'password' && renderPasswordForm()}
-              {loginStep === 'success' && renderSuccessState()}
-            </Box>
+                {/* Mini canlı istatistikler */}
+                <Box
+                  sx={{
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    gap: 1,
+                    mb: 2.5,
+                  }}
+                >
+                  {[
+                    { label: 'Aktif Klinik', value: '24' },
+                    { label: 'Bugünkü Randevu', value: '128' },
+                    { label: 'Kayıtlı Hasta', value: '4.320+' },
+                  ].map((item) => (
+                    <Box
+                      key={item.label}
+                      sx={{
+                        px: 1.5,
+                        py: 1,
+                        borderRadius: 999,
+                        bgcolor: 'rgba(255,255,255,0.75)',
+                        border: '1px solid rgba(0,0,0,0.06)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 0.75,
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          width: 8,
+                          height: 8,
+                          borderRadius: '50%',
+                          bgcolor: 'rgba(46,125,50,0.9)',
+                          boxShadow: '0 0 0 6px rgba(46,125,50,0.16)',
+                          animation: `${pulseAnimation} 3s ease-in-out infinite`,
+                        }}
+                      />
+                      <Box>
+                        <Typography sx={{ fontSize: 11, color: 'rgba(0,0,0,0.55)' }}>
+                          {item.label}
+                        </Typography>
+                        <Typography sx={{ fontSize: 13, fontWeight: 800 }}>{item.value}</Typography>
+                      </Box>
+                    </Box>
+                  ))}
+                </Box>
 
-            <Box sx={{ mt: 3, textAlign: 'center' }}>
-              <Typography variant="caption" color="text.secondary">
-                &copy; {new Date().getFullYear()} {companyName}. Tüm hakları saklıdır.
-              </Typography>
-            </Box>
-          </Paper>
+                <Box
+                  sx={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
+                    gap: 1.25,
+                    mt: 1,
+                  }}
+                >
+                  {[
+                    { icon: <Schedule />, title: 'Akıllı Randevu', desc: 'Günlük akışı hızlı planla' },
+                    { icon: <MedicalServices />, title: 'Hasta Kayıtları', desc: 'Hızlı erişim & takip' },
+                    { icon: <Analytics />, title: 'Analiz & Rapor', desc: 'Özetlerle karar ver' },
+                    { icon: <Shield />, title: 'Güvenli Giriş', desc: 'Rol bazlı erişim' },
+                  ].map((item) => (
+                    <Box
+                      key={item.title}
+                      sx={{
+                        p: 1.5,
+                        borderRadius: 4,
+                        background: 'rgba(255,255,255,0.65)',
+                        border: '1px solid rgba(0,0,0,0.06)',
+                        backdropFilter: 'blur(10px)',
+                      }}
+                    >
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <Box
+                          sx={{
+                            width: 36,
+                            height: 36,
+                            borderRadius: 3,
+                            display: 'grid',
+                            placeItems: 'center',
+                            bgcolor: 'rgba(224,242,241,0.75)',
+                            border: '1px solid rgba(0,121,107,0.18)',
+                            color: 'rgba(0,121,107,1)',
+                          }}
+                        >
+                          {item.icon}
+                        </Box>
+                        <Box sx={{ minWidth: 0 }}>
+                          <Typography sx={{ fontWeight: 900, fontSize: 13, lineHeight: 1.2 }}>
+                            {item.title}
+                          </Typography>
+                          <Typography sx={{ fontSize: 12, color: 'rgba(0,0,0,0.58)' }}>
+                            {item.desc}
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </Box>
+                  ))}
+                </Box>
+
+                {/* Solda statik illüstrasyon (public klasörüne eklenen görsel) */}
+                <Box
+                  sx={{
+                    mt: 2.5,
+                    borderRadius: 5,
+                    overflow: 'hidden',
+                    border: '1px solid rgba(0,0,0,0.06)',
+                    boxShadow: '0 16px 34px rgba(0,0,0,0.10)',
+                    backgroundColor: 'rgba(0,0,0,0.02)',
+                  }}
+                >
+                  <Box
+                    component="img"
+                    src={loginIllustration}
+                    alt="Veteriner klinik illüstrasyonu"
+                    sx={{
+                      width: '100%',
+                      display: 'block',
+                      objectFit: 'cover',
+                    }}
+                  />
+                </Box>
+
+              </Box>
+            </Paper>
+
+            {/* Login Panel */}
+            <Paper
+              elevation={0}
+              sx={{
+                position: 'relative',
+                overflow: 'hidden',
+                p: { xs: 3, sm: 4 },
+                borderRadius: 6,
+                background: 'rgba(255, 255, 255, 0.72)',
+                backdropFilter: 'blur(18px)',
+                WebkitBackdropFilter: 'blur(18px)',
+                border: '1px solid rgba(255, 255, 255, 0.65)',
+                boxShadow: '0 18px 48px rgba(0, 0, 0, 0.12)',
+                '&::before': {
+                  content: '""',
+                  position: 'absolute',
+                  inset: -2,
+                  borderRadius: 24,
+                  background: `linear-gradient(135deg, ${theme.palette.primary.main}55, ${theme.palette.secondary.main}44, ${theme.palette.primary.light}55)`,
+                  opacity: 0.8,
+                  zIndex: 0,
+                },
+              }}
+            >
+              <Box sx={{ position: 'relative', zIndex: 1 }}>
+                {renderHeader()}
+                {renderErrorAlert()}
+
+                <Box sx={{ position: 'relative', minHeight: 200 }}>
+                  {loginStep === 'initial' && renderLoginOptions()}
+                  {loginStep === 'password' && renderPasswordForm()}
+                  {loginStep === 'success' && renderSuccessState()}
+                </Box>
+
+                <Box sx={{ mt: 3, textAlign: 'center' }}>
+                  <Typography variant="caption" color="text.secondary">
+                    &copy; {new Date().getFullYear()} {companyName}. Tüm hakları saklıdır.
+                  </Typography>
+                </Box>
+              </Box>
+            </Paper>
+          </Box>
         </Fade>
       </Container>
 
