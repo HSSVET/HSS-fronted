@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Paper, Typography, Box, Dialog } from '@mui/material';
+import { Container, Paper, Typography, Box, Dialog, Button, useTheme } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
 import { AppointmentService } from '../services/appointmentService';
 import '../styles/AppointmentSystem.css';
 import type { AppointmentFormData, LegacyAppointment } from '../types/appointment';
@@ -9,6 +10,7 @@ import AppointmentList from './AppointmentList';
 import Calendar from './Calendar';
 
 const AppointmentPage: React.FC = () => {
+  const theme = useTheme();
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [appointments, setAppointments] = useState<LegacyAppointment[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -131,27 +133,62 @@ const AppointmentPage: React.FC = () => {
   };
 
   return (
-    <Container maxWidth="xl" sx={{ py: 3 }}>
+    <Container maxWidth="xl" sx={{ py: { xs: 2, md: 3 } }}>
       {/* Header Section */}
       <Paper
         elevation={0}
         sx={{
-          p: 3,
-          mb: 3,
-          borderRadius: 3,
-          background: 'linear-gradient(135deg, #1a237e 0%, #0d47a1 100%)', // Example modern gradient
-          color: 'white',
+          p: { xs: 2.25, md: 2.75 },
+          mb: { xs: 2, md: 2.5 },
+          borderRadius: 4,
+          background:
+            'radial-gradient(circle at 15% 25%, rgba(140, 169, 154, 0.30) 0%, rgba(140, 169, 154, 0) 55%), radial-gradient(circle at 85% 25%, rgba(134, 200, 181, 0.22) 0%, rgba(134, 200, 181, 0) 55%), linear-gradient(135deg, rgba(250,253,255,0.92) 0%, rgba(240,248,252,0.86) 100%)',
+          color: 'text.primary',
           position: 'relative',
-          overflow: 'hidden'
+          overflow: 'hidden',
+          border: '1px solid rgba(90,140,180,0.22)',
+          boxShadow: '0 12px 30px rgba(40, 70, 90, 0.14)',
         }}
       >
-        <Box sx={{ position: 'relative', zIndex: 1 }}>
-          <Typography variant="h4" component="h1" fontWeight="bold" gutterBottom>
+        <Box sx={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'flex-start', gap: 2 }}>
+          <Box sx={{ flex: 1, minWidth: 0 }}>
+            <Typography
+              variant="h4"
+              component="h1"
+              fontWeight={900}
+              gutterBottom
+              sx={{ letterSpacing: '-0.6px', color: 'rgba(31, 43, 38, 0.92)' }}
+            >
             Randevu Sistemi
           </Typography>
-          <Typography variant="subtitle1" sx={{ opacity: 0.9 }}>
+            <Typography variant="subtitle1" sx={{ color: 'rgba(31, 43, 38, 0.62)' }}>
             Veteriner Hekim Randevu Yönetimi
           </Typography>
+          </Box>
+
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={handleNewAppointment}
+            sx={{
+              mt: 0.25,
+              borderRadius: 3,
+              px: 2,
+              py: 1.1,
+              fontWeight: 900,
+              textTransform: 'none',
+              background: `linear-gradient(180deg, ${theme.palette.primary.main}, ${theme.palette.primary.dark})`,
+              boxShadow: '0 10px 22px rgba(92, 122, 109, 0.25)',
+              '&:hover': {
+                background: `linear-gradient(180deg, ${theme.palette.primary.main}, ${theme.palette.primary.dark})`,
+                filter: 'brightness(1.03)',
+                transform: 'translateY(-1px)',
+              },
+              transition: 'transform 200ms cubic-bezier(.2,.6,.2,1), filter 200ms cubic-bezier(.2,.6,.2,1)',
+            }}
+          >
+            Yeni Randevu
+          </Button>
         </Box>
         {/* Decorative circle */}
         <Box
@@ -162,7 +199,8 @@ const AppointmentPage: React.FC = () => {
             width: 150,
             height: 150,
             borderRadius: '50%',
-            backgroundColor: 'rgba(255,255,255,0.1)'
+            background:
+              'radial-gradient(circle, rgba(140, 169, 154, 0.22) 0%, rgba(140, 169, 154, 0) 60%)',
           }}
         />
       </Paper>
@@ -174,10 +212,13 @@ const AppointmentPage: React.FC = () => {
             elevation={0}
             sx={{
               p: 0,
-              borderRadius: 3,
+              borderRadius: 4,
               overflow: 'hidden',
-              border: '1px solid',
-              borderColor: 'divider',
+              border: '1px solid rgba(90,140,180,0.22)',
+              background: 'linear-gradient(180deg, rgba(250,253,255,0.90), rgba(240,248,252,0.82))',
+              backdropFilter: 'saturate(1.18) blur(14px)',
+              WebkitBackdropFilter: 'saturate(1.18) blur(14px)',
+              boxShadow: '0 12px 28px rgba(40, 70, 90, 0.14)',
               height: '100%'
             }}
           >
@@ -208,10 +249,13 @@ const AppointmentPage: React.FC = () => {
           <Paper
             elevation={0}
             sx={{
-              p: 3,
-              borderRadius: 3,
-              border: '1px solid',
-              borderColor: 'divider',
+              p: { xs: 2, md: 2.5 },
+              borderRadius: 4,
+              border: '1px solid rgba(90,140,180,0.22)',
+              background: 'linear-gradient(180deg, rgba(250,253,255,0.90), rgba(240,248,252,0.82))',
+              backdropFilter: 'saturate(1.18) blur(14px)',
+              WebkitBackdropFilter: 'saturate(1.18) blur(14px)',
+              boxShadow: '0 12px 28px rgba(40, 70, 90, 0.14)',
               minHeight: 600
             }}
           >

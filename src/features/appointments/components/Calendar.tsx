@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Button, IconButton, Typography, Menu, MenuItem } from '@mui/material';
+import { Box, Button, IconButton, Typography, Menu, MenuItem, useTheme } from '@mui/material';
 import { ChevronLeft, ChevronRight, KeyboardArrowDown } from '@mui/icons-material';
 import { LegacyAppointment } from '../types/appointment';
 
@@ -10,6 +10,7 @@ interface CalendarProps {
 }
 
 const Calendar: React.FC<CalendarProps> = ({ selectedDate, onDateSelect, appointments }) => {
+    const theme = useTheme();
     const [monthAnchorEl, setMonthAnchorEl] = useState<null | HTMLElement>(null);
     const [yearAnchorEl, setYearAnchorEl] = useState<null | HTMLElement>(null);
 
@@ -117,33 +118,45 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDate, onDateSelect, appoint
                     <Box
                         onClick={() => selectDate(day)}
                         sx={{
-                            width: 36,
-                            height: 36,
-                            borderRadius: '50%',
+                            width: 38,
+                            height: 38,
+                            borderRadius: 3,
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
                             cursor: 'pointer',
                             fontSize: '0.875rem',
                             fontWeight: isSelected || isToday ? 'bold' : 'normal',
-                            backgroundColor: isSelected
-                                ? 'primary.main'
+                            background: isSelected
+                                ? `linear-gradient(180deg, ${theme.palette.primary.main}, ${theme.palette.primary.dark})`
                                 : isToday
-                                    ? 'secondary.light'
+                                    ? 'rgba(140, 169, 154, 0.18)'
                                     : 'transparent',
                             color: isSelected
-                                ? 'white'
-                                : isToday
-                                    ? 'secondary.contrastText'
-                                    : 'text.primary',
-                            border: hasAppts && !isSelected ? '1px solid' : 'none',
-                            borderColor: 'primary.main',
+                                ? '#fff'
+                                : 'rgba(31, 43, 38, 0.92)',
+                            border: hasAppts && !isSelected ? '1px solid rgba(134,200,181,0.65)' : '1px solid transparent',
+                            boxShadow: isSelected ? '0 10px 22px rgba(92, 122, 109, 0.25)' : 'none',
                             '&:hover': {
-                                backgroundColor: isSelected ? 'primary.dark' : 'action.hover',
+                                background: isSelected
+                                    ? `linear-gradient(180deg, ${theme.palette.primary.main}, ${theme.palette.primary.dark})`
+                                    : 'rgba(140, 169, 154, 0.12)',
                             }
                         }}
                     >
                         {day}
+                        {hasAppts && !isSelected && (
+                            <Box
+                                sx={{
+                                    position: 'absolute',
+                                    bottom: 5,
+                                    width: 6,
+                                    height: 6,
+                                    borderRadius: '50%',
+                                    bgcolor: 'rgba(134, 200, 181, 0.95)',
+                                }}
+                            />
+                        )}
                     </Box>
                 </Box>
             );
@@ -153,10 +166,18 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDate, onDateSelect, appoint
     };
 
     return (
-        <Box sx={{ p: 2, bgcolor: 'background.paper' }}>
+        <Box sx={{ p: 2, bgcolor: 'transparent' }}>
             {/* Header */}
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
-                <IconButton onClick={goToPreviousMonth} size="small">
+                <IconButton
+                    onClick={goToPreviousMonth}
+                    size="small"
+                    sx={{
+                        border: '1px solid rgba(90,140,180,0.18)',
+                        bgcolor: 'rgba(255,255,255,0.65)',
+                        '&:hover': { bgcolor: 'rgba(140, 169, 154, 0.12)' },
+                    }}
+                >
                     <ChevronLeft />
                 </IconButton>
 
@@ -166,7 +187,15 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDate, onDateSelect, appoint
                         endIcon={<KeyboardArrowDown />}
                         onClick={handleMonthClick}
                         color="inherit"
-                        sx={{ textTransform: 'none', fontWeight: 600 }}
+                        sx={{
+                            textTransform: 'none',
+                            fontWeight: 900,
+                            borderRadius: 3,
+                            bgcolor: 'rgba(255,255,255,0.55)',
+                            border: '1px solid rgba(90,140,180,0.18)',
+                            px: 1.25,
+                            '&:hover': { bgcolor: 'rgba(140, 169, 154, 0.12)' },
+                        }}
                     >
                         {monthNames[currentMonth]}
                     </Button>
@@ -191,7 +220,15 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDate, onDateSelect, appoint
                         endIcon={<KeyboardArrowDown />}
                         onClick={handleYearClick}
                         color="inherit"
-                        sx={{ textTransform: 'none', fontWeight: 600 }}
+                        sx={{
+                            textTransform: 'none',
+                            fontWeight: 900,
+                            borderRadius: 3,
+                            bgcolor: 'rgba(255,255,255,0.55)',
+                            border: '1px solid rgba(90,140,180,0.18)',
+                            px: 1.25,
+                            '&:hover': { bgcolor: 'rgba(140, 169, 154, 0.12)' },
+                        }}
                     >
                         {currentYear}
                     </Button>
@@ -212,7 +249,15 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDate, onDateSelect, appoint
                     </Menu>
                 </Box>
 
-                <IconButton onClick={goToNextMonth} size="small">
+                <IconButton
+                    onClick={goToNextMonth}
+                    size="small"
+                    sx={{
+                        border: '1px solid rgba(90,140,180,0.18)',
+                        bgcolor: 'rgba(255,255,255,0.65)',
+                        '&:hover': { bgcolor: 'rgba(140, 169, 154, 0.12)' },
+                    }}
+                >
                     <ChevronRight />
                 </IconButton>
             </Box>
@@ -223,7 +268,15 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDate, onDateSelect, appoint
                     variant="outlined"
                     size="small"
                     onClick={goToToday}
-                    sx={{ borderRadius: 4, textTransform: 'none', px: 3 }}
+                    sx={{
+                        borderRadius: 999,
+                        textTransform: 'none',
+                        px: 2.5,
+                        fontWeight: 900,
+                        borderColor: 'rgba(140,169,154,0.35)',
+                        bgcolor: 'rgba(255,255,255,0.55)',
+                        '&:hover': { bgcolor: 'rgba(140, 169, 154, 0.10)', borderColor: 'rgba(140,169,154,0.45)' },
+                    }}
                 >
                     Bugün
                 </Button>

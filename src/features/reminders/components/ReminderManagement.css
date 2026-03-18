@@ -1,9 +1,10 @@
 .reminder-management {
-  background: white;
-  border-radius: 12px;
-  padding: 24px;
+  background: linear-gradient(180deg, rgba(250,253,255,0.9), rgba(240,248,252,0.82));
+  border-radius: 20px;
+  padding: 18px;
   margin: 20px 0;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--elev-1);
+  border: 1px solid rgba(90,140,180,0.22);
 }
 
 .reminder-management-header {
@@ -11,15 +12,15 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 24px;
-  border-bottom: 2px solid #f0f0f0;
+  border-bottom: 1px solid rgba(90,140,180,0.18);
   padding-bottom: 16px;
 }
 
 .reminder-management-header h2 {
   margin: 0;
-  color: #2c5aa0;
-  font-size: 24px;
-  font-weight: 600;
+  color: var(--primary-700);
+  font-size: 18px;
+  font-weight: 800;
 }
 
 .system-status {
@@ -33,9 +34,10 @@
   flex-direction: column;
   align-items: center;
   padding: 8px 12px;
-  background: #f8f9fa;
-  border-radius: 8px;
+  background: rgba(255,255,255,0.75);
+  border-radius: 14px;
   min-width: 80px;
+  border: 1px solid rgba(90,140,180,0.14);
 }
 
 .status-label {
@@ -69,10 +71,10 @@
 .btn {
   padding: 10px 16px;
   border: none;
-  border-radius: 8px;
-  font-weight: 500;
+  border-radius: 12px;
+  font-weight: 800;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: filter var(--t), transform var(--t), box-shadow var(--t);
   font-size: 14px;
   display: flex;
   align-items: center;
@@ -91,37 +93,39 @@
 }
 
 .btn-primary {
-  background: #2c5aa0;
-  color: white;
+  background: linear-gradient(180deg, var(--primary-500), var(--primary-600));
+  color: #fff;
 }
 
 .btn-primary:hover {
-  background: #1e3f73;
+  filter: brightness(1.03);
 }
 
 .btn-secondary {
-  background: #6b7280;
-  color: white;
+  background: linear-gradient(180deg, rgba(255,255,255,0.86), rgba(255,255,255,0.76));
+  color: var(--text-900);
+  border: 1px solid rgba(140,169,154,0.22);
 }
 
 .btn-secondary:hover {
-  background: #4b5563;
+  filter: brightness(1.02);
 }
 
 .btn-info {
-  background: #0ea5e9;
-  color: white;
+  background: linear-gradient(180deg, rgba(134,200,181,0.35), rgba(134,200,181,0.26));
+  color: #1f5c4a;
+  border: 1px solid rgba(134,200,181,0.50);
 }
 
 .btn-info:hover {
-  background: #0284c7;
+  filter: brightness(1.02);
 }
 
 .create-reminder-form {
-  background: #f8f9fa;
-  border: 2px solid #e5e7eb;
-  border-radius: 12px;
-  padding: 20px;
+  background: rgba(255,255,255,0.75);
+  border: 1px solid rgba(90,140,180,0.18);
+  border-radius: 18px;
+  padding: 16px;
   margin-bottom: 24px;
 }
 
@@ -147,16 +151,18 @@
 .form-group select {
   width: 100%;
   padding: 10px 12px;
-  border: 2px solid #d1d5db;
-  border-radius: 8px;
+  border: 1px solid rgba(0,0,0,0.12);
+  border-radius: 12px;
   font-size: 14px;
-  transition: border-color 0.2s ease;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+  background: rgba(255,255,255,0.85);
 }
 
 .form-group input:focus,
 .form-group select:focus {
   outline: none;
-  border-color: #2c5aa0;
+  border-color: rgba(140,169,154,0.40);
+  box-shadow: var(--ring);
 }
 
 .form-group input:disabled {
@@ -178,26 +184,26 @@
 
 .no-reminders {
   text-align: center;
-  color: #6b7280;
+  color: var(--text-600);
   font-style: italic;
   padding: 40px;
-  background: #f9fafb;
-  border-radius: 8px;
-  border: 2px dashed #d1d5db;
+  background: rgba(255,255,255,0.72);
+  border-radius: 14px;
+  border: 1px dashed rgba(90,140,180,0.28);
 }
 
 .reminders-table {
-  border: 2px solid #e5e7eb;
-  border-radius: 8px;
+  border: 1px solid rgba(90,140,180,0.22);
+  border-radius: 14px;
   overflow: hidden;
 }
 
 .table-header {
   display: grid;
   grid-template-columns: 80px 1fr 1fr 100px 180px 120px;
-  background: #f3f4f6;
+  background: rgba(255,255,255,0.72);
   font-weight: 600;
-  color: #374151;
+  color: var(--text-900);
   font-size: 13px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -205,7 +211,7 @@
 
 .table-header > div {
   padding: 12px 16px;
-  border-right: 1px solid #d1d5db;
+  border-right: 1px solid rgba(90,140,180,0.18);
 }
 
 .table-header > div:last-child {
@@ -215,12 +221,12 @@
 .table-row {
   display: grid;
   grid-template-columns: 80px 1fr 1fr 100px 180px 120px;
-  border-bottom: 1px solid #e5e7eb;
-  transition: background-color 0.2s ease;
+  border-bottom: 1px solid rgba(90,140,180,0.16);
+  transition: background-color var(--t);
 }
 
 .table-row:hover {
-  background: #f9fafb;
+  background: rgba(140, 169, 154, 0.10);
 }
 
 .table-row:last-child {
@@ -229,7 +235,7 @@
 
 .table-row > div {
   padding: 12px 16px;
-  border-right: 1px solid #e5e7eb;
+  border-right: 1px solid rgba(90,140,180,0.14);
   display: flex;
   align-items: center;
   font-size: 14px;
@@ -241,7 +247,7 @@
 
 .channel-badge {
   padding: 4px 8px;
-  border-radius: 4px;
+  border-radius: 999px;
   font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
@@ -249,18 +255,20 @@
 }
 
 .channel-badge.sms {
-  background: #dbeafe;
-  color: #1e40af;
+  background: rgba(134,200,181,0.26);
+  color: #1f5c4a;
+  border: 1px solid rgba(134,200,181,0.48);
 }
 
 .channel-badge.email {
-  background: #fef3c7;
-  color: #d97706;
+  background: rgba(233,184,110,0.26);
+  color: #5f3f17;
+  border: 1px solid rgba(233,184,110,0.50);
 }
 
 .status-badge {
   padding: 4px 8px;
-  border-radius: 4px;
+  border-radius: 999px;
   font-size: 11px;
   font-weight: 600;
   color: white;

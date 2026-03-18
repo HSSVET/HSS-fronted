@@ -12,6 +12,9 @@ import {
   Stepper,
   Step,
   StepLabel,
+  Paper,
+  Container,
+  useTheme,
 } from '@mui/material';
 import { CheckCircle, PersonAdd } from '@mui/icons-material';
 import { queueApi } from '../services/queueApi';
@@ -37,6 +40,7 @@ const PRIORITIES: { value: QueuePriority; label: string }[] = [
 ];
 
 const PatientCheckIn: React.FC = () => {
+  const theme = useTheme();
   const navigate = useNavigate();
   const [activeStep, setActiveStep] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -122,9 +126,19 @@ const PatientCheckIn: React.FC = () => {
 
   if (success) {
     return (
-      <Box sx={{ p: 3, display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
-        <Card sx={{ maxWidth: 500, textAlign: 'center' }}>
-          <CardContent sx={{ p: 4 }}>
+      <Container maxWidth="md" sx={{ py: { xs: 2, md: 3 } }}>
+        <Paper
+          elevation={0}
+          sx={{
+            p: { xs: 2.25, md: 3 },
+            borderRadius: 4,
+            background:
+              'linear-gradient(180deg, rgba(250,253,255,0.90), rgba(240,248,252,0.82))',
+            border: '1px solid rgba(90,140,180,0.22)',
+            boxShadow: '0 12px 28px rgba(40, 70, 90, 0.14)',
+            textAlign: 'center',
+          }}
+        >
             <CheckCircle sx={{ fontSize: 80, color: 'success.main', mb: 2 }} />
             <Typography variant="h4" gutterBottom sx={{ fontWeight: 600 }}>
               Giriş Başarılı!
@@ -138,22 +152,52 @@ const PatientCheckIn: React.FC = () => {
             <Typography variant="body2" color="textSecondary">
               Kuyruk sayfasına yönlendiriliyorsunuz...
             </Typography>
-          </CardContent>
-        </Card>
-      </Box>
+        </Paper>
+      </Container>
     );
   }
 
   return (
-    <Box sx={{ p: 3 }}>
-      <Typography variant="h4" sx={{ fontWeight: 600, mb: 3 }}>
-        Hasta Girişi
-      </Typography>
+    <Container maxWidth="lg" sx={{ py: { xs: 2, md: 3 } }}>
+      <Paper
+        elevation={0}
+        sx={{
+          p: { xs: 2.25, md: 2.75 },
+          mb: { xs: 2, md: 2.5 },
+          borderRadius: 4,
+          background:
+            'radial-gradient(circle at 15% 25%, rgba(140, 169, 154, 0.30) 0%, rgba(140, 169, 154, 0) 55%), radial-gradient(circle at 85% 25%, rgba(134, 200, 181, 0.22) 0%, rgba(134, 200, 181, 0) 55%), linear-gradient(135deg, rgba(250,253,255,0.92) 0%, rgba(240,248,252,0.86) 100%)',
+          border: '1px solid rgba(90,140,180,0.22)',
+          boxShadow: '0 12px 30px rgba(40, 70, 90, 0.14)',
+        }}
+      >
+        <Typography
+          variant="h4"
+          sx={{ fontWeight: 900, letterSpacing: '-0.6px', color: 'rgba(31, 43, 38, 0.92)' }}
+        >
+          Hasta Girişi
+        </Typography>
+        <Typography sx={{ mt: 0.5, color: 'rgba(31, 43, 38, 0.62)' }}>
+          Ayakta hasta veya randevulu giriş oluşturun.
+        </Typography>
+      </Paper>
 
-      <Card sx={{ maxWidth: 800, mx: 'auto' }}>
-        <CardContent sx={{ p: 4 }}>
+      <Paper
+        elevation={0}
+        sx={{
+          maxWidth: 920,
+          mx: 'auto',
+          borderRadius: 4,
+          overflow: 'hidden',
+          background: 'linear-gradient(180deg, rgba(250,253,255,0.90), rgba(240,248,252,0.82))',
+          border: '1px solid rgba(90,140,180,0.22)',
+          boxShadow: '0 12px 28px rgba(40, 70, 90, 0.14)',
+        }}
+      >
+        <Card elevation={0} sx={{ background: 'transparent' }}>
+          <CardContent sx={{ p: { xs: 2, md: 3 } }}>
           {/* Check-in Type Selection */}
-          {activeStep === 0 && checkInType === 'walkin' && (
+          {activeStep === 0 && (
             <Box sx={{ mb: 4 }}>
               <Typography variant="h6" gutterBottom>
                 Giriş Tipi Seçin
@@ -161,15 +205,55 @@ const PatientCheckIn: React.FC = () => {
               <Box sx={{ display: 'flex', gap: 2 }}>
                 <Button
                   variant={checkInType === 'walkin' ? 'contained' : 'outlined'}
-                  onClick={() => setCheckInType('walkin')}
-                  sx={{ flex: 1, py: 2 }}
+                  onClick={() => {
+                    setCheckInType('walkin');
+                    setActiveStep(0);
+                    setError(null);
+                  }}
+                  sx={{
+                    flex: 1,
+                    py: 1.6,
+                    borderRadius: 3,
+                    fontWeight: 900,
+                    textTransform: 'none',
+                    background: checkInType === 'walkin'
+                      ? `linear-gradient(180deg, ${theme.palette.primary.main}, ${theme.palette.primary.dark})`
+                      : 'transparent',
+                    boxShadow: checkInType === 'walkin' ? '0 10px 22px rgba(92, 122, 109, 0.22)' : 'none',
+                    borderColor: 'rgba(140,169,154,0.35)',
+                    '&:hover': {
+                      background: checkInType === 'walkin'
+                        ? `linear-gradient(180deg, ${theme.palette.primary.main}, ${theme.palette.primary.dark})`
+                        : 'rgba(140, 169, 154, 0.10)',
+                    },
+                  }}
                 >
-                  Randevusuz (Walk-in)
+                  Randevusuz (Ayakta Hasta)
                 </Button>
                 <Button
                   variant={checkInType !== 'walkin' ? 'contained' : 'outlined'}
-                  onClick={() => setCheckInType('appointment')}
-                  sx={{ flex: 1, py: 2 }}
+                  onClick={() => {
+                    setCheckInType('appointment');
+                    setActiveStep(0);
+                    setError(null);
+                  }}
+                  sx={{
+                    flex: 1,
+                    py: 1.6,
+                    borderRadius: 3,
+                    fontWeight: 900,
+                    textTransform: 'none',
+                    background: checkInType !== 'walkin'
+                      ? `linear-gradient(180deg, ${theme.palette.primary.main}, ${theme.palette.primary.dark})`
+                      : 'transparent',
+                    boxShadow: checkInType !== 'walkin' ? '0 10px 22px rgba(92, 122, 109, 0.22)' : 'none',
+                    borderColor: 'rgba(140,169,154,0.35)',
+                    '&:hover': {
+                      background: checkInType !== 'walkin'
+                        ? `linear-gradient(180deg, ${theme.palette.primary.main}, ${theme.palette.primary.dark})`
+                        : 'rgba(140, 169, 154, 0.10)',
+                    },
+                  }}
                 >
                   Randevulu
                 </Button>
@@ -178,7 +262,15 @@ const PatientCheckIn: React.FC = () => {
           )}
 
           {/* Stepper */}
-          <Stepper activeStep={activeStep} sx={{ mb: 4 }}>
+          <Stepper
+            activeStep={activeStep}
+            sx={{
+              mb: 4,
+              '& .MuiStepLabel-label': { fontWeight: 800 },
+              '& .MuiStepIcon-root.Mui-active': { color: theme.palette.primary.main },
+              '& .MuiStepIcon-root.Mui-completed': { color: theme.palette.primary.dark },
+            }}
+          >
             {steps.map((label) => (
               <Step key={label}>
                 <StepLabel>{label}</StepLabel>
@@ -269,7 +361,15 @@ const PatientCheckIn: React.FC = () => {
                 <Typography variant="h6" gutterBottom>
                   Giriş Bilgilerini Onaylayın
                 </Typography>
-                <Box sx={{ bgcolor: '#F5F5F5', p: 3, borderRadius: 2, mt: 2 }}>
+                <Box
+                  sx={{
+                    background: 'rgba(255,255,255,0.70)',
+                    border: '1px solid rgba(90,140,180,0.18)',
+                    p: 3,
+                    borderRadius: 3,
+                    mt: 2,
+                  }}
+                >
                   {checkInType === 'appointment' ? (
                     <Typography>Randevu ID: {appointmentId}</Typography>
                   ) : (
@@ -311,7 +411,20 @@ const PatientCheckIn: React.FC = () => {
 
           {/* Navigation Buttons */}
           <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 4 }}>
-            <Button onClick={handleBack} disabled={activeStep === 0 || loading}>
+            <Button
+              onClick={() => {
+                if (loading) return;
+                if (activeStep === 0 && checkInType === 'appointment') {
+                  setCheckInType('walkin');
+                  setActiveStep(0);
+                  setError(null);
+                  return;
+                }
+                handleBack();
+              }}
+              disabled={loading || (activeStep === 0 && checkInType === 'walkin')}
+              sx={{ borderRadius: 3, textTransform: 'none', fontWeight: 800 }}
+            >
               Geri
             </Button>
 
@@ -321,18 +434,49 @@ const PatientCheckIn: React.FC = () => {
                 onClick={handleCheckIn}
                 disabled={loading || !canProceed()}
                 startIcon={loading ? <CircularProgress size={20} /> : <PersonAdd />}
+                sx={{
+                  borderRadius: 3,
+                  textTransform: 'none',
+                  fontWeight: 900,
+                  background: `linear-gradient(180deg, ${theme.palette.primary.main}, ${theme.palette.primary.dark})`,
+                  boxShadow: '0 10px 22px rgba(92, 122, 109, 0.25)',
+                  '&:hover': {
+                    background: `linear-gradient(180deg, ${theme.palette.primary.main}, ${theme.palette.primary.dark})`,
+                    filter: 'brightness(1.03)',
+                    transform: 'translateY(-1px)',
+                  },
+                  transition: 'transform 200ms cubic-bezier(.2,.6,.2,1), filter 200ms cubic-bezier(.2,.6,.2,1)',
+                }}
               >
                 {loading ? 'Giriş Yapılıyor...' : 'Girişi Tamamla'}
               </Button>
             ) : (
-              <Button variant="contained" onClick={handleNext} disabled={!canProceed()}>
+              <Button
+                variant="contained"
+                onClick={handleNext}
+                disabled={!canProceed()}
+                sx={{
+                  borderRadius: 3,
+                  textTransform: 'none',
+                  fontWeight: 900,
+                  background: `linear-gradient(180deg, ${theme.palette.primary.main}, ${theme.palette.primary.dark})`,
+                  boxShadow: '0 10px 22px rgba(92, 122, 109, 0.25)',
+                  '&:hover': {
+                    background: `linear-gradient(180deg, ${theme.palette.primary.main}, ${theme.palette.primary.dark})`,
+                    filter: 'brightness(1.03)',
+                    transform: 'translateY(-1px)',
+                  },
+                  transition: 'transform 200ms cubic-bezier(.2,.6,.2,1), filter 200ms cubic-bezier(.2,.6,.2,1)',
+                }}
+              >
                 İleri
               </Button>
             )}
           </Box>
         </CardContent>
-      </Card>
-    </Box>
+        </Card>
+      </Paper>
+    </Container>
   );
 };
 

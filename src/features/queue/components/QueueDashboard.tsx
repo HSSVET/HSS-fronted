@@ -16,6 +16,9 @@ import {
   TextField,
   MenuItem,
   Alert,
+  Container,
+  Paper,
+  useTheme,
 } from '@mui/material';
 import {
   Refresh,
@@ -55,6 +58,7 @@ const PRIORITY_COLORS = {
 };
 
 const QueueDashboard: React.FC = () => {
+  const theme = useTheme();
   const { queue, loading, error, refreshQueue } = useQueue(30000); // Refresh every 30 seconds
   const [assignDialogOpen, setAssignDialogOpen] = useState(false);
   const [selectedEntry, setSelectedEntry] = useState<QueueEntry | null>(null);
@@ -125,55 +129,108 @@ const QueueDashboard: React.FC = () => {
   const inProgressCount = queue.filter(q => q.status === 'IN_PROGRESS').length;
 
   return (
-    <Box sx={{ p: 3 }}>
+    <Container maxWidth="xl" sx={{ py: { xs: 2, md: 3 } }}>
       {/* Header */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h4" sx={{ fontWeight: 600 }}>
-          Hasta Kuyruğu
-        </Typography>
-        <Button
-          variant="outlined"
-          startIcon={<Refresh />}
-          onClick={refreshQueue}
-          disabled={loading}
-        >
-          Yenile
-        </Button>
-      </Box>
+      <Paper
+        elevation={0}
+        sx={{
+          p: { xs: 2.25, md: 2.75 },
+          mb: { xs: 2, md: 2.5 },
+          borderRadius: 4,
+          background:
+            'radial-gradient(circle at 15% 25%, rgba(140, 169, 154, 0.30) 0%, rgba(140, 169, 154, 0) 55%), radial-gradient(circle at 85% 25%, rgba(134, 200, 181, 0.22) 0%, rgba(134, 200, 181, 0) 55%), linear-gradient(135deg, rgba(250,253,255,0.92) 0%, rgba(240,248,252,0.86) 100%)',
+          border: '1px solid rgba(90,140,180,0.22)',
+          boxShadow: '0 12px 30px rgba(40, 70, 90, 0.14)',
+        }}
+      >
+        <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
+          <Box sx={{ flex: 1, minWidth: 0 }}>
+            <Typography
+              variant="h4"
+              sx={{ fontWeight: 900, letterSpacing: '-0.6px', color: 'rgba(31, 43, 38, 0.92)' }}
+            >
+              Hasta Kuyruğu
+            </Typography>
+            <Typography sx={{ mt: 0.5, color: 'rgba(31, 43, 38, 0.62)' }}>
+              Bekleyenleri yönetin, muayene akışını tek ekrandan takip edin.
+            </Typography>
+          </Box>
+          <Button
+            variant="outlined"
+            startIcon={<Refresh />}
+            onClick={refreshQueue}
+            disabled={loading}
+            sx={{
+              borderRadius: 3,
+              textTransform: 'none',
+              fontWeight: 900,
+              borderColor: 'rgba(140,169,154,0.35)',
+              bgcolor: 'rgba(255,255,255,0.55)',
+              '&:hover': { bgcolor: 'rgba(140, 169, 154, 0.10)', borderColor: 'rgba(140,169,154,0.45)' },
+            }}
+          >
+            Yenile
+          </Button>
+        </Box>
+      </Paper>
 
       {/* Summary Cards */}
-      <Grid container spacing={2} sx={{ mb: 3 }}>
+      <Grid container spacing={2} sx={{ mb: { xs: 2, md: 2.5 } }}>
         <Grid size={{ xs: 12, sm: 4 }}>
-          <Card sx={{ bgcolor: '#FFF3E0' }}>
+          <Card
+            elevation={0}
+            sx={{
+              borderRadius: 4,
+              background: 'linear-gradient(180deg, rgba(250,253,255,0.90), rgba(240,248,252,0.82))',
+              border: '1px solid rgba(90,140,180,0.22)',
+              boxShadow: '0 12px 28px rgba(40, 70, 90, 0.12)',
+            }}
+          >
             <CardContent>
-              <Typography color="textSecondary" gutterBottom>
+              <Typography sx={{ color: 'rgba(31, 43, 38, 0.62)', fontWeight: 800 }} gutterBottom>
                 Bekleyen
               </Typography>
-              <Typography variant="h3" sx={{ fontWeight: 600, color: '#F57C00' }}>
+              <Typography variant="h3" sx={{ fontWeight: 900, color: theme.palette.primary.dark }}>
                 {waitingCount}
               </Typography>
             </CardContent>
           </Card>
         </Grid>
         <Grid size={{ xs: 12, sm: 4 }}>
-          <Card sx={{ bgcolor: '#E3F2FD' }}>
+          <Card
+            elevation={0}
+            sx={{
+              borderRadius: 4,
+              background: 'linear-gradient(180deg, rgba(250,253,255,0.90), rgba(240,248,252,0.82))',
+              border: '1px solid rgba(90,140,180,0.22)',
+              boxShadow: '0 12px 28px rgba(40, 70, 90, 0.12)',
+            }}
+          >
             <CardContent>
-              <Typography color="textSecondary" gutterBottom>
+              <Typography sx={{ color: 'rgba(31, 43, 38, 0.62)', fontWeight: 800 }} gutterBottom>
                 Muayenede
               </Typography>
-              <Typography variant="h3" sx={{ fontWeight: 600, color: '#1976D2' }}>
+              <Typography variant="h3" sx={{ fontWeight: 900, color: theme.palette.primary.dark }}>
                 {inProgressCount}
               </Typography>
             </CardContent>
           </Card>
         </Grid>
         <Grid size={{ xs: 12, sm: 4 }}>
-          <Card sx={{ bgcolor: '#F5F5F5' }}>
+          <Card
+            elevation={0}
+            sx={{
+              borderRadius: 4,
+              background: 'linear-gradient(180deg, rgba(250,253,255,0.90), rgba(240,248,252,0.82))',
+              border: '1px solid rgba(90,140,180,0.22)',
+              boxShadow: '0 12px 28px rgba(40, 70, 90, 0.12)',
+            }}
+          >
             <CardContent>
-              <Typography color="textSecondary" gutterBottom>
+              <Typography sx={{ color: 'rgba(31, 43, 38, 0.62)', fontWeight: 800 }} gutterBottom>
                 Toplam
               </Typography>
-              <Typography variant="h3" sx={{ fontWeight: 600 }}>
+              <Typography variant="h3" sx={{ fontWeight: 900, color: 'rgba(31, 43, 38, 0.92)' }}>
                 {queue.length}
               </Typography>
             </CardContent>
@@ -196,9 +253,23 @@ const QueueDashboard: React.FC = () => {
         {queue.map((entry) => (
           <Grid size={{ xs: 12 }} key={entry.queueEntryId}>
             <Card
+              elevation={0}
               sx={{
-                borderLeft: `4px solid ${STATUS_COLORS[entry.status]}`,
-                '&:hover': { boxShadow: 4 },
+                borderRadius: 4,
+                border: '1px solid rgba(90,140,180,0.22)',
+                background: 'linear-gradient(180deg, rgba(255,255,255,0.88), rgba(255,255,255,0.76))',
+                backdropFilter: 'blur(10px)',
+                position: 'relative',
+                overflow: 'hidden',
+                '&::before': {
+                  content: '""',
+                  position: 'absolute',
+                  inset: 0,
+                  borderLeft: `5px solid ${STATUS_COLORS[entry.status]}`,
+                  pointerEvents: 'none',
+                },
+                transition: 'transform 200ms cubic-bezier(.2,.6,.2,1), box-shadow 200ms cubic-bezier(.2,.6,.2,1)',
+                '&:hover': { boxShadow: '0 18px 40px rgba(40, 70, 90, 0.16)', transform: 'translateY(-2px)' },
               }}
             >
               <CardContent>
@@ -206,10 +277,10 @@ const QueueDashboard: React.FC = () => {
                   {/* Left Side - Patient Info */}
                   <Box sx={{ flex: 1 }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                      <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                      <Typography variant="h6" sx={{ fontWeight: 900, letterSpacing: '-0.2px' }}>
                         #{entry.queueNumber}
                       </Typography>
-                      <Typography variant="h6">
+                      <Typography variant="h6" sx={{ fontWeight: 800 }}>
                         {entry.animalName}
                       </Typography>
                       {entry.priority !== 'NORMAL' && (
@@ -220,6 +291,7 @@ const QueueDashboard: React.FC = () => {
                             bgcolor: PRIORITY_COLORS[entry.priority],
                             color: 'white',
                             fontWeight: 600,
+                            borderRadius: 999,
                           }}
                         />
                       )}
@@ -280,6 +352,7 @@ const QueueDashboard: React.FC = () => {
                         bgcolor: STATUS_COLORS[entry.status],
                         color: 'white',
                         fontWeight: 600,
+                        borderRadius: 999,
                       }}
                     />
 
@@ -307,6 +380,11 @@ const QueueDashboard: React.FC = () => {
                             color="primary"
                             onClick={() => handleOpenAssignDialog(entry)}
                             title="Atama Yap"
+                            sx={{
+                              border: '1px solid rgba(90,140,180,0.18)',
+                              bgcolor: 'rgba(255,255,255,0.55)',
+                              '&:hover': { bgcolor: 'rgba(140, 169, 154, 0.10)' },
+                            }}
                           >
                             <Person />
                           </IconButton>
@@ -316,6 +394,11 @@ const QueueDashboard: React.FC = () => {
                             onClick={() => handleStatusUpdate(entry.queueEntryId, 'IN_PROGRESS')}
                             title="Başlat"
                             disabled={actionLoading}
+                            sx={{
+                              border: '1px solid rgba(90,140,180,0.18)',
+                              bgcolor: 'rgba(255,255,255,0.55)',
+                              '&:hover': { bgcolor: 'rgba(134, 200, 181, 0.14)' },
+                            }}
                           >
                             <PlayArrow />
                           </IconButton>
@@ -329,6 +412,11 @@ const QueueDashboard: React.FC = () => {
                           onClick={() => handleStatusUpdate(entry.queueEntryId, 'COMPLETED')}
                           title="Tamamla"
                           disabled={actionLoading}
+                          sx={{
+                            border: '1px solid rgba(90,140,180,0.18)',
+                            bgcolor: 'rgba(255,255,255,0.55)',
+                            '&:hover': { bgcolor: 'rgba(134, 200, 181, 0.14)' },
+                          }}
                         >
                           <CheckCircle />
                         </IconButton>
@@ -341,6 +429,11 @@ const QueueDashboard: React.FC = () => {
                           onClick={() => handleStatusUpdate(entry.queueEntryId, 'CANCELLED')}
                           title="İptal"
                           disabled={actionLoading}
+                          sx={{
+                            border: '1px solid rgba(90,140,180,0.18)',
+                            bgcolor: 'rgba(255,255,255,0.55)',
+                            '&:hover': { bgcolor: 'rgba(229,127,115,0.12)' },
+                          }}
                         >
                           <Cancel />
                         </IconButton>
@@ -356,7 +449,15 @@ const QueueDashboard: React.FC = () => {
 
       {/* Empty State */}
       {!loading && queue.length === 0 && (
-        <Box sx={{ textAlign: 'center', py: 8 }}>
+        <Box
+          sx={{
+            textAlign: 'center',
+            py: 8,
+            borderRadius: 4,
+            background: 'rgba(255,255,255,0.70)',
+            border: '1px dashed rgba(90,140,180,0.28)',
+          }}
+        >
           <Typography variant="h6" color="textSecondary">
             Kuyrukta hasta bulunmuyor
           </Typography>
@@ -403,7 +504,7 @@ const QueueDashboard: React.FC = () => {
           </Button>
         </DialogActions>
       </Dialog>
-    </Box>
+    </Container>
   );
 };
 
